@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Каталог — K-Beauty | C-Health</title>
+  <meta name="description" content="Каталог корейской косметики, лечебных трав и подарочных наборов с доставкой по Казахстану.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=10">
+  <script src="assets/js/app.js?v=10" data-page="catalog"></script>
+</head>
+<body data-page="catalog">
+  <header id="site-header"></header>
+
+  <main class="section-clip">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Хлебные крошки" id="crumbs"></nav>
+      <div class="page-head catalog-head">
+        <div>
+          <h1 id="cat-title">Каталог</h1>
+          <p class="lead" id="cat-lead">Выберите категорию и найдите то, что подходит именно вам.</p>
+        </div>
+        <form class="catalog-search" role="search" id="cat-search">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/></svg>
+          <label class="sr-only" for="q">Поиск по товарам</label>
+          <input id="q" type="search" placeholder="Поиск по товарам…" autocomplete="off">
+        </form>
+      </div>
+    </div>
+    <img class="decor" src="assets/images/decor/branch-top-right.png" alt="" aria-hidden="true" data-decor onerror="imgFail(this)" style="right:-40px;top:20px;width:260px">
+
+    <div class="container" style="padding-bottom:56px">
+      <div class="panel catalog-layout">
+        <aside class="cat-aside" id="aside" aria-label="Категории и фильтры"></aside>
+        <div>
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <button class="dropdown-btn filters-btn" type="button" id="open-filters"></button>
+              <div class="dropdown" id="sort-dd"></div>
+              <div class="dropdown" id="price-dd"></div>
+            </div>
+            <div class="view-switch" id="view-switch" role="group" aria-label="Вид списка"></div>
+          </div>
+          <div class="found" id="found" aria-live="polite"></div>
+          <div class="products-grid" id="grid"></div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-backdrop" id="backdrop"></div>
+  </main>
+
+  <footer id="site-footer"></footer>
+</body>
+</html>

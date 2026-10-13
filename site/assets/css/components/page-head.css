@@ -1,0 +1,7 @@
+/* Хлебные крошки и заголовок страницы */
+.breadcrumbs { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--text-muted); padding-top: 24px; }
+.breadcrumbs a:hover { color: var(--primary); }
+.breadcrumbs span[aria-hidden] { opacity: .6; }
+.page-head { position: relative; padding: 8px 0 32px; }
+.page-head h1 { margin-top: 14px; }
+.page-head .lead { margin-top: 12px; font-size: 17px; color: var(--text-muted); max-width: 620px; }

@@ -1,0 +1,35 @@
+/* Главный файл стилей магазина: подключает все части по порядку.
+   ?v=10 — версия для сброса кеша браузера; меняйте вместе с VERSION в assets/js/app.js.
+   Порядок важен: база → компоненты → страницы → адаптив. */
+@import url("base/variables.css?v=10");
+@import url("base/base.css?v=10");
+@import url("base/interaction.css?v=10");
+@import url("components/buttons.css?v=10");
+@import url("components/header.css?v=10");
+@import url("components/mobile-menu.css?v=10");
+@import url("components/page-head.css?v=10");
+@import url("components/benefits.css?v=10");
+@import url("components/product-card.css?v=10");
+@import url("components/carousel.css?v=autoplay-4");
+@import url("components/forms.css?v=10");
+@import url("components/toast.css?v=10");
+@import url("components/modal.css?v=10");
+@import url("components/states.css?v=10");
+@import url("components/footer.css?v=10");
+@import url("pages/home.css?v=10");
+@import url("pages/catalog.css?v=10");
+@import url("pages/product.css?v=decor-fix-1?v=10");
+@import url("pages/product-reviews.css?v=10");
+@import url("pages/about.css?v=10");
+@import url("pages/delivery.css?v=10");
+@import url("pages/cart-checkout.css?v=10");
+@import url("pages/login.css?v=10");
+@import url("pages/account.css?v=10");
+@import url("pages/not-found.css?v=10");
+@import url("components/motion.css?v=10");
+@import url("components/transitions.css?v=10");
+@import url("responsive/large-screens.css?v=10");
+@import url("responsive/laptop.css?v=10");
+@import url("responsive/tablet.css?v=10");
+@import url("responsive/mobile.css?v=10");
+@import url("responsive/reduced-motion.css?v=10");

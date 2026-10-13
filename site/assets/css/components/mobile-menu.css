@@ -1,0 +1,25 @@
+/* Мобильное меню */
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 100; background: var(--bg);
+  transform: translateX(100%); transition: transform .32s var(--ease); visibility: hidden;
+  display: flex; flex-direction: column; padding: 20px 24px calc(24px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+.mobile-menu.is-open { transform: none; visibility: visible; }
+.mobile-menu .decor { right: -40px; bottom: 120px; width: 260px; opacity: .9; }
+.mm-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.mm-head .logo svg { width: 56px; height: 42px; }
+.mm-close .icon { width: 30px; height: 30px; }
+.mm-nav { position: relative; z-index: 1; flex: 1; }
+.mm-nav > li > a, .mm-nav > li > button {
+  display: flex; align-items: center; gap: 18px; width: 100%; padding: 14px 0; font-size: 19px; text-align: left;
+}
+.mm-nav .icon { width: 26px; height: 26px; color: var(--primary); }
+.mm-nav .is-active > a, .mm-nav .is-active > button { color: var(--primary); font-weight: 700; }
+.mm-nav .chev { margin-left: auto; transition: transform .2s; }
+.mm-nav .is-open .chev { transform: rotate(180deg); }
+.mm-sub { margin: 0 0 8px 12px; padding-left: 30px; border-left: 1px solid var(--border); display: none; }
+.is-open > .mm-sub { display: block; }
+.mm-sub a { display: block; padding: 9px 0; color: var(--text-muted); font-size: 16px; }
+.mm-foot { position: relative; z-index: 1; padding-top: 24px; }
+.mm-register { margin-top: 10px; }

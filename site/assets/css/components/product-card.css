@@ -1,0 +1,59 @@
+/* Карточка товара, вид «список», звёзды */
+.products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.product-card {
+  position: relative; display: flex; flex-direction: column; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 8px 14px;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.pc-media { position: relative; display: block; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: var(--surface-2); }
+.pc-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+.pc-fav {
+  position: absolute; top: 12px; right: 12px; z-index: 2; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; background: rgba(255,255,255,.92); box-shadow: 0 2px 8px rgba(0,0,0,.06); transition: transform .2s;
+}
+@media (hover: hover) { .pc-fav:hover { transform: scale(1.08); } }
+.pc-fav .icon { width: 19px; height: 19px; }
+.pc-fav.is-active { color: var(--primary); }
+.pc-fav.is-active .icon { fill: var(--primary); }
+.pc-badges { position: absolute; top: 12px; left: 12px; z-index: 2; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.tag { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--primary); color: #fff; }
+.tag-sale { background: var(--danger); }
+.tag-soft { background: var(--sage-soft); color: var(--primary); }
+.pc-body { display: flex; flex-direction: column; flex: 1; padding: 12px 8px 0; }
+.pc-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pc-brand { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+.pc-rating { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.pc-rating .icon { width: 14px; height: 14px; fill: var(--gold); stroke: none; }
+.pc-rating small { font-weight: 400; color: var(--text-muted); }
+.pc-title { font-family: var(--font-serif); font-size: 19px; line-height: 1.2; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.4em; }
+.pc-title:hover { color: var(--primary); }
+.pc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
+.price { font-family: var(--font-serif); font-size: 24px; font-weight: 600; white-space: nowrap; }
+.price-old { font-size: 14px; color: var(--text-muted); text-decoration: line-through; margin-left: 6px; font-family: var(--font-sans); font-weight: 400; }
+.pc-cart-sq { width: 40px; height: 40px; border-radius: 10px; background: var(--primary); color: #fff; display: grid; place-items: center; transition: background .2s; flex: none; }
+.pc-cart-sq:hover { background: var(--primary-hover); }
+.pc-cart-sq .icon { width: 19px; height: 19px; }
+.pc-cart { margin-top: 12px; height: 42px; font-size: 14px; }
+.pc-cart.is-added { background: var(--sage); }
+.pc-out { font-size: 13px; color: var(--danger); margin-top: 12px; text-align: center; }
+
+/* Вид «список» */
+.products-grid.is-list { grid-template-columns: 1fr; }
+.is-list .product-card { flex-direction: row; align-items: center; gap: 20px; padding: 10px; }
+.is-list .pc-media { width: 150px; flex: none; }
+.is-list .pc-body { padding: 0; }
+.is-list .pc-desc { display: block; }
+.is-list .pc-cart { width: 180px; margin: 0 8px 0 0; flex: none; }
+.pc-desc { display: none; font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+.products-grid.is-large { grid-template-columns: repeat(2, 1fr); }
+
+.img-ph { width: 100%; height: 100%; display: grid; place-items: center; background: linear-gradient(135deg, #EFEADF, #E4DECF); color: var(--sage); }
+.img-ph svg { width: 34%; max-width: 160px; height: auto; }
+.pp-thumbs .img-ph, .gallery-grid .img-ph, .mission-img .img-ph, .pm-img .img-ph { width: 100%; height: 100%; }
+.pm-img .img-ph { position: absolute; inset: 0; }
+
+/* Звёзды рейтинга */
+.stars { display: inline-flex; gap: 2px; color: var(--gold); }
+.stars .icon { width: 17px; height: 17px; fill: currentColor; stroke: none; }
+.stars .off { color: #D9D2C1; }
+.fav-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }

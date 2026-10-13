@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>K-Beauty | C-Health — корейская косметика и лечебные травы в Казахстане</title>
+  <meta name="description" content="Оригинальная корейская косметика и натуральные лечебные травы. Доставка по Казахстану, оплата картой или наличными при получении.">
+  <meta property="og:title" content="K-Beauty | C-Health — красота и забота в одном месте">
+  <meta property="og:image" content="assets/images/common/og-image.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=decor-fix-1">
+  <script src="assets/js/app.js?v=10" data-page="home"></script>
+</head>
+<body data-page="home">
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-media"><img src="assets/images/pages/home/hero.jpg" alt="Корейская косметика на камнях у ручья" fetchpriority="high" onerror="imgFail(this)"></div>
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="anim-up">Красота и забота<br>в одном месте</h1>
+          <p class="lead anim-up" style="animation-delay:.08s">Корейская косметика и лечебные травы для естественной красоты, здоровья и внутреннего баланса.</p>
+          <a class="btn btn-primary anim-up" style="animation-delay:.16s" href="catalog.html">Перейти к каталогу <svg class="icon icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div class="anim-up" style="animation-delay:.24s" id="hero-benefits"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container promo-grid">
+        <article class="promo-card promo-main reveal">
+          <div class="pm-img"><img src="assets/images/pages/home/cream-texture.jpg" alt="Текстура крема" loading="lazy" onerror="imgFail(this)"></div>
+          <div class="pm-body">
+            <h2>Секрет естественной красоты</h2>
+            <p>Качественная корейская косметика, проверенные травы и натуральные компоненты для вашей кожи и здоровья.</p>
+            <a class="btn btn-primary" href="catalog.html?cat=korean-cosmetics">О косметике <svg class="icon icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </article>
+        <article class="promo-card promo-herbs reveal">
+          <img src="assets/images/pages/home/herbs-leaf.png" alt="" aria-hidden="true" data-decor onerror="imgFail(this)">
+          <h3>Натуральные лекарственные травы</h3>
+          <p>Традиционные средства для укрепления иммунитета и общего самочувствия.</p>
+          <a class="btn btn-primary btn-sm" href="catalog.html?cat=herbs">Перейти к травам <svg class="icon icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:16px">
+      <div class="container">
+        <div class="section-head">
+          <h2>Популярные товары</h2>
+          <a class="link-arrow" href="catalog.html?sort=popular">Смотреть все <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="carousel" id="popular">
+          <button class="carousel-btn prev" type="button" aria-label="Назад"></button>
+          <div class="carousel-track"></div>
+          <button class="carousel-btn next" type="button" aria-label="Вперёд"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cats-banner" aria-labelledby="cats-title">
+      <div class="container">
+        <h2 id="cats-title">Категории</h2>
+        <div class="cats-row" id="cats-row"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Новинки</h2>
+          <a class="link-arrow" href="catalog.html?flag=new">Все новинки <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="carousel" id="new">
+          <button class="carousel-btn prev" type="button" aria-label="Назад"></button>
+          <div class="carousel-track"></div>
+          <button class="carousel-btn next" type="button" aria-label="Вперёд"></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+</body>
+</html>

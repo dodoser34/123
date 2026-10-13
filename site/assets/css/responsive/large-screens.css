@@ -1,0 +1,12 @@
+/* Большие экраны: Full HD → 2K → 4K.
+   Интерфейс пропорционально увеличивается свойством zoom (переменная --zoom),
+   эффективная ширина макета остаётся ~1700–1920 px на любом большом мониторе. */
+@media (min-width: 1600px) { :root { --container: 1360px; } }
+@media (min-width: 1800px) { :root { --zoom: 1.12; } }   /* Full HD 1920 */
+@media (min-width: 2200px) { :root { --zoom: 1.35; } }   /* 2K / QHD 2560 */
+@media (min-width: 2800px) { :root { --zoom: 1.7; } }    /* 3K / ультраширокие */
+@media (min-width: 3400px) { :root { --zoom: 2; } }      /* 4K / UHD 3840 */
+@media (min-width: 1600px) {
+  .hero { min-height: 700px; }
+  .products-grid { gap: 24px; }
+}

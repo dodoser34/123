@@ -1,0 +1,78 @@
+/* Телефоны: до 760 px и до 560 px */
+@media (max-width: 760px) {
+  .benefits { grid-template-columns: 1fr; gap: 18px; }
+  .benefit { padding: 0; }
+  .benefit + .benefit { border: 0; }
+  .hero .benefits { flex-wrap: wrap; gap: 16px 24px; }
+  .promo-main { grid-template-columns: 1fr; }
+  .promo-main .pm-img { min-height: 220px; }
+  .promo-main .pm-img { -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent); mask-image: linear-gradient(to bottom, #000 60%, transparent); }
+  .promo-main .pm-body { padding: 8px 24px 28px; }
+  .catalog-head { flex-direction: column; align-items: stretch; }
+  .catalog-search { width: 100%; }
+  .is-list .product-card { flex-wrap: wrap; }
+  .is-list .pc-media { width: 110px; }
+  .is-list .pc-body { flex: 1; min-width: 0; }
+  .is-list .pc-cart { width: 100%; margin: 4px 0 0; }
+  .view-switch .vs-large { display: none; }
+  .info-row { grid-template-columns: 54px 1fr; }
+  .info-row p, .info-row > div:last-child { grid-column: 2; }
+  .cart-item { grid-template-columns: 80px 1fr 36px; gap: 12px; }
+  .cart-item img, .cart-item .img-ph { width: 80px; height: 80px; grid-row: span 2; }
+  .cart-item .qty { grid-column: 2; }
+  .cart-item .ci-sum { grid-column: 2; grid-row: 3; text-align: left; }
+  .cart-item .ci-del { grid-column: 3; grid-row: 1; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .stats { grid-template-columns: 1fr; padding: 8px 20px; }
+  .stats div { padding: 16px 0; }
+  .stats div + div { border-left: 0; border-top: 1px solid var(--border); }
+  .values { grid-template-columns: 1fr; text-align: left; gap: 14px; }
+  .values li { display: flex; align-items: center; gap: 14px; padding: 0; }
+  .values li + li { border: 0; }
+  .values .v-ic { margin: 0; width: 56px; height: 56px; flex: none; }
+  .table thead { display: none; }
+  .table tr { display: block; padding: 12px 8px; border-bottom: 1px solid var(--border); }
+  .table td { display: block; padding: 2px 8px; border: 0; }
+  .table td:first-child { color: var(--text); font-weight: 600; }
+  .cta-band { flex-direction: column; align-items: stretch; text-align: left; }
+  .footer-main { grid-template-columns: 1fr 1fr; }
+  .footer-bottom { flex-direction: column; }
+  .toasts { left: 16px; right: 16px; bottom: 16px; }
+  .toast { min-width: 0; max-width: none; }
+}
+
+@media (max-width: 560px) {
+  :root { --gutter: 16px; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .products-grid.is-large { grid-template-columns: 1fr; }
+  .product-card { padding: 6px 6px 10px; }
+  .pc-body { padding: 10px 4px 0; }
+  .pc-title { font-size: 16px; }
+  .price { font-size: 20px; }
+  .pc-cart { height: 38px; font-size: 13px; }
+  .pc-cart span { display: none; }
+  .pc-fav { width: 32px; height: 32px; top: 8px; right: 8px; }
+  .carousel-track { grid-auto-columns: 66%; }
+  .hero-media { height: 300px; }
+  .hero .btn { width: 100%; }
+  .panel-pad { padding: 22px; }
+  .pp-thumbs { display: none; }
+  .pp-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+  .pp-dots button { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .pp-dots button.is-active { background: var(--primary); width: 20px; border-radius: 4px; }
+  .pp-buy .btn { flex: 1; min-width: 0; }
+  .trust-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .trust-card { font-size: 16px; padding: 20px 10px; }
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .info-panel { padding: 18px 18px 4px; }
+  .modal-box { padding: 24px 20px; }
+  .footer-main { grid-template-columns: 1fr; gap: 24px; }
+  .site-footer .decor { width: 150px; opacity: .6; }
+}
+
+/* Очень узкие телефоны: заголовок секции и ссылка «Смотреть все» переносятся */
+@media (max-width: 400px) {
+  .section-head { flex-wrap: wrap; gap: 6px 16px; }
+  .order-item { grid-template-columns: 52px minmax(0, 1fr); }
+  .order-item > .btn, .order-item > .order-rated { grid-column: 2; justify-self: start; }
+}

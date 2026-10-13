@@ -1,0 +1,55 @@
+/* Полосы прокрутки, выделение текста и «залипания» при нажатиях */
+
+/* Полосы прокрутки ---------------------------------------------------------
+   Chrome, Edge, Safari: тонкая «таблетка» в фирменных цветах. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(31, 58, 45, .28);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-color: rgba(31, 58, 45, .5); }
+::-webkit-scrollbar-thumb:active { background-color: var(--primary); }
+::-webkit-scrollbar-corner { background: transparent; }
+/* Вся страница — полоса чуть шире, на кремовом фоне */
+html::-webkit-scrollbar { width: 12px; }
+html::-webkit-scrollbar-track { background: var(--bg); }
+html::-webkit-scrollbar-thumb { border-width: 3px; }
+/* Внутри небольших блоков (таблицы, вкладки, меню) — совсем тонкая */
+.adm-table-wrap::-webkit-scrollbar, .acc-nav::-webkit-scrollbar, .pp-thumbs::-webkit-scrollbar,
+.modal-box::-webkit-scrollbar, .cat-aside::-webkit-scrollbar, .mobile-menu::-webkit-scrollbar,
+.search-results::-webkit-scrollbar { width: 6px; height: 6px; }
+.adm-table-wrap::-webkit-scrollbar-thumb, .acc-nav::-webkit-scrollbar-thumb, .pp-thumbs::-webkit-scrollbar-thumb,
+.modal-box::-webkit-scrollbar-thumb, .cat-aside::-webkit-scrollbar-thumb, .mobile-menu::-webkit-scrollbar-thumb,
+.search-results::-webkit-scrollbar-thumb { border-width: 1px; }
+/* Тёмное меню админки — светлая полоса */
+.adm-side::-webkit-scrollbar { width: 6px; }
+.adm-side::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, .25); border-width: 1px; }
+.adm-side::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, .45); }
+
+/* Firefox понимает только цвет и толщину */
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-width: thin; scrollbar-color: rgba(31, 58, 45, .35) transparent; }
+  html { scrollbar-color: rgba(31, 58, 45, .35) var(--bg); }
+  .adm-side { scrollbar-color: rgba(255, 255, 255, .3) transparent; }
+}
+
+/* Выделение текста ---------------------------------------------------------- */
+::selection { background: var(--sage-soft); color: var(--primary); }
+
+/* Кнопки, меню, вкладки, карточки и карусели не выделяются при двойном щелчке
+   и быстрых нажатиях. Текст описаний, отзывов и полей ввода выделяется как обычно. */
+button, .btn, [role="button"], [role="tab"], label, summary, nav, .tabs, .chip, .tag,
+.carousel-track, .cats-row, .cat-circle, .product-card, .pp-thumbs, .pp-main, .qty,
+.header, .mobile-menu, .adm-side, .pf-nav, .rating-bars, .stars, .badge, .lightbox {
+  -webkit-user-select: none;
+  user-select: none;
+}
+input, textarea, select, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
+
+/* Картинки и ссылки не «утаскиваются» мышью, нажатие на телефоне без синей вспышки */
+img, a, svg { -webkit-user-drag: none; }
+html { -webkit-tap-highlight-color: transparent; }
+button, a, label, summary, [role="button"] { touch-action: manipulation; }

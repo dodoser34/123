@@ -1,0 +1,25 @@
+Use case: ui-mockup
+Asset type: premium botanical ecommerce full-screen mobile menu design reference.
+Create ONE single portrait flat mobile UI screenshot, proportions exactly 375×812, full bleed edge-to-edge, no device frame, no browser frame, no perspective, no multiple screens. Russian Cyrillic must be sharp and correctly spelled. Store for Korean cosmetics and natural herbs in Kostanay Kazakhstan; NO invented brand name, thin outline forest-green lotus logo only.
+
+Palette warm cream #F3EFE6 background, #FAF8F3 surface, #ECE7DB secondary, #1F3A2D forest green primary, #22251F text, #6F6F64 muted, #E2DCCD thin borders, #9DAE8C sage. Typography Manrope medium 15px main UI, 14px sublinks; natural premium apothecary mood and abundant uncluttered breathing room, thin 1.5px linear icons. Output at high resolution while maintaining 375×812 layout proportions.
+
+Full-screen open mobile menu. Top 60px header with small fine-line lotus at left with 16px horizontal padding, simple close X right within a 44px touch area. No header search/bag/burger because this is the open menu dialog.
+Vertical menu starts around y=100:
+48px row fine home icon and "Главная".
+48px row fine grid/folder icon, active forest-green semibold "Каталог", upward chevron at right to show expanded.
+Nested category sublinks beneath catalog with 32px indentation and a thin vertical border on left, muted 14px text, each around 34px high:
+"Корейская косметика"
+"Травы"
+"Наборы"
+"Новинки"
+"Скидки"
+Then 48px rows:
+fine person outline "О нас"
+fine truck outline "Доставка и оплата"
+fine phone outline "Контакты"
+All text and icons fully visible and neatly aligned. No boxes around each row, no clutter, excellent legibility.
+
+Bottom anchored area below ample blank breathing room: full width forest-green pill button with 16px side margins and white centered text "Войти / Регистрация". Under it, centered horizontal row of four fine outline Instagram, TikTok, Telegram and Email icons, 24px with 24px gaps. Maintain bottom safe area.
+Subtle realistic olive/eucalyptus leafy branch peeking into the lower-right corner at opacity about 70%, soft daylight natural leaves, carefully placed so it does not cover button, icons, or text.
+No bottom tab bar in the open menu. No shadows suggesting a physical phone. No caption, no watermark. One clean premium UI screenshot only.

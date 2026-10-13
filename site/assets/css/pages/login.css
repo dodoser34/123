@@ -1,0 +1,35 @@
+/* Вход */
+.auth-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh / var(--zoom) - var(--header-h)); }
+.auth-side { position: relative; overflow: hidden; }
+.auth-side img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.auth-side .hand { position: absolute; left: 40px; bottom: 40px; right: 40px; font-size: 44px; color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,.3); line-height: 1.1; }
+.auth-form { display: flex; align-items: center; justify-content: center; padding: 48px 24px; }
+.auth-box { width: 100%; max-width: 420px; }
+.auth-box h1 { font-size: 46px; }
+.auth-box .lead { color: var(--text-muted); margin: 10px 0 28px; }
+.auth-alt { text-align: center; margin-top: 22px; font-size: 14px; color: var(--text-muted); }
+.auth-alt a { color: var(--primary); font-weight: 700; }
+.auth-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--border); margin: 28px 0; }
+.auth-tabs a { padding: 0 0 12px; color: var(--text-muted); font-weight: 600; border-bottom: 2px solid transparent; }
+.auth-tabs a[aria-current] { color: var(--primary); border-color: var(--primary); }
+.auth-local { color: var(--text-muted); font-size: 12px; text-align: center; margin-top: 20px; }
+
+/* Демо-аккаунты: вход в один клик */
+.demo-accounts { display: grid; gap: 10px; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--border); }
+.demo-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+.demo-card { display: flex; align-items: center; gap: 16px; width: 100%; padding: 16px 18px; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color .2s, box-shadow .2s, transform .2s var(--ease); }
+.demo-card:hover { border-color: var(--primary); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.demo-card .avatar { width: 52px; height: 52px; font-size: 20px; }
+.demo-card .avatar.is-admin { background: var(--sage-soft); color: var(--primary); }
+.demo-card .avatar .icon { width: 24px; height: 24px; }
+.demo-body { flex: 1; min-width: 0; }
+.demo-body b { display: block; font-family: var(--font-serif); font-size: 21px; font-weight: 600; line-height: 1.2; }
+.demo-body small { display: block; color: var(--text-muted); font-size: 13px; line-height: 1.4; margin-top: 2px; }
+.demo-body code { display: inline-block; margin-top: 6px; font-size: 12px; color: var(--text-muted); background: var(--surface-2); padding: 2px 8px; border-radius: 6px; }
+.demo-go { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.demo-go .icon { width: 16px; height: 16px; transition: transform .2s; }
+.demo-card:hover .demo-go .icon { transform: translateX(3px); }
+@media (max-width: 480px) {
+  .demo-card { flex-wrap: wrap; }
+  .demo-go { width: 100%; justify-content: flex-end; }
+}

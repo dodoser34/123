@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Доставка и оплата — K-Beauty | C-Health</title>
+  <meta name="description" content="Доставка по Казахстану, самовывоз в Костанае, оплата картой онлайн или наличными при получении.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=10">
+  <script src="assets/js/app.js?v=10" data-page="delivery"></script>
+</head>
+<body data-page="delivery">
+  <header id="site-header"></header>
+
+  <main class="container" style="padding-bottom:56px">
+    <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="index.html">Главная</a><span aria-hidden="true">/</span><span>Доставка и оплата</span></nav>
+
+    <div class="delivery-layout">
+      <div>
+        <div class="page-head">
+          <h1>Доставка и оплата</h1>
+          <p class="lead">Мы делаем всё, чтобы ваш заказ пришёл быстро, безопасно и в удобное для вас время.</p>
+        </div>
+        <section class="panel info-panel reveal" aria-labelledby="h-del">
+          <h2 id="h-del">Доставка</h2>
+          <div id="delivery-rows"></div>
+        </section>
+        <section class="panel info-panel reveal" id="pay" aria-labelledby="h-pay">
+          <h2 id="h-pay">Оплата</h2>
+          <div id="pay-rows"></div>
+        </section>
+      </div>
+      <aside class="delivery-side reveal" aria-hidden="true">
+        <img src="assets/images/pages/delivery/delivery-side.jpg" alt="" data-decor onerror="imgFail(this)">
+        <span class="hand">Быстрая доставка<br>и удобная оплата<svg class="icon" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
+      </aside>
+    </div>
+
+    <section class="section" style="padding-bottom:0">
+      <h2 class="reveal" style="margin-bottom:20px">Сроки и стоимость</h2>
+      <div class="panel table-wrap reveal">
+        <table class="table">
+          <thead><tr><th>Город / способ</th><th>Срок</th><th>Стоимость</th></tr></thead>
+          <tbody id="rates"></tbody>
+        </table>
+        <p class="table-note">Сроки и стоимость уточняйте при оформлении заказа.</p>
+      </div>
+    </section>
+
+    <section class="section" id="faq" style="padding-bottom:0">
+      <h2 class="reveal" style="margin-bottom:20px">Частые вопросы</h2>
+      <div class="panel faq reveal" id="faq-list"></div>
+    </section>
+
+    <section class="section" style="padding-bottom:0">
+      <div class="panel cta-band reveal">
+        <div style="position:relative;z-index:1">
+          <h2>Остались вопросы?</h2>
+          <p>Напишите нам — мы поможем!</p>
+        </div>
+        <a class="btn btn-primary" id="wa-btn" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24"><path d="m22 3-7.5 18-3.5-7.5L3.5 10Z"/><path d="M22 3 11 13.5"/></svg> Написать <svg class="icon icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <img class="decor" src="assets/images/pages/delivery/cta-branch.png" alt="" aria-hidden="true" data-decor onerror="imgFail(this)">
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+</body>
+</html>

@@ -1,0 +1,69 @@
+/* Форма товара и загрузка фото */
+.pf { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.pf-side { position: sticky; top: 88px; display: grid; gap: 20px; }
+.pf .adm-card + .adm-card { margin-top: 20px; }
+.pf .field label small { font-weight: 400; color: var(--text-muted); }
+.pf .textarea { min-height: 96px; }
+.pf .textarea.is-short { min-height: 70px; }
+.pf .textarea.is-tall { min-height: 140px; }
+.dropzone { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1.5px dashed #C9C0AB; border-radius: 14px; padding: 26px; text-align: center; color: var(--text-muted); cursor: pointer; transition: border-color .2s, background .2s; }
+.dropzone:hover, .dropzone.is-over { border-color: var(--primary); background: #F2F4EC; color: var(--primary); }
+.dropzone .icon { width: 30px; height: 30px; }
+.dropzone small { font-size: 12px; }
+.dropzone b { color: var(--primary); }
+.img-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-top: 14px; }
+.img-item { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); }
+.img-item img, .img-item .img-ph { width: 100%; height: 100%; object-fit: cover; }
+.img-item .main-badge { position: absolute; left: 6px; top: 6px; font-size: 10px; padding: 2px 7px; }
+.img-item .ii-actions { position: absolute; inset: auto 0 0 0; display: flex; justify-content: center; gap: 4px; padding: 6px; background: linear-gradient(transparent, rgba(0,0,0,.45)); opacity: 0; transition: opacity .2s; }
+.img-item:hover .ii-actions, .img-item:focus-within .ii-actions { opacity: 1; }
+.img-item .ii-actions button { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,.92); display: grid; place-items: center; }
+.img-item .ii-actions .icon { width: 15px; height: 15px; }
+.url-row { display: flex; gap: 8px; margin-top: 12px; }
+.url-row .input { height: 42px; font-size: 14px; }
+.toggle-list { display: grid; gap: 12px; }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; cursor: pointer; }
+.switch input { appearance: none; width: 42px; height: 24px; border-radius: 999px; background: #D9D2C1; position: relative; cursor: pointer; transition: background .2s; flex: none; }
+.switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.switch input:checked { background: var(--primary); }
+.switch input:checked::after { transform: translateX(18px); }
+.pf-preview .product-card { pointer-events: none; }
+.pf-actions { position: sticky; bottom: 16px; z-index: 5; display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex-wrap: wrap; padding: 12px 16px; margin-top: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(40,45,30,.12); }
+.pf-actions .pf-status { margin-right: auto; font-size: 13px; color: var(--text-muted); }
+/* Навигация по разделам формы */
+.pf-back { margin: -8px 0 14px; }
+.pf-nav { position: sticky; top: 68px; z-index: 6; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -4px 18px; padding: 8px 4px; background: #F1EEE6; }
+.pf-nav a { flex: none; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; color: var(--text-muted); }
+.pf-nav a:hover { color: var(--primary); border-color: var(--primary); }
+.pf-section { scroll-margin-top: 130px; }
+.pf-hint { margin: -6px 0 16px; font-size: 13px; color: var(--text-muted); }
+.check-row { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 6px 0; }
+.pf-status-hint { margin-top: 10px; }
+.img-empty { margin-top: 12px; font-size: 13px; }
+
+/* Метки */
+.chips-box { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 48px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); cursor: text; transition: border-color .2s, box-shadow .2s; }
+.chips-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,58,45,.08); }
+.chips-box .chip { height: 30px; background: var(--sage-soft); color: var(--primary); font-weight: 600; }
+.chips-input { flex: 1; min-width: 160px; height: 34px; border: 0; background: none; outline: none; font-size: 14px; }
+
+/* Списки строк и пары */
+.list-rows { display: grid; gap: 8px; counter-reset: row; }
+.list-row { display: flex; align-items: center; gap: 8px; }
+.list-row .input { height: 42px; font-size: 14px; }
+.list-rows.is-numbered .list-row::before { counter-increment: row; content: counter(row); width: 26px; height: 26px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--sage-soft); color: var(--primary); font-size: 12px; font-weight: 700; }
+.list-row .row-actions { flex: none; }
+.list-row .row-actions button { width: 32px; height: 32px; }
+.pair-row .input:first-child { flex: 0 0 38%; }
+.list-add { margin-top: 8px; text-decoration: none; display: inline-flex; gap: 6px; }
+
+/* Заполненность */
+.progress { height: 8px; border-radius: 8px; background: var(--surface-2); overflow: hidden; }
+.progress b { display: block; height: 100%; background: var(--primary); transition: width .3s; }
+.progress-text { margin: 8px 0 10px; font-size: 13px; font-weight: 700; }
+.checklist { display: grid; gap: 6px; font-size: 13px; color: var(--text-muted); }
+.checklist li { display: flex; align-items: center; gap: 8px; }
+.checklist .icon { width: 16px; height: 16px; }
+.checklist .is-done { color: var(--primary); }
+.pf-delete { color: var(--danger); text-decoration: none; }
+.pf-status.is-dirty { color: #B07D16; font-weight: 600; }

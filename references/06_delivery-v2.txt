@@ -1,0 +1,43 @@
+Use case: ui-mockup
+Asset type: premium ecommerce delivery-and-payment page visual reference.
+Create ONE clean full-page desktop website screenshot, front-on flat UI, conceptual desktop width 1440px, full page height about 2000px, no browser/device frame, no perspective. Russian UI with carefully legible Cyrillic. A Kazakhstan Kostanay store of Korean cosmetics and natural herbs. No invented brand name, only thin line lotus logo.
+
+Art direction: calm premium apothecary botanical ecommerce, warm cream #F3EFE6 background, #FAF8F3 surfaces, #ECE7DB secondary, forest #1F3A2D primary, #22251F text, #6F6F64 muted, #E2DCCD borders. Cormorant Garamond medium elegant serif headings, Manrope body and UI, Caveat handwritten accent. Airy 1280px content container, rounded 16px surfaces, pill buttons, thin icons, soft shadows. Realistic olive/eucalyptus branches with soft daylight and natural green texture as sparse decoration.
+
+Header lotus at left, navigation "Каталог", "Корейская косметика", "Травы", "О нас", right search, heart, profile, shopping bag with small count 2.
+Breadcrumb "Главная / Доставка и оплата".
+Large serif H1 "Доставка и оплата".
+Lead "Мы делаем всё, чтобы ваш заказ пришёл быстро, безопасно и в удобное для вас время."
+
+Main content a spacious grid with wide left column and narrow 300px right decorative panel.
+Left H2 "Доставка", two horizontal rows with 48px thin circle icons:
+truck, "По Казахстану", "Доставка курьером, почтой и в пункты выдачи. Сроки: 1–7 дней."
+pin, "Самовывоз", "г. Костанай, Центральный рынок. Уточняйте адрес в WhatsApp." and underlined "Показать на карте".
+Left H2 "Оплата", three rows separated by thin borders:
+card, "Карта", "Оплата картами Kaspi, Halyk, Visa, Mastercard." with subtle monochrome payment labels;
+Kaspi line icon, "Kaspi Red", "Покупка в рассрочку.";
+package/hands icon, "Наложенный платёж", "Оплата при получении (для некоторых городов).".
+Right tall #ECE7DB rounded panel with olive branch hanging from top, slanted handwritten text "Быстрая доставка и удобная оплата" and thin heart below.
+
+Below full-width serif title "Сроки и стоимость", beautifully aligned three-column zebra table headers "Город / способ", "Срок", "Стоимость".
+Exact rows:
+"Костанай — курьер" | "в день заказа / 1 день" | "1 000 ₸, бесплатно от 15 000 ₸"
+"Костанай — самовывоз" | "в день заказа" | "бесплатно"
+"Астана, Алматы" | "2–4 дня" | "по тарифу службы"
+"Другие города РК" | "3–7 дней" | "по тарифу службы"
+Small footnote "Сроки и стоимость уточняйте при оформлении заказа." to mark values as illustrative.
+
+Next title "Частые вопросы" with five closed accordion rows plus right thin "+":
+"Как отследить заказ?"
+"Можно ли вернуть товар?"
+"Как оформить Kaspi Red?"
+"Вы доставляете в мой город?"
+"Как проверить оригинальность?"
+
+CTA wide rounded light surface left "Остались вопросы?" and "Напишите нам в WhatsApp — мы поможем!", right forest green pill paper-plane icon "Написать →".
+Footer top benefits three evenly spaced thin circles leaf/truck/shield: "Оригинальная продукция", "Доставка по Казахстану", "Kaspi Red и рассрочка".
+Footer lotus plus columns "Каталог" with "Корейская косметика", "Травы", "Наборы"; "Покупателям" with "Доставка и оплата", "О нас", "Контакты"; "Контакты" with "WhatsApp", "г. Костанай, Центральный рынок". Social icons Instagram TikTok Telegram Email, tiny copyright "© 2026. Все права защищены.", sparse leaves in bottom right.
+No invented phone number, no filler English, no watermark, no UI outside the page. Include all sections within one polished full-page screenshot with readable text and generous spacing.
+
+Edit prompt applied to references/06_delivery.png:
+Use case: ui-mockup. Edit this exact delivery-and-payment page screenshot. Change ONLY the four small payment-system brand marks under «Карта»: render Kaspi, Halyk, VISA and Mastercard entirely monochrome muted gray #6F6F64, as required for this premium botanical UI. Eliminate red, blue, yellow or any other saturated color from those small logos. Preserve everything else exactly: page layout, dimensions, every Russian word, typography, columns, buttons, lotus, botanical images, table, FAQ and footer. Do not alter any other element.

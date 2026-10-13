@@ -1,0 +1,31 @@
+/* Карусель */
+.carousel { position: relative; }
+.carousel-track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 3 * 20px) / 4); gap: 20px;
+  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 6px 2px 14px;
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track > * { scroll-snap-align: start; }
+.carousel-btn {
+  position: absolute; top: 40%; z-index: 3; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow); transition: opacity .2s, background .2s;
+}
+/* Стрелки в заголовке раздела — рядом со ссылкой «Смотреть все» */
+.section-head > a { margin-left: auto; }
+.carousel-nav { display: flex; align-items: center; gap: 8px; }
+.carousel-nav .carousel-btn { position: static; width: 42px; height: 42px; box-shadow: none; }
+.carousel-nav .carousel-btn[disabled] { opacity: .35; pointer-events: none; }
+.carousel-btn:hover { background: var(--surface-2); }
+.carousel-btn.prev { left: -22px; }
+.carousel-btn.next { right: -22px; }
+.carousel-btn[disabled] { opacity: 0; pointer-events: none; }
+
+.cats-banner .cats-row {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 140px; gap: clamp(12px, 1.8vw, 28px);
+  justify-content: safe center; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; padding: 8px 2px 14px;
+}
+.cats-banner .cats-row::-webkit-scrollbar { display: none; }
+.cats-banner .cat-circle { justify-self: center; scroll-snap-align: start; }
+@media (max-width: 1024px) {
+  .cats-banner .cats-row { grid-auto-columns: 124px; gap: 16px; }
+}

@@ -1,0 +1,31 @@
+/* Дизайн-токены: цвета, шрифты, радиусы, тени. Поменяйте значение здесь — и оно изменится на всём сайте. */
+:root {
+  --bg: #F3EFE6;
+  --surface: #FAF8F3;
+  --surface-2: #ECE7DB;
+  --primary: #1F3A2D;
+  --primary-hover: #2C4F3E;
+  --text: #22251F;
+  --text-muted: #6F6F64;
+  --border: #E2DCCD;
+  --sage: #9DAE8C;
+  --sage-soft: #DDE3D2;
+  --danger: #A6402E;
+  --gold: #C08A3E;
+  --overlay: rgba(18, 28, 20, .55);
+
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope", "Segoe UI", Arial, sans-serif;
+  --font-hand: "Caveat", cursive;
+
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 2px 12px rgba(40, 45, 30, .06);
+  --shadow-hover: 0 10px 30px rgba(40, 45, 30, .11);
+  --container: 1280px;
+  --gutter: 40px;
+  --header-h: 76px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --zoom: 1; /* масштаб интерфейса для больших экранов (2K / 4K), см. конец файла */
+}
