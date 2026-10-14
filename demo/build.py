@@ -1,5 +1,6 @@
 """Build the removable GitHub Pages demo, with every product photo, into demo/.public."""
 import importlib.util
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -58,6 +59,24 @@ def validate_output():
             raise ValueError('Refusing to replace unmanaged demo output')
 
 
+def stamp_assets(stage: Path) -> str:
+    """Version every browser module from actual release contents, preventing stale login/UI code."""
+    digest = hashlib.sha256()
+    for file in sorted(stage.rglob('*')):
+        if file.is_file() and file.suffix in {'.js', '.css', '.html'}:
+            digest.update(file.relative_to(stage).as_posix().encode())
+            digest.update(file.read_bytes())
+    version = digest.hexdigest()[:12]
+    loader = stage / 'js/app.js'
+    if loader.is_file():
+        text = loader.read_text(encoding='utf-8')
+        loader.write_text(re.sub(r"var VERSION = '[^']+';", f"var VERSION = '{version}';", text), encoding='utf-8')
+    for file in stage.rglob('*.html'):
+        text = file.read_text(encoding='utf-8')
+        file.write_text(re.sub(r'([?&]v=)[0-9a-z.-]+', lambda match: match[1] + version, text), encoding='utf-8')
+    return version
+
+
 def build() -> dict:
     if FRONTEND.is_symlink() or (FRONTEND / 'index.html').is_symlink() or not (FRONTEND / 'index.html').is_file():
         raise ValueError('Shared frontend/index.html is required')
@@ -90,6 +109,7 @@ def build() -> dict:
             if not (stage / ref.lstrip('@')).is_file():
                 raise ValueError(f'Missing demo module: {ref}')
         photos = validate_photos(stage)
+        version = stamp_assets(stage)
         size = sum(path.stat().st_size for path in stage.rglob('*') if path.is_file())
         if size >= 1024 ** 3:
             raise ValueError('Demo exceeds the 1 GiB GitHub Pages site size limit')
@@ -98,7 +118,7 @@ def build() -> dict:
             shutil.rmtree(OUTPUT)  # reserved, resolved and owned directory checked above
         helper.replace_directory(stage, OUTPUT)
         OWNER.write_text(json.dumps(IDENTITY) + '\n', encoding='utf-8')
-    return {'files': count, 'productPhotos': photos, 'bytes': size}
+    return {'files': count, 'productPhotos': photos, 'bytes': size, 'assetVersion': version}
 
 
 if __name__ == '__main__':

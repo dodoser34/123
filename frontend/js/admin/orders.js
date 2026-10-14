@@ -31,7 +31,6 @@
   function orders() {
     A.setTitle('Заказы');
     const S = db.orders.STATUSES;
-    const PAY = ui.t('account.orders.payment'); // статусы оплаты — texts/…/account.js
     A.$content.innerHTML = `
       <div class="adm-toolbar">
         <div class="search">${ui.icon('search')}<input class="input" type="search" id="o-q" placeholder="Номер, имя или телефон" value="${ui.esc(oState.q)}"></div>
@@ -71,6 +70,7 @@
     const o = db.orders.get(id);
     if (!o) return;
     const S = db.orders.STATUSES;
+    const PAY = ui.t('account.orders.payment');
     const md = ui.modal(`
       <div class="order-detail">
         <h3>Заказ №${o.number}</h3>

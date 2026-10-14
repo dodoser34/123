@@ -96,3 +96,18 @@ def test_all_original_catalog_photos_exist():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.validate_photos(PROJECT) == 65
+
+
+def test_release_version_changes_when_ui_changes(builder):
+    loader = builder.FRONTEND / 'js/app.js'
+    loader.parent.mkdir()
+    loader.write_text("var VERSION = '1';\n", encoding='utf-8')
+    page = builder.FRONTEND / 'index.html'
+    page.write_text('<script src="js/app.js?v=1"></script>', encoding='utf-8')
+    first = builder.build()['assetVersion']
+    assert f'?v={first}' in (builder.OUTPUT / 'index.html').read_text(encoding='utf-8')
+    assert first in (builder.OUTPUT / 'js/app.js').read_text(encoding='utf-8')
+    loader.write_text("var VERSION = '1';\nconsole.log('changed');", encoding='utf-8')
+    second = builder.build()['assetVersion']
+    assert second != first
+    assert builder.build()['assetVersion'] == second
