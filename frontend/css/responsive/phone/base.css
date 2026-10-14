@@ -1,0 +1,43 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → общие элементы: сетка, отступы, формы, кнопки, окна, уведомления, декор */
+@media (max-width: 760px) {
+  .benefits {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .benefit {
+    padding: 0;
+  }
+  .benefit + .benefit {
+    border: 0;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .toasts {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+  .toast {
+    min-width: 0;
+    max-width: none;
+  }
+}
+@media (max-width: 560px) {
+  :root {
+    --gutter: 16px;
+  }
+  .panel-pad {
+    padding: 22px;
+  }
+  .modal-box {
+    padding: 24px 20px;
+  }
+}
+@media (max-width: 400px) {
+  .section-head {
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
+}

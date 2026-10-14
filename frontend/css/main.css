@@ -1,0 +1,32 @@
+/* Главный файл стилей магазина: подключает все части по порядку.
+   ?v=21 — версия для сброса кеша браузера; меняйте вместе с VERSION в js/app.js.
+   Порядок важен: база → компоненты → страницы → декор → адаптация (папка responsive/, подключается последней). */
+@import url('base/variables.css?v=21');
+@import url('base/base.css?v=21');
+@import url('base/interaction.css?v=21');
+@import url('components/buttons.css?v=21');
+@import url('components/header.css?v=21');
+@import url('components/mobile-menu.css?v=21');
+@import url('components/page-head.css?v=21');
+@import url('components/benefits.css?v=21');
+@import url('components/product-card.css?v=21');
+@import url('components/carousel.css?v=21');
+@import url('components/forms.css?v=21');
+@import url('components/toast.css?v=21');
+@import url('components/modal.css?v=21');
+@import url('components/states.css?v=21');
+@import url('components/footer.css?v=21');
+@import url('pages/home.css?v=21');
+@import url('pages/catalog.css?v=21');
+@import url('pages/product.css?v=21');
+@import url('pages/product-reviews.css?v=21');
+@import url('pages/about.css?v=21');
+@import url('pages/delivery.css?v=21');
+@import url('pages/cart-checkout.css?v=21');
+@import url('pages/login.css?v=21');
+@import url('pages/account.css?v=21');
+@import url('pages/not-found.css?v=21');
+@import url('components/motion.css?v=21');
+@import url('components/transitions.css?v=21');
+@import url('components/botanical.css?v=21');
+@import url('responsive/index.css?v=21');

@@ -1,4 +1,155 @@
-# Системные файлы Windows и macOS
+# Общие правила действуют во всех вложенных папках.
+# Исходники, документация, миграции и шаблоны .env.example остаются в Git.
+
+# Секреты и локальная конфигурация
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.envrc
+.direnv/
+secrets/
+credentials/
+.ssh/
+.aws/
+.azure/
+.kube/
+.gcloud/
+.git-credentials
+.netrc
+.pypirc
+.npmrc
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.kdbx
+*.secret
+*.secrets
+secrets.txt
+secrets.yaml
+secrets.yml
+secrets.toml
+secrets.ini
+credentials.txt
+credentials.yaml
+credentials.yml
+credentials.toml
+credentials.ini
+credentials*.json
+*-credentials.json
+service-account*.json
+service_account*.json
+client_secret*.json
+secrets*.json
+*.local.*
+
+# Личные материалы, выгрузки покупателей, резервные копии
+private/
+.private/
+personal/
+exports/
+backups/
+.backups/
+kbch-data-*.json
+backup-*.sql
+backup-*.sql.gz
+backup-*.zip
+backup-*.tar*
+*.dump
+*.dump.gz
+
+# Локальные базы и их журналы
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.rdb
+*.aof
+
+# Зависимости, окружения Python и кеши
+node_modules/
+.venv/
+venv/
+.tox/
+.nox/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.cache/
+.pnpm-store/
+.parcel-cache/
+.vite/
+.turbo/
+.next/
+.nuxt/
+.eslintcache
+.stylelintcache
+
+# Результаты сборки и проверок
+/build/
+/dist/
+/output/
+/.public/
+/.public-build.json
+/.public-build-*/
+.coverage
+.coverage.*
+coverage.xml
+coverage/
+htmlcov/
+playwright-report/
+test-results/
+_demo_check/
+# временные папки тестов и браузерных проверок
+.test-tmp/
+.pytest-tmp/
+*.tap
+screenshots/
+
+# Логи, письма с кодами, временные файлы
+*.log
+*.log.*
+logs/
+*.pid
+*.pid.lock
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+tmp/
+temp/
+
+# Локальные настройки редакторов и AI-инструментов
+.vscode/
+.idea/
+.claude/
+.codex/
+.agents/
+.cursor/
+.aider*
+.playwright-mcp/
+*.swp
+*.swo
+*.suo
+*.user
+*~
+
+# Системные файлы
 Thumbs.db
 ehthumbs.db
 desktop.ini
@@ -6,29 +157,9 @@ $RECYCLE.BIN/
 .DS_Store
 ._*
 
-# Редакторы и инструменты
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.claude/
+# Проверочная галерея и локальные материалы фронтенда
+/frontend/assets/images/decor/preview.html
+/frontend/_local/
 
-# Зависимости и логи (если когда-нибудь появится сборка)
-node_modules/
-npm-debug.log*
-yarn-error.log*
-*.log
-
-# Временные файлы
-*.tmp
-*.bak
-*.orig
-_demo_check/
-
-# Секреты — никогда не публикуются
-.env
-.env.*
-
-# Резервные копии из админки (Настройки → «Экспорт JSON»): в них заказы и данные покупателей
-kbch-data-*.json
+# Загруженные из админки фото, локальная база и письма с кодами — в backend/.gitignore;
+# настройки сервера, сертификаты и резервные копии базы — в deploy/.gitignore

@@ -1,0 +1,10 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → вход и регистрация */
+@media (max-width: 480px) {
+  .demo-card {
+    flex-wrap: wrap;
+  }
+  .demo-go {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

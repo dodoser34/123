@@ -1,0 +1,34 @@
+# Проверки сайта: логика JS (корзина, каталог, цены, маски) и сборка публичной папки .public/
+name: Тесты сайта
+
+on:
+  push:
+    paths: ['frontend/**', 'tests/**', 'deploy/prepare_frontend.py', 'pytest.ini', '.github/workflows/checks.yml']
+  pull_request:
+    paths: ['frontend/**', 'tests/**', 'deploy/prepare_frontend.py']
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Синтаксис всех JS-файлов
+        run: find frontend -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Тесты логики сайта
+        run: node --test tests/frontend/utils.test.cjs tests/frontend/store.test.cjs tests/frontend/catalog.test.cjs
+
+  public-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pytest==8.3.4 pytest-asyncio==0.24.0
+      - name: Тесты сборки .public/
+        run: python -m pytest -q
+      - name: Сборка .public/ проходит
+        run: python deploy/prepare_frontend.py

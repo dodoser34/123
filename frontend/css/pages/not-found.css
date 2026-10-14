@@ -1,0 +1,14 @@
+/* Страница 404 */
+.nf {
+  text-align: center;
+  padding: 96px 16px;
+}
+.nf .num {
+  font-family: var(--font-serif);
+  font-size: 140px;
+  line-height: 1;
+  color: var(--sage);
+}
+.nf p {
+  margin: 14px 0 28px;
+}

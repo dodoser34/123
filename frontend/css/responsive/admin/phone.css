@@ -1,0 +1,17 @@
+/* АДМИНКА на телефонах (до 520 px) */
+@media (max-width: 520px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .site-photos {
+    grid-template-columns: 1fr;
+  }
+  .block-row {
+    flex-direction: column;
+  }
+  .block-row .row-actions {
+    align-self: flex-end;
+  }
+}

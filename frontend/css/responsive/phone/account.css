@@ -1,0 +1,27 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → личный кабинет */
+@media (max-width: 760px) {
+  .acc-hero {
+    padding: 22px 18px;
+  }
+  .acc-hero-main {
+    gap: 14px;
+  }
+  .avatar-lg {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+  }
+  .acc-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 400px) {
+  .order-item {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+  .order-item > .btn,
+  .order-item > .order-rated {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

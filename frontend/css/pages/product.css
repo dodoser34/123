@@ -1,0 +1,531 @@
+/* Страница товара: галерея, покупка, вкладки, «Кому подходит», похожие товары. Отзывы — в product-reviews.css */
+.pp-top {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 20px 0 40px;
+}
+.pp-thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pp-thumbs button {
+  width: 84px;
+  height: 84px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  transition: border-color 0.2s;
+}
+.pp-thumbs button.is-active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.pp-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pp-main {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--surface-2);
+  cursor: zoom-in;
+}
+.pp-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pp-main .pc-fav {
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+}
+.pp-dots {
+  display: none;
+}
+
+/* Информация и покупка */
+.pp-info h1 {
+  font-size: clamp(32px, 3.6vw, 50px);
+}
+.pp-info .alert {
+  margin: 12px 0 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pp-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 15px;
+}
+.pp-rating a {
+  color: var(--text-muted);
+}
+.pp-rating a:hover {
+  text-decoration: underline;
+}
+.pp-price {
+  margin: 22px 0 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pp-price .price {
+  font-size: 46px;
+}
+.pp-price .price-old {
+  font-size: 18px;
+}
+.pp-short {
+  color: var(--text-muted);
+  font-size: 16px;
+  max-width: 520px;
+}
+.pp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.pp-chips-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: 2px;
+}
+.pp-chips-label .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--primary);
+}
+.chip-link {
+  padding: 0 12px;
+  background: var(--sage-soft);
+  color: var(--primary);
+  transition: background 0.2s;
+}
+.chip-link:hover {
+  background: #cfd8c2;
+}
+.pp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+.pp-tags a {
+  color: var(--text-muted);
+}
+.pp-tags a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.pp-buy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 26px 0 14px;
+  flex-wrap: wrap;
+}
+.pp-buy .btn {
+  min-width: 200px;
+  height: 52px;
+  font-size: 16px;
+}
+.pp-buy .btn-icon {
+  width: 52px;
+  height: 52px;
+}
+.pp-buy .qty {
+  height: 52px;
+}
+.pp-stock {
+  font-size: 13px;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+.pp-stock::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sage);
+}
+.pp-stock.is-out {
+  color: var(--danger);
+}
+.pp-stock.is-out::before {
+  background: var(--danger);
+}
+.pp-benefits {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.pp-benefits .benefit {
+  padding: 0;
+  gap: 10px;
+  border: 0 !important;
+}
+.pp-benefits .benefit-ic {
+  width: 40px;
+  height: 40px;
+  background: var(--sage-soft);
+  border: 0;
+}
+.pp-benefits .benefit-ic .icon {
+  width: 20px;
+  height: 20px;
+}
+.pp-benefits small {
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* Вкладки */
+.pp-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+.pp-tabs-panel {
+  padding: 8px 28px 28px;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs button {
+  padding: 14px 18px;
+  font-size: 15px;
+  color: var(--text-muted);
+  position: relative;
+  white-space: nowrap;
+}
+.tabs button:hover {
+  color: var(--text);
+}
+.tabs button.is-active {
+  color: var(--primary);
+  font-weight: 700;
+}
+.tabs button.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--primary);
+}
+.tab-panel {
+  padding: 24px 4px 4px;
+  display: none;
+  font-size: 16px;
+}
+.tab-panel.is-active {
+  display: block;
+}
+.tab-subtitle {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 26px 0 12px;
+}
+.tab-panel > .tab-subtitle:first-child {
+  margin-top: 0;
+}
+.leaf-list {
+  display: grid;
+  gap: 14px;
+}
+.leaf-list li {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.leaf-list .icon {
+  color: var(--primary);
+  fill: var(--sage);
+  stroke: var(--primary);
+  width: 22px;
+  height: 22px;
+}
+.ingredients {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.ingredient {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg);
+}
+.ingredient .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--primary);
+  flex: none;
+  margin-top: 2px;
+}
+.ingredient b {
+  display: block;
+  font-size: 15px;
+}
+.ingredient span {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.composition {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.when {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.when-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--sage-soft);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+.when-item .icon {
+  width: 17px;
+  height: 17px;
+}
+.when-freq {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+.steps {
+  counter-reset: s;
+  display: grid;
+  gap: 14px;
+}
+.steps li {
+  counter-increment: s;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.steps li::before {
+  content: counter(s);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sage-soft);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.warning {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fbf3e2;
+  border: 1px solid #f0ddb3;
+}
+.warning .icon {
+  width: 22px;
+  height: 22px;
+  color: #b07d16;
+  flex: none;
+}
+.warning b {
+  display: block;
+  font-size: 14px;
+}
+.warning p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.specs-table th,
+.specs-table td {
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.specs-table th {
+  width: 45%;
+  font-weight: 400;
+  color: var(--text-muted);
+  padding-right: 16px;
+}
+.specs-table tr:last-child th,
+.specs-table tr:last-child td {
+  border-bottom: 0;
+}
+
+/* «Кому подходит» */
+.suits {
+  padding: 28px;
+}
+.suits h3 {
+  margin-bottom: 14px;
+}
+.suits li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  font-size: 16px;
+}
+.suits .s-ic {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--sage-soft);
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  flex: none;
+}
+.suits > .muted {
+  margin-bottom: 20px;
+}
+.suits-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.suits-note .icon {
+  width: 17px;
+  height: 17px;
+}
+
+/* Похожие товары и липкая полоса покупки на телефоне */
+.related {
+  position: relative;
+  margin-top: 48px;
+  padding: 44px 0 52px;
+  background: var(--surface-2);
+  overflow: clip;
+}
+.related .decor-l {
+  left: -110px;
+  top: -65px;
+  width: 220px;
+  opacity: 0.45;
+}
+.related .decor-r {
+  right: -110px;
+  top: -65px;
+  width: 220px;
+  opacity: 0.45;
+}
+.related .section-head {
+  position: relative;
+  z-index: 1;
+}
+.related .carousel {
+  z-index: 1;
+}
+.sticky-buy {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(100%);
+  transition: transform 0.25s;
+}
+.sticky-buy.is-visible {
+  transform: none;
+}
+.sticky-buy small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.sticky-buy .price {
+  font-size: 22px;
+}
+.sticky-buy .btn {
+  margin-left: auto;
+}
+
+/* Свои разделы товара (добавляются в админке): абзацы и списки */
+.custom-text + .custom-text,
+.custom-list + .custom-text,
+.custom-text + .custom-list {
+  margin-top: 14px;
+}
+.custom-list {
+  display: grid;
+  gap: 8px;
+}
+.custom-list li {
+  position: relative;
+  padding-left: 22px;
+}
+.custom-list li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.65em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sage);
+}

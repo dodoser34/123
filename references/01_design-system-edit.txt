@@ -1,1 +1,0 @@
-Edit only the footer of this Russian UI style guide. Remove the invented telephone number +7 700 123 45 67 and its phone icon, leaving clean whitespace. Replace © 2024 with © 2026. Keep all other content, typography, composition, colors, photos, dimensions, and UI unchanged. No new contact details.

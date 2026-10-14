@@ -1,0 +1,47 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → главная */
+@media (max-width: 1024px) {
+  .cats-banner .cats-row {
+    grid-auto-columns: 124px;
+    gap: 16px;
+  }
+  .hero {
+    min-height: auto;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero-media {
+    position: relative;
+    width: auto;
+    height: 380px;
+    order: 2;
+    margin: 0 calc(-1 * var(--gutter));
+  }
+  .hero-media {
+    --hero-mask: linear-gradient(to bottom, transparent 0, #000 38%), linear-gradient(to top, transparent 0, #000 60px);
+  }
+  .hero-content {
+    padding: calc(var(--header-h) + 32px) 0 24px;
+  }
+  .hero .benefits {
+    margin-top: 32px;
+  }
+  .cats-row {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 4px 0 8px;
+  }
+  .cats-row::-webkit-scrollbar {
+    display: none;
+  }
+  .cat-circle {
+    width: 124px;
+    height: 124px;
+    font-size: 16px;
+  }
+}
+@media (min-width: 761px) and (max-width: 1024px) {
+  .hero-media {
+    height: 440px;
+  }
+}

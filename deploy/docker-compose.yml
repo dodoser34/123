@@ -1,0 +1,155 @@
+# Магазин на своём сервере (VPS): PostgreSQL + API (FastAPI) + Nginx (сайт, /api, /media, HTTPS) + резервные копии.
+# Все настройки — в одном файле deploy/.env (образец: deploy/.env.example). Подробно — docs/11-Бэкенд-и-деплой.md.
+#
+#   cp deploy/.env.example deploy/.env    # заполнить
+#   python3 deploy/prepare_frontend.py     # папка .public/ — только публичные файлы сайта (повторять после каждого обновления)
+#   docker compose -f deploy/docker-compose.yml --profile init run --rm --service-ports certbot-init   # первый сертификат HTTPS
+#   docker compose -f deploy/docker-compose.yml up -d --build
+#   docker compose -f deploy/docker-compose.yml exec backend python -m app.cli seed --frontend /frontend   # категории (+ --demo)
+name: kbch
+
+x-logging: &logging # журналы контейнеров не разрастаются бесконечно
+  driver: json-file
+  options: { max-size: '10m', max-file: '5' }
+
+services:
+  # ---------- База данных: только во внутренней сети, из интернета недоступна ----------
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kbch}
+      POSTGRES_USER: ${POSTGRES_USER:-kbch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?заполните POSTGRES_PASSWORD в deploy/.env}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    command: >-
+      postgres
+      -c max_connections=50
+      -c idle_in_transaction_session_timeout=60000
+      -c log_min_duration_statement=2000
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    security_opt: ['no-new-privileges:true']
+    logging: *logging
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ---------- API ----------
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    env_file: .env # SECRET_KEY, администратор, почта, Google, оплата — см. deploy/.env.example
+    environment: # то, что вычисляется из DOMAIN и пароля базы, — менять не нужно
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-kbch}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kbch}
+      FRONTEND_URL: https://${DOMAIN:?заполните DOMAIN в deploy/.env}
+      PUBLIC_API_URL: https://${DOMAIN}/api
+      CORS_ORIGINS: https://${DOMAIN},https://www.${DOMAIN}
+      ALLOWED_HOSTS: ${DOMAIN},www.${DOMAIN},backend,localhost
+      TRUST_PROXY: 'true' # IP посетителя берётся из заголовка, который ставит Nginx
+      PROXY_HOPS: '1'
+      EMAIL_BACKEND: smtp
+      MEDIA_DIR: /app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media:/app/media # загруженные из админки фото переживают пересборку
+      - ../.public:/frontend:ro # для стартового наполнения: python -m app.cli seed --frontend /frontend
+    networks: [internal, public] # public — только исходящие соединения: почта, Google, Kaspi (порты наружу не открыты)
+    expose: ['8000']
+    security_opt: ['no-new-privileges:true']
+    logging: *logging
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ---------- Nginx: сайт, прокси к API, HTTPS, ограничение запросов ----------
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on: [backend]
+    ports: ['80:80', '443:443']
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ../.public:/usr/share/nginx/html:ro # только публичные файлы (deploy/prepare_frontend.py)
+      - ./env.js:/usr/share/nginx/html/env.js:ro # сайт работает с API на этом же домене (/api)
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/security.conf:/etc/nginx/conf.d/00-security.conf:ro
+      - ./nginx/headers.conf:/etc/nginx/snippets/headers.conf:ro
+      - media:/srv/media:ro
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
+    networks: [internal, public]
+    security_opt: ['no-new-privileges:true']
+    logging: *logging
+
+  # ---------- Продление HTTPS-сертификата (Let's Encrypt выдаёт его на 90 дней) ----------
+  certbot:
+    image: certbot/certbot:v2.11.0
+    restart: unless-stopped
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    networks: [public]
+    logging: *logging
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done'
+
+  # первый выпуск сертификата: запускается один раз вручную, пока Nginx ещё не работает (порт 80 свободен)
+  certbot-init:
+    image: certbot/certbot:v2.11.0
+    profiles: ['init']
+    ports: ['80:80']
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+    networks: [public]
+    command: >-
+      certonly --standalone --agree-tos --no-eff-email
+      -m ${LETSENCRYPT_EMAIL:?заполните LETSENCRYPT_EMAIL в deploy/.env}
+      -d ${DOMAIN} -d www.${DOMAIN}
+
+  # ---------- Резервные копии базы: раз в сутки в deploy/backups/, старые удаляются ----------
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGDATABASE: ${POSTGRES_DB:-kbch}
+      PGUSER: ${POSTGRES_USER:-kbch}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - ./backups:/backups
+    networks: [internal]
+    security_opt: ['no-new-privileges:true']
+    logging: *logging
+    entrypoint: >-
+      /bin/sh -c 'trap exit TERM;
+      while :; do
+        f=/backups/kbch-$$(date +%Y-%m-%d_%H%M).dump;
+        if pg_dump -Fc -f "$$f.tmp"; then mv "$$f.tmp" "$$f"; echo "backup: $$f"; else rm -f "$$f.tmp"; echo "backup FAILED"; fi;
+        find /backups -name "kbch-*.dump" -mtime +$${KEEP_DAYS} -delete;
+        sleep 24h & wait $${!};
+      done'
+
+networks:
+  internal:
+    internal: true # без выхода в интернет: база и резервные копии
+  public: {}
+
+volumes:
+  pgdata:
+  media:
+  letsencrypt:
+  certbot-www:

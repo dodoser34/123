@@ -1,0 +1,35 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → шапка и мобильное меню */
+@media (max-width: 1024px) {
+  .main-nav,
+  .header-search {
+    display: none;
+  }
+  .burger,
+  .mobile-search-btn {
+    display: grid;
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .header-actions .hide-m {
+    display: none;
+  }
+  .header-inner.is-searching .logo,
+  .header-inner.is-searching .header-actions {
+    display: none;
+  }
+  .header-inner.is-searching .header-search {
+    display: block;
+    width: 100%;
+    margin: 0;
+  }
+  .header-cancel {
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 600;
+    flex: none;
+  }
+  .header-inner.is-searching .header-cancel {
+    display: block;
+  }
+}

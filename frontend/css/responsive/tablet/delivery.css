@@ -1,0 +1,18 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → «Доставка и оплата» */
+@media (max-width: 1024px) {
+  .delivery-layout {
+    grid-template-columns: 1fr;
+  }
+  .delivery-side {
+    position: relative;
+    top: 0;
+    min-height: 260px;
+  }
+  .cta-band {
+    padding-right: 32px;
+  }
+  .cta-band .cta-botanical,
+  .auth-decor.botanical {
+    display: none;
+  }
+}

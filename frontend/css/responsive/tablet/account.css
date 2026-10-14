@@ -1,0 +1,28 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → личный кабинет */
+@media (max-width: 1024px) {
+  .account-layout {
+    grid-template-columns: 1fr;
+  }
+  .acc-nav {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+  }
+  .acc-hero {
+    grid-template-columns: 1fr;
+  }
+  .acc-nav .is-active::before {
+    display: none;
+  }
+  .acc-nav .acc-logout {
+    margin-top: 0;
+    border-top: 0;
+    padding-top: 11px;
+  }
+  .acc-nav button,
+  .acc-nav a {
+    white-space: nowrap;
+    width: auto;
+  }
+}

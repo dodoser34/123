@@ -1,0 +1,358 @@
+/* Страница товара → отзывы и форма отзыва */
+.reviews-summary {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 220px;
+  gap: 28px;
+  align-items: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.rs-score {
+  text-align: center;
+}
+.rs-score .muted {
+  font-size: 13px;
+  margin-top: 4px;
+}
+.rs-big {
+  font-family: var(--font-serif);
+  font-size: 58px;
+  line-height: 1;
+}
+.rs-recommend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.rs-recommend .icon {
+  width: 15px;
+  height: 15px;
+}
+.rs-bars {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.rs-bars button {
+  display: grid;
+  grid-template-columns: 34px 1fr 26px;
+  gap: 10px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  text-align: left;
+  transition: background 0.2s;
+}
+.rs-bars button:not([disabled]):hover,
+.rs-bars button.is-active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.rs-bars button[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+.rs-bars button span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.rs-bars .icon {
+  width: 12px;
+  height: 12px;
+  fill: var(--gold);
+  stroke: none;
+}
+.rs-bars i {
+  display: block;
+  height: 6px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.rs-bars button.is-active i {
+  background: #fff;
+}
+.rs-bars i b {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+.rs-cta p {
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.reviews-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 0 4px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.reviews-toolbar .btn-ghost {
+  font-size: 14px;
+  margin-left: 6px;
+}
+.reviews-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.reviews-sort .select {
+  height: 38px;
+  font-size: 14px;
+  width: auto;
+}
+.reviews-empty {
+  padding: 20px 0;
+}
+.reviews-more {
+  display: flex;
+  margin: 20px auto 0;
+}
+.review {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+.review:last-of-type {
+  border-bottom: 0;
+}
+.review-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.review-head .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+.review-head b {
+  font-size: 15px;
+  margin-right: 8px;
+}
+.review-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+.review-verified .icon {
+  width: 14px;
+  height: 14px;
+}
+.review-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.stars-sm .icon {
+  width: 14px;
+  height: 14px;
+}
+.review-title {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.review-pc {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.review-pc div {
+  display: flex;
+  gap: 8px;
+}
+.review-pc dt {
+  font-weight: 700;
+  flex: none;
+}
+.review-pc dt::after {
+  content: ':';
+}
+.review-pc dd {
+  margin: 0;
+  color: var(--text-muted);
+}
+.review-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+.review-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  font-weight: 600;
+}
+.review-rec.is-no {
+  color: var(--danger);
+}
+.review-rec .icon,
+.review-helpful .icon {
+  width: 15px;
+  height: 15px;
+}
+.review-helpful {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+.review-helpful:not([disabled]):hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.review-helpful.is-voted {
+  color: var(--primary);
+  border-color: var(--sage);
+  background: var(--sage-soft);
+  cursor: default;
+}
+.review-reply {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--bg);
+  border-left: 3px solid var(--sage);
+}
+.review-reply .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+  flex: none;
+  margin-top: 2px;
+}
+.review-reply b {
+  display: block;
+  font-size: 13px;
+  color: var(--primary);
+}
+.review-reply p {
+  font-size: 14px;
+}
+/* Форма отзыва */
+.review-form-product {
+  margin: -12px 0 14px;
+  font-size: 14px;
+}
+.modal-box > .review-verified {
+  margin-bottom: 14px;
+}
+.rate-input {
+  display: inline-flex;
+  gap: 4px;
+  flex-direction: row-reverse;
+}
+.rate-input input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.rate-input label {
+  cursor: pointer;
+  color: #d9d2c1;
+  transition:
+    color 0.15s,
+    transform 0.15s;
+}
+.rate-input label .icon {
+  width: 32px;
+  height: 32px;
+  fill: currentColor;
+  stroke: none;
+}
+.rate-input input:checked ~ label,
+.rate-input label:hover,
+.rate-input label:hover ~ label {
+  color: var(--gold);
+}
+.rate-input input:focus-visible + label {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.rate-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.rate-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.field.has-error .rate-input label {
+  color: #e8c9c2;
+}
+.segmented {
+  display: flex;
+  gap: 8px;
+}
+.segmented label {
+  flex: 1;
+  cursor: pointer;
+}
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.segmented span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 14px;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.segmented .icon {
+  width: 16px;
+  height: 16px;
+}
+.segmented input:checked + span {
+  border-color: var(--primary);
+  background: #f2f4ec;
+  color: var(--primary);
+  font-weight: 700;
+}
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

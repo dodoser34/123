@@ -1,0 +1,145 @@
+/* Декор растёт из границ блока: срезы стеблей скрыты, фотографии сохраняют пропорции. */
+.botanical-title {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.botanical-title h1,
+.botanical-title h2 {
+  min-width: 0;
+}
+/* У заголовков остаётся свободное пространство без отдельных вырезок. */
+.botanical-mark {
+  display: none;
+}
+.decor.botanical {
+  height: auto;
+  mix-blend-mode: normal;
+  animation: none;
+  transform-origin: center;
+}
+.home-popular,
+.home-new {
+  position: relative;
+  overflow: clip;
+}
+.home-popular > .container,
+.home-new > .container,
+.cats-banner .container {
+  position: relative;
+  z-index: 1;
+}
+.home-popular .home-popular-edge {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 240px);
+  left: -18px;
+  top: 24px;
+  opacity: 0.75;
+}
+.home-new .home-new-ground {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 240px);
+  right: -12px;
+  bottom: -10px;
+}
+.cats-banner .cats-botanical {
+  width: clamp(120px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 260px);
+  left: -18px;
+  top: -12px;
+  opacity: 0.6;
+  transform: scaleY(-1);
+}
+.about-intro .about-edge-right {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 280px);
+  right: -18px;
+  top: -12px;
+  opacity: 0.85;
+  transform: rotate(180deg);
+}
+.about-intro .about-edge-left {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 280px);
+  left: -18px;
+  top: 240px;
+  opacity: 0.75;
+  transform: none;
+}
+.about-head .page-head {
+  padding-right: 0;
+}
+.catalog-head {
+  position: relative;
+  z-index: 1;
+}
+.catalog-decor.botanical {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 240px);
+  right: -18px;
+  top: -12px;
+  opacity: 0.65;
+  transform: rotate(180deg);
+}
+.quote-band .quote-chamomile {
+  width: 200px;
+  left: 24px;
+  top: auto;
+  bottom: -24px;
+  opacity: 0.8;
+  transform: none;
+}
+.quote-band .quote-centella {
+  width: 240px;
+  right: -16px;
+  top: auto;
+  bottom: -72px;
+  opacity: 0.85;
+  transform: none;
+}
+.faq-title {
+  margin-bottom: 20px;
+}
+.cta-band .cta-botanical {
+  width: 180px;
+  top: auto;
+  bottom: -12px;
+  right: -18px;
+  opacity: 0.8;
+  transform: scaleX(-1);
+}
+.site-footer .footer-botanical {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 180px);
+  right: -18px;
+  bottom: -12px;
+  opacity: 0.6;
+  transform: scaleX(-1);
+}
+.site-footer .footer-bloom {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 280px);
+  left: -18px;
+  right: auto;
+  top: 170px;
+  bottom: auto;
+  opacity: 0.8;
+}
+.mobile-menu .menu-botanical {
+  display: none;
+}
+.auth-decor.botanical {
+  width: 200px;
+  right: -20px;
+  bottom: -24px;
+  opacity: 0.4;
+  transform: scaleX(-1);
+}
+.related .decor-l.botanical {
+  width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 220px);
+  left: -18px;
+  top: auto;
+  bottom: -12px;
+  opacity: 0.6;
+  transform: none;
+}
+.related .decor-r.botanical {
+  width: clamp(140px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 240px);
+  right: -16px;
+  top: auto;
+  bottom: -72px;
+  opacity: 0.65;
+  transform: none;
+}

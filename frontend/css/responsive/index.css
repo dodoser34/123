@@ -1,0 +1,43 @@
+/* АДАПТАЦИЯ ПОД ЭКРАНЫ — всё, что меняется в зависимости от размера экрана, лежит в этой папке.
+   Подключается из css/main.css последним, поэтому перекрывает обычные стили.
+
+   desktop/large-screens.css  — Full HD, 2K, 4K, 5K, 8K: интерфейс пропорционально увеличивается
+   desktop/laptop.css         — ноутбуки 1025–1365 px и правила «только для компьютера»
+   tablet/<раздел>.css        — планшеты до 1024 px
+   phone/<раздел>.css         — телефоны до 760 px (внутри — ступени 600, 560, 480, 400, 360 px)
+   phone/landscape.css        — телефон горизонтально (низкий экран)
+   touch/touch.css            — сенсорные экраны: зоны нажатия, поля без автоприближения, вырез экрана
+   accessibility/             — «уменьшить движение» в настройках системы
+   admin/                     — админка (подключается из css/admin.css)
+
+   Разделы одинаковые для планшетов и телефонов: base (общее), header, footer, product-card,
+   home, catalog, product, about, delivery, cart-checkout, account, login.
+   Порядок важен: от больших экранов к маленьким — узкие правила идут позже и побеждают. */
+@import url('desktop/large-screens.css?v=21');
+@import url('desktop/laptop.css?v=21');
+@import url('tablet/base.css?v=21');
+@import url('tablet/header.css?v=21');
+@import url('tablet/product-card.css?v=21');
+@import url('tablet/home.css?v=21');
+@import url('tablet/catalog.css?v=21');
+@import url('tablet/product.css?v=21');
+@import url('tablet/about.css?v=21');
+@import url('tablet/delivery.css?v=21');
+@import url('tablet/cart-checkout.css?v=21');
+@import url('tablet/account.css?v=21');
+@import url('tablet/login.css?v=21');
+@import url('phone/base.css?v=21');
+@import url('phone/header.css?v=21');
+@import url('phone/footer.css?v=21');
+@import url('phone/product-card.css?v=21');
+@import url('phone/home.css?v=21');
+@import url('phone/catalog.css?v=21');
+@import url('phone/product.css?v=21');
+@import url('phone/about.css?v=21');
+@import url('phone/delivery.css?v=21');
+@import url('phone/cart-checkout.css?v=21');
+@import url('phone/account.css?v=21');
+@import url('phone/login.css?v=21');
+@import url('phone/landscape.css?v=21');
+@import url('touch/touch.css?v=21');
+@import url('accessibility/reduced-motion.css?v=21');

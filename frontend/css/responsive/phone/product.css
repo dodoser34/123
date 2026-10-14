@@ -1,0 +1,42 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → страница товара и отзывы */
+@media (max-width: 560px) {
+  .reviews-summary {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .rs-cta {
+    display: block;
+  }
+  .rs-cta .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .reviews-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .pp-thumbs {
+    display: none;
+  }
+  .pp-dots {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 10px;
+  }
+  .pp-dots button {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .pp-dots button.is-active {
+    background: var(--primary);
+    width: 20px;
+    border-radius: 4px;
+  }
+  .pp-buy .btn {
+    flex: 1;
+    min-width: 0;
+  }
+}

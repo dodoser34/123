@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Политика безопасности: скрипты только с этого сайта, без встроенных обработчиков (защита от XSS) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-q0Wd0OPZMU86IOVcSP9fpo4ghh4/m9OeKf2TNC7is7E='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http://localhost:* http://127.0.0.1:*; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>K-Beauty | C-Health</title>
+    <meta name="robots" content="noindex" />
+    <script>
+      // Эта страница показывается для любого неверного адреса, даже вложенного (/a/b/c), поэтому ссылки на стили,
+      // скрипты и картинки считаются от корня сайта: на GitHub Pages — /<репозиторий>/, на своём сервере — /.
+      (function () {
+        var root = location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/';
+        document.write('<base href="' + root.replace('//', '/') + '">');
+      })();
+    </script>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css?v=21" />
+    <script src="js/app.js?v=21" data-page="404"></script>
+  </head>
+  <body data-page="404">
+    <header id="site-header"></header>
+    <main>
+      <div class="container nf">
+        <div class="num">404</div>
+        <h1 data-t="notFound.title"></h1>
+        <p class="muted" data-t="notFound.text"></p>
+        <a class="btn btn-primary" href="pages/catalog.html" data-t="notFound.action"></a>
+      </div>
+    </main>
+    <footer id="site-footer"></footer>
+  </body>
+</html>

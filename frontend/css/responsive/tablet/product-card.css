@@ -1,0 +1,19 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → карточки товаров, сетки и карусели */
+@media (max-width: 1024px) {
+  .carousel-track {
+    grid-auto-columns: calc((100% - 2 * 16px) / 2.5);
+    gap: 16px;
+  }
+  .carousel-btn {
+    display: none;
+  }
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 761px) and (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}

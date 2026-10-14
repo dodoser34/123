@@ -1,0 +1,484 @@
+/* Личный кабинет */
+.account-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.acc-nav {
+  padding: 12px;
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+}
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 17px;
+  flex: none;
+}
+.acc-nav button,
+.acc-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  text-align: left;
+}
+.acc-nav button,
+.acc-nav a {
+  position: relative;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    padding-left 0.25s var(--ease);
+}
+.acc-nav .icon {
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+.acc-nav button:hover,
+.acc-nav a:hover {
+  background: rgba(31, 58, 45, 0.06);
+  color: var(--primary);
+  padding-left: 16px;
+}
+.acc-nav button:hover .icon,
+.acc-nav a:hover .icon,
+.acc-nav .is-active .icon {
+  color: var(--primary);
+}
+/* Активный раздел — мягкая плашка с полоской слева */
+.acc-nav .is-active,
+.acc-nav .is-active:hover {
+  background: var(--sage-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+.acc-nav .is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--primary);
+}
+.acc-nav .acc-logout {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 10px 10px;
+  padding-top: 14px;
+}
+.acc-nav .acc-logout:hover,
+.acc-nav .acc-logout:hover .icon {
+  color: var(--danger);
+  background: transparent;
+}
+.order-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  background: var(--bg);
+}
+.order-card + .order-card {
+  margin-top: 12px;
+}
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.order-head b {
+  font-size: 16px;
+}
+.order-head .price {
+  font-size: 22px;
+}
+.order-sub {
+  font-size: 13px;
+  margin-top: 2px;
+}
+.order-items {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px 0;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+}
+.order-item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+.order-item img,
+.order-item .img-ph {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.order-item-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.order-item small {
+  font-size: 12px;
+}
+.order-rated {
+  display: inline-flex;
+}
+.order-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.acc-content h2 {
+  margin-bottom: 20px;
+}
+.acc-form {
+  max-width: 520px;
+}
+.my-review .review-meta {
+  margin: 10px 0 6px;
+}
+.my-review > p {
+  margin-bottom: 8px;
+}
+.my-review-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.my-review-product img,
+.my-review-product .img-ph {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--surface-2);
+}
+.status::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status-new {
+  color: #8a6a1f;
+  background: #f5ebd3;
+}
+.status-processing {
+  color: #2e5a86;
+  background: #e1eaf3;
+}
+.status-shipped {
+  color: #5b3e8a;
+  background: #ece4f5;
+}
+.status-done {
+  color: var(--primary);
+  background: var(--sage-soft);
+}
+.status-cancelled {
+  color: var(--danger);
+  background: #f6e3de;
+}
+.account-body {
+  padding-top: 24px;
+}
+
+/* Приветствие: аватар, имя, плитки статистики */
+.acc-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px 40px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 32px 36px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.7), transparent 55%),
+    linear-gradient(120deg, var(--sage-soft), var(--surface) 70%);
+}
+.acc-hero-decor {
+  right: -60px;
+  bottom: -70px;
+  width: 260px;
+  opacity: 0.35;
+}
+.acc-hero-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+.avatar-lg {
+  width: 84px;
+  height: 84px;
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 0 0 5px var(--surface),
+    0 0 0 6px var(--border),
+    0 12px 28px rgba(31, 58, 45, 0.18);
+}
+.acc-hello {
+  display: block;
+  font-size: 24px;
+  color: var(--primary);
+  line-height: 1;
+}
+.acc-hero h1 {
+  font-size: clamp(32px, 3.4vw, 46px);
+  margin: 4px 0 6px;
+  overflow-wrap: anywhere;
+}
+.acc-hero .muted {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.acc-stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 12px;
+}
+.acc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+  transition:
+    transform 0.25s var(--ease),
+    box-shadow 0.25s,
+    border-color 0.25s;
+}
+a.acc-stat:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+}
+.acc-stat-ic {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: var(--sage-soft);
+  color: var(--primary);
+}
+.acc-stat-ic .icon {
+  width: 17px;
+  height: 17px;
+}
+.acc-stat b {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.acc-stat small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* Шкала статуса заказа */
+.order-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 16px 0 4px;
+}
+.order-progress li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.order-progress li::before {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: -50%;
+  right: 50%;
+  height: 2px;
+  background: var(--border);
+}
+.order-progress li:first-child::before {
+  display: none;
+}
+.order-progress li.is-done::before,
+.order-progress li.is-current::before {
+  background: var(--primary);
+}
+.order-progress span {
+  position: relative;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  color: #fff;
+}
+.order-progress .icon {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2.5;
+}
+.order-progress .is-done span,
+.order-progress .is-current span {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.order-progress .is-current {
+  color: var(--primary);
+  font-weight: 700;
+}
+.order-progress .is-current span {
+  box-shadow: 0 0 0 5px var(--sage-soft);
+}
+.order-card {
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s;
+}
+.order-card:hover {
+  border-color: #d6d9cc;
+  box-shadow: var(--shadow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .acc-hero-main,
+  .acc-stat {
+    animation: acc-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .acc-stat:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  .acc-stat:nth-child(2) {
+    animation-delay: 0.16s;
+  }
+  .acc-stat:nth-child(3) {
+    animation-delay: 0.22s;
+  }
+  .acc-stat:nth-child(4) {
+    animation-delay: 0.28s;
+  }
+  .avatar-lg {
+    animation: acc-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  /* карточки раздела появляются по очереди */
+  .acc-content > * {
+    animation: acc-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .acc-content > :nth-child(2) {
+    animation-delay: 0.06s;
+  }
+  .acc-content > :nth-child(3) {
+    animation-delay: 0.12s;
+  }
+  .acc-content > :nth-child(n + 4) {
+    animation-delay: 0.18s;
+  }
+  .order-progress .is-current span {
+    animation: acc-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes acc-rise {
+    from {
+      opacity: 0;
+      translate: 0 16px;
+    }
+  }
+  @keyframes acc-pop {
+    from {
+      opacity: 0;
+      scale: 0.6;
+    }
+  }
+  @keyframes acc-pulse {
+    50% {
+      box-shadow: 0 0 0 9px rgba(31, 58, 45, 0.06);
+    }
+  }
+}
+
+/* «Удалить аккаунт» — отдельный блок под профилем */
+.acc-danger {
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.acc-danger h3 {
+  margin-bottom: 6px;
+  color: var(--danger);
+}
+.acc-danger .muted {
+  margin-bottom: 16px;
+  max-width: 520px;
+}
+.acc-note {
+  margin-bottom: 16px;
+}
+
+/* Статус оплаты заказа */
+.order-pay {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.status-pay-awaiting,
+.status-pay-failed {
+  color: #8a6a1f;
+}
+.status-pay-paid {
+  color: var(--primary);
+}
+.order-card .pay-info {
+  margin: 12px 0 0;
+  max-width: none;
+}

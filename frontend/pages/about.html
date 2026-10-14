@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru" data-base="../">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Политика безопасности: скрипты только с этого сайта, без встроенных обработчиков (защита от XSS) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http://localhost:* http://127.0.0.1:*; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <title>K-Beauty | C-Health</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/main.css?v=21" />
+    <script src="../js/app.js?v=21" data-page="about"></script>
+  </head>
+  <body data-page="about">
+    <header id="site-header"></header>
+
+    <main>
+      <div class="section-clip about-intro">
+        <img
+          class="decor botanical about-botanical about-edge-right"
+          src="../assets/images/decor/tea-branch.png"
+          width="1536"
+          height="1024"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          data-decor
+         
+        />
+        <img
+          class="decor botanical about-edge-left"
+          src="../assets/images/decor/eucalyptus-round-spray.png"
+          width="1536"
+          height="1024"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          data-decor
+         
+        />
+        <div class="container about-head relative">
+          <nav class="breadcrumbs" data-t-label="common.breadcrumbs.label">
+            <a href="../index.html" data-t="common.breadcrumbs.home"></a><span aria-hidden="true">/</span><span data-t="about.title"></span>
+          </nav>
+          <div class="page-head">
+            <h1 data-t="about.title"></h1>
+            <p class="lead" data-t="about.lead"></p>
+          </div>
+
+          <section class="mission reveal">
+            <div class="mission-img">
+              <img
+                src="../assets/images/pages/about/about-shop.jpg"
+                alt=""
+                data-t-alt="about.photoAlt"
+                loading="lazy"
+               
+              />
+            </div>
+            <div class="mission-card">
+              <h2 data-t="about.mission.title"></h2>
+              <p data-t="about.mission.text"></p>
+              <ul class="values" id="values"></ul>
+            </div>
+          </section>
+
+          <section class="stats reveal" id="stats" data-t-label="about.stats.label"></section>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="container">
+          <div class="botanical-title reveal">
+            <h2 data-t="about.trust.title"></h2>
+          </div>
+          <div class="trust-grid" id="trust"></div>
+        </div>
+      </section>
+
+      <section class="section section-tight" aria-labelledby="gallery-title">
+        <div class="container">
+          <div class="section-head reveal">
+            <h2 id="gallery-title" data-t="about.gallery.title"></h2>
+            <p class="muted" data-t="about.gallery.lead"></p>
+          </div>
+          <div class="gallery-grid reveal" id="gallery"></div>
+        </div>
+      </section>
+
+      <section class="section section-tight about-contacts" id="contacts">
+        <div class="container">
+          <h2 class="reveal" data-t="about.contacts.title"></h2>
+          <div class="contacts-grid reveal" id="contacts-grid"></div>
+        </div>
+      </section>
+
+      <section class="quote-band">
+        <img
+          class="decor botanical decor-l quote-chamomile"
+          src="../assets/images/decor/chamomile-sprig.png"
+          width="1024"
+          height="1536"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          data-decor
+         
+        />
+        <img
+          class="decor botanical decor-r quote-centella"
+          src="../assets/images/decor/centella-leaves.png"
+          width="1536"
+          height="1024"
+          loading="lazy"
+          decoding="async"
+          alt=""
+          aria-hidden="true"
+          data-decor
+         
+        />
+        <span class="hand reveal" data-t="about.quote"></span>
+        <a class="btn btn-primary" href="catalog.html"
+          ><span data-t="about.toCatalog"></span> <svg class="icon icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+        ></a>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>

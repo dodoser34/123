@@ -1,0 +1,101 @@
+# Render Blueprint (render.com → New → Blueprint → выбрать этот репозиторий).
+# Создаёт: базу PostgreSQL, API (FastAPI в Docker) и сайт (статические файлы frontend/).
+# После создания заполните переменные с sync: false в панели Render (Environment) — они не хранятся в git.
+# Подробно — docs/11-Бэкенд-и-деплой.md.
+
+databases:
+  - name: kbch-db
+    plan: free
+    databaseName: kbch
+    user: kbch
+
+services:
+  - type: web
+    name: kbch-api
+    runtime: docker
+    rootDir: backend
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL # postgres://… автоматически переводится на драйвер asyncpg
+        fromDatabase:
+          name: kbch-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: '1'
+      - key: TRUST_PROXY # IP посетителя — из заголовка прокси Render (нужно для ограничения попыток входа)
+        value: 'true'
+      # адреса: подставьте свои после первого деплоя (https://kbch-site.onrender.com, https://kbch-api.onrender.com/api)
+      - key: FRONTEND_URL
+        sync: false
+      - key: PUBLIC_API_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      # администратор: почта и пароль (≥ 12 символов) ИЛИ вместо пароля ADMIN_PASSWORD_HASH (python -m app.cli hash-password)
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: ADMIN_NAME
+        value: Администратор
+      # письма с кодами (Gmail: пароль приложения)
+      - key: EMAIL_BACKEND
+        value: smtp
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      # вход через Google (необязательно)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      # оплата
+      - key: PAYMENT_METHODS
+        value: kaspi_transfer,cash
+      - key: KASPI_PHONE
+        sync: false
+      - key: KASPI_RECEIVER
+        sync: false
+      - key: KASPI_PAY_LINK
+        sync: false
+      # Kaspi Pay API (когда будет доступ; затем добавить kaspi_pay в PAYMENT_METHODS) — docs/14-Платежи.md
+      - key: KASPI_MERCHANT_ID
+        sync: false
+      - key: KASPI_API_KEY
+        sync: false
+      - key: KASPI_WEBHOOK_SECRET
+        sync: false
+
+  - type: web
+    name: kbch-site
+    runtime: static
+    # Сборка из корня: публичные файлы из frontend/ собираются в .public/.
+    # Публикуются только публичные файлы; env.js получает адрес API без shell-подстановки.
+    buildCommand: python3 deploy/prepare_frontend.py --api-url-from-env API_URL
+    staticPublishPath: .public
+    envVars:
+      - key: API_URL # например https://kbch-api.onrender.com/api
+        sync: false
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /env.js
+        name: Cache-Control
+        value: no-store

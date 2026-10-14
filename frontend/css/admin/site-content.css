@@ -1,0 +1,214 @@
+/* Админка → содержимое сайта: «Тексты сайта», «Фото «О нас»», свои разделы в форме товара */
+
+/* ---------- Свои разделы товара (форма товара) ---------- */
+.block-row {
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+.block-row + .block-row {
+  margin-top: 10px;
+}
+.block-fields {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.block-fields .input {
+  font-weight: 600;
+}
+
+/* ---------- Фото «О нас» ---------- */
+.site-photos-intro {
+  margin-bottom: 20px;
+}
+.site-photos-intro .muted {
+  margin: 6px 0 12px;
+  max-width: 760px;
+}
+.site-photos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.site-photo {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.site-photo.is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.site-photo-img {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--surface-2);
+}
+.site-photo-img img,
+.site-photo-img .img-ph {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.site-photo-num {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  font-weight: 700;
+  font-size: 14px;
+}
+.site-photo-badge {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.site-photo-body {
+  padding: 14px 16px 16px;
+  display: grid;
+  gap: 12px;
+}
+.site-photo-body .field {
+  margin: 0;
+}
+.site-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.site-photo-actions label.btn {
+  cursor: pointer;
+}
+
+/* ---------- Тексты сайта ---------- */
+.texts-intro {
+  margin-bottom: 16px;
+}
+.texts-intro .muted {
+  max-width: 860px;
+  margin-bottom: 14px;
+}
+.texts-intro code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  font-size: 13px;
+}
+.texts-search {
+  position: relative;
+  max-width: 460px;
+}
+.texts-search .icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+.texts-search .input {
+  padding-left: 42px;
+}
+.texts-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.texts-tabs button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.texts-tabs button.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.texts-tabs .count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e8b04b;
+  color: #fff;
+  font-size: 12px;
+  display: inline-grid;
+  place-items: center;
+}
+.text-group {
+  margin-bottom: 14px;
+}
+.text-group h3 {
+  margin-bottom: 12px;
+}
+.text-field {
+  padding: 10px 0;
+  border-top: 1px dashed var(--border);
+}
+.text-field:first-of-type {
+  border-top: 0;
+}
+.text-field-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  min-height: 24px;
+}
+.text-field-head small {
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.text-edited {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #f5ebd3;
+  color: #8a6a1f;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.text-reset {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--primary);
+}
+.text-reset .icon {
+  width: 14px;
+  height: 14px;
+}
+.text-field.is-edited .input,
+.text-field.is-edited .textarea {
+  border-color: #e8b04b;
+}

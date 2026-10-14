@@ -1,0 +1,54 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → карточки товаров, сетки и карусели */
+@media (max-width: 760px) {
+  .is-list .product-card {
+    flex-wrap: wrap;
+  }
+  .is-list .pc-media {
+    width: 110px;
+  }
+  .is-list .pc-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .is-list .pc-cart {
+    width: 100%;
+    margin: 4px 0 0;
+  }
+}
+@media (max-width: 560px) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .products-grid.is-large {
+    grid-template-columns: 1fr;
+  }
+  .product-card {
+    padding: 6px 6px 10px;
+  }
+  .pc-body {
+    padding: 10px 4px 0;
+  }
+  .pc-title {
+    font-size: 16px;
+  }
+  .price {
+    font-size: 20px;
+  }
+  .pc-cart {
+    height: 38px;
+    font-size: 13px;
+  }
+  .pc-cart span {
+    display: none;
+  }
+  .pc-fav {
+    width: 32px;
+    height: 32px;
+    top: 8px;
+    right: 8px;
+  }
+  .carousel-track {
+    grid-auto-columns: 66%;
+  }
+}

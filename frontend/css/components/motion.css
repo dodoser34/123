@@ -1,0 +1,181 @@
+/* Все анимации сайта в одном месте.
+   • Появление блоков при прокрутке — управляет components/reveal.js (класс .will-reveal).
+   • Эффекты наведения работают только с мышью, чтобы на телефоне карточка не «залипала» после касания.
+   • Если в системе включено «Уменьшить движение», анимации отключаются (см. responsive/reduced-motion.css). */
+
+/* Блок ещё ниже экрана и ждёт плавного появления */
+.will-reveal {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-media.hero-layered {
+    animation: none;
+  }
+  .hero-layered .hero-background {
+    animation: hero-photo-in 1.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  }
+  .hero-layered .hero-products {
+    opacity: 0;
+  }
+  .hero-layered.is-ready .hero-products {
+    animation: hero-products-in 3s cubic-bezier(0.4, 0, 0.2, 1) 1.6s both;
+  }
+  @keyframes hero-photo-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes hero-products-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  /* Первый экран главной: фото мягко «оседает», текст поднимается */
+  /* анимируется весь блок вместе с маской — если анимировать саму картинку, на краю появляется тонкий шов */
+  .hero-media {
+    transform-origin: 100% 50%;
+    animation: hero-settle 2.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  @keyframes hero-settle {
+    from {
+      opacity: 0.35;
+      scale: 1.05;
+    }
+  }
+  .anim-up {
+    animation: rise 0.8s var(--ease) backwards;
+  }
+  /* ступенчатое появление элементов первого экрана */
+  .anim-delay-1 {
+    animation-delay: 0.08s;
+  }
+  .anim-delay-2 {
+    animation-delay: 0.16s;
+  }
+  .anim-delay-3 {
+    animation-delay: 0.24s;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  }
+
+  /* Декоративные ветки слегка покачиваются, пока видны на экране */
+  .decor {
+    transform-origin: 80% 70%;
+    animation: botanical-sway 9s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+  .decor.motion-visible {
+    animation-play-state: running;
+  }
+  .decor-l {
+    animation-delay: -4s;
+  }
+  .decor-r {
+    animation-delay: -2s;
+  }
+  @keyframes botanical-sway {
+    from {
+      rotate: -1.5deg;
+      translate: 0 0;
+    }
+    to {
+      rotate: 1.5deg;
+      translate: 0 -6px;
+    }
+  }
+
+  /* Отклик кнопок */
+  .btn,
+  .btn-icon,
+  .pc-cart-sq {
+    transition:
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s,
+      transform 0.25s,
+      box-shadow 0.25s,
+      scale 0.2s;
+  }
+  .btn:active,
+  .btn-icon:active,
+  .pc-cart-sq:active {
+    scale: 0.96;
+  }
+  .pc-fav.is-active .icon {
+    animation: favorite-pop 0.45s ease-out;
+  }
+  @keyframes favorite-pop {
+    45% {
+      scale: 1.3;
+      rotate: -8deg;
+    }
+  }
+  .pc-cart.is-added .icon {
+    animation: check-pop 0.45s ease-out;
+  }
+  @keyframes check-pop {
+    from {
+      opacity: 0;
+      scale: 0.5;
+    }
+  }
+
+  /* Плавное увеличение фото при наведении */
+  .mission-img img,
+  .gallery-grid img {
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .cat-circle .icon,
+  .trust-card .icon {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Эффекты наведения — только для мыши */
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover {
+    box-shadow: var(--shadow-hover);
+  }
+  .trust-card:hover {
+    box-shadow: var(--shadow-hover);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(31, 58, 45, 0.18);
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+  }
+  .product-card:hover .pc-media img {
+    transform: scale(1.065);
+  }
+  .trust-card:hover {
+    transform: translateY(-3px);
+  }
+  .cat-circle:hover {
+    transform: scale(1.04);
+  }
+  .cat-circle:hover .icon,
+  .trust-card:hover .icon {
+    transform: translateY(-4px) rotate(-5deg);
+  }
+  .mission:hover .mission-img img,
+  .gallery-grid button:hover img {
+    transform: scale(1.05);
+  }
+}

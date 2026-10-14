@@ -1,12 +1,14 @@
 # Публикация сайта на GitHub Pages.
-# При каждом push в ветку main содержимое папки site/ выкладывается на https://<логин>.github.io/<репозиторий>/
+# При каждом push публикуются только публичные файлы из подготовленной папки .public/.
+# Если в репозитории задана переменная API_URL (Settings → Secrets and variables → Actions → Variables),
+# сайт работает с сервером по этому адресу; если нет — в демо-режиме (всё хранится в браузере).
 # Один раз включите в репозитории: Settings → Pages → Source: «GitHub Actions».
 name: Публикация на GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/pages.yml']
+    paths: ['frontend/**', 'deploy/prepare_frontend.py', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -27,8 +29,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Подготовить только публичные файлы сайта
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: python deploy/prepare_frontend.py --api-url-from-env API_URL
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: .public
       - id: deployment
         uses: actions/deploy-pages@v4

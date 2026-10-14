@@ -1,7 +1,0 @@
-/* Редактор категорий */
-.cat-admin { display: grid; gap: 16px; }
-.cat-admin .adm-card-pad { display: grid; gap: 10px; }
-.cat-line { display: flex; align-items: center; gap: 10px; }
-.cat-line .input { height: 40px; font-size: 14px; }
-.cat-line.is-sub { padding-left: 28px; }
-.cat-line .muted { font-size: 12px; white-space: nowrap; }

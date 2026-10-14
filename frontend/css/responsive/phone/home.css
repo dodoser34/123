@@ -1,0 +1,15 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → главная */
+@media (max-width: 760px) {
+  .hero .benefits {
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+}
+@media (max-width: 560px) {
+  .hero-media {
+    height: 300px;
+  }
+  .hero .btn {
+    width: 100%;
+  }
+}

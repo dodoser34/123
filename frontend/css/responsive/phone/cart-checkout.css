@@ -1,0 +1,25 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → корзина и оформление заказа */
+@media (max-width: 760px) {
+  .cart-item {
+    grid-template-columns: 80px 1fr 36px;
+    gap: 12px;
+  }
+  .cart-item img,
+  .cart-item .img-ph {
+    width: 80px;
+    height: 80px;
+    grid-row: span 2;
+  }
+  .cart-item .qty {
+    grid-column: 2;
+  }
+  .cart-item .ci-sum {
+    grid-column: 2;
+    grid-row: 3;
+    text-align: left;
+  }
+  .cart-item .ci-del {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}

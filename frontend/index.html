@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <!-- Политика безопасности: скрипты только с этого сайта, без встроенных обработчиков (защита от XSS) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: http://localhost:* http://127.0.0.1:*; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <title>K-Beauty | C-Health</title>
+    <meta property="og:title" content="K-Beauty | C-Health — красота и забота в одном месте" />
+    <meta property="og:image" content="assets/images/common/og-image.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css?v=21" />
+    <script src="js/app.js?v=21" data-page="home"></script>
+  </head>
+  <body data-page="home">
+    <header id="site-header"></header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-media hero-layered">
+          <img class="hero-background" src="assets/images/pages/home/hero-background.jpg" alt="" aria-hidden="true" fetchpriority="high" />
+          <img
+            class="hero-products"
+            src="assets/images/pages/home/hero-products.webp"
+            alt=""
+            data-t-alt="home.hero.photoAlt"
+            fetchpriority="high"
+           
+          />
+        </div>
+        <div class="container">
+          <div class="hero-content">
+            <h1 class="anim-up" data-t="home.hero.title"></h1>
+            <p class="lead anim-up anim-delay-1" data-t="home.hero.lead"></p>
+            <a class="btn btn-primary anim-up anim-delay-2" href="pages/catalog.html"
+              ><span data-t="home.hero.button"></span>
+              <svg class="icon icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></a>
+            <div class="anim-up anim-delay-3" id="hero-benefits"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section home-popular">
+        <img
+          class="decor botanical home-popular-edge"
+          src="assets/images/decor/tea-branch.png"
+          width="1536"
+          height="1024"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          data-decor
+         
+        />
+        <div class="container">
+          <div class="section-head">
+            <div class="botanical-title">
+              <h2 data-t="home.popular.title"></h2>
+            </div>
+            <a class="link-arrow" href="pages/catalog.html?sort=popular"
+              ><span data-t="home.popular.all"></span> <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></a>
+          </div>
+          <div class="carousel" id="popular">
+            <button class="carousel-btn prev" type="button" data-t-label="common.carousel.prev"></button>
+            <div class="carousel-track"></div>
+            <button class="carousel-btn next" type="button" data-t-label="common.carousel.next"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="cats-banner" aria-labelledby="cats-title">
+        <img
+          class="decor botanical cats-botanical"
+          src="assets/images/decor/eucalyptus-round-spray.png"
+          width="1536"
+          height="1024"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          data-decor
+         
+        />
+        <div class="container">
+          <h2 id="cats-title" data-t="home.categories.title"></h2>
+          <div class="cats-row" id="cats-row"></div>
+        </div>
+      </section>
+
+      <section class="section home-new">
+        <img
+          class="decor botanical home-new-ground"
+          src="assets/images/decor/aloe-stones.png"
+          width="1536"
+          height="1024"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          data-decor
+         
+        />
+        <div class="container">
+          <div class="section-head">
+            <div class="botanical-title">
+              <h2 data-t="home.fresh.title"></h2>
+            </div>
+            <a class="link-arrow" href="pages/catalog.html?flag=new"
+              ><span data-t="home.fresh.all"></span> <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></a>
+          </div>
+          <div class="carousel" id="new">
+            <button class="carousel-btn prev" type="button" data-t-label="common.carousel.prev"></button>
+            <div class="carousel-track"></div>
+            <button class="carousel-btn next" type="button" data-t-label="common.carousel.next"></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+  </body>
+</html>

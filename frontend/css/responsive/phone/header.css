@@ -1,0 +1,28 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → шапка и мобильное меню */
+@media (max-width: 480px) {
+  .site-header .header-inner {
+    gap: 8px;
+  }
+  .site-header .header-actions {
+    gap: 0;
+  }
+  .site-header .icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .site-header .logo {
+    gap: 6px;
+  }
+  .site-header .logo-text {
+    font-size: 16px;
+  }
+  .site-header .logo svg {
+    width: 34px;
+    height: 26px;
+  }
+}
+@media (max-width: 359px) {
+  .site-header .logo-text {
+    display: none;
+  }
+}

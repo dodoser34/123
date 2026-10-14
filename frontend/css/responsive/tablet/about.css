@@ -1,0 +1,27 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → «О нас» */
+@media (max-width: 1024px) {
+  .mission {
+    grid-template-columns: 1fr;
+  }
+  .mission-card {
+    margin: -60px 16px 0;
+  }
+  .trust-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .contacts-grid {
+    grid-template-columns: 1fr;
+  }
+  .quote-band .quote-chamomile {
+    width: 140px;
+    left: 0;
+    bottom: -18px;
+  }
+  .quote-band .quote-centella {
+    width: 180px;
+    bottom: -56px;
+  }
+}

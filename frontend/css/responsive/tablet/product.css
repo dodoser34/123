@@ -1,0 +1,36 @@
+/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → страница товара и отзывы */
+@media (max-width: 1024px) {
+  .reviews-summary {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .rs-cta {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .rs-cta p {
+    margin: 0;
+  }
+  .pp-top {
+    grid-template-columns: 1fr;
+  }
+  .pp-thumbs {
+    flex-direction: row;
+    order: 2;
+    overflow-x: auto;
+  }
+  .pp-thumbs button {
+    width: 70px;
+    height: 70px;
+    flex: none;
+  }
+  .pp-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sticky-buy {
+    display: flex;
+  }
+}

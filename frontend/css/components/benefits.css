@@ -1,0 +1,65 @@
+/* Блок преимуществ */
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 24px;
+}
+.benefit + .benefit {
+  border-left: 1px solid var(--border);
+}
+.benefit-ic {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  background: var(--surface);
+}
+.benefit-ic .icon {
+  width: 28px;
+  height: 28px;
+}
+.benefit b {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 600;
+}
+.benefit small {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+.benefits-bar {
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+}
+.benefits.is-compact .benefit-ic {
+  width: auto;
+  height: auto;
+  border: 0;
+  background: none;
+}
+.benefits.is-compact .benefit b {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+.benefits.is-compact .benefit {
+  padding: 0;
+  gap: 10px;
+}
+.benefits.is-compact .benefit + .benefit {
+  border: 0;
+}

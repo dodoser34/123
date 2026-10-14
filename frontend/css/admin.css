@@ -1,0 +1,11 @@
+/* Стили админ-панели: общая дизайн-система магазина + части админки */
+@import url('main.css?v=21');
+@import url('admin/layout.css?v=21');
+@import url('admin/dashboard.css?v=21');
+@import url('admin/tables.css?v=21');
+@import url('admin/product-form.css?v=21');
+@import url('admin/categories.css?v=21');
+@import url('admin/orders.css?v=21');
+@import url('admin/site-content.css?v=21');
+@import url('responsive/admin/tablet.css?v=21');
+@import url('responsive/admin/phone.css?v=21');

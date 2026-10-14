@@ -1,0 +1,58 @@
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → «О нас» */
+@media (max-width: 760px) {
+  .stats {
+    padding: 16px 0;
+  }
+  .stats div {
+    padding: 0 6px;
+  }
+  .stats b {
+    font-size: 30px;
+  }
+  .stats span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+  .values {
+    grid-template-columns: 1fr;
+    text-align: left;
+    gap: 14px;
+  }
+  .values li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0;
+  }
+  .values li + li {
+    border: 0;
+  }
+  .values .v-ic {
+    margin: 0;
+    width: 56px;
+    height: 56px;
+    flex: none;
+  }
+}
+@media (max-width: 560px) {
+  .trust-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .trust-card {
+    font-size: 16px;
+    padding: 20px 10px;
+  }
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+}
+@media (max-width: 600px) {
+  .quote-band .quote-chamomile,
+  .quote-band .quote-centella {
+    display: none;
+  }
+}

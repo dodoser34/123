@@ -1,0 +1,94 @@
+/* ТЕЛЕФОН ГОРИЗОНТАЛЬНО: экран низкий (до 520 px по высоте) — шапка ниже, первый экран и страница товара
+   раскладываются в две колонки, чтобы главное помещалось без прокрутки. */
+@media (orientation: landscape) and (max-height: 520px) and (max-width: 1024px) {
+  :root {
+    --header-h: 56px;
+  }
+  .section {
+    padding: 32px 0;
+  }
+
+  /* Главная: текст слева, фото справа на всю высоту экрана */
+  .hero {
+    flex-direction: row;
+    align-items: center;
+    min-height: 100svh;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    order: 0;
+    --hero-mask: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.2) 34%, #000 62%),
+      linear-gradient(to top, transparent 0, #000 36px);
+  }
+  .hero-media img {
+    object-position: 80% 60%;
+  }
+  .hero-content {
+    max-width: 50%;
+    padding: calc(var(--header-h) + 16px) 0 20px;
+  }
+  .hero h1 {
+    font-size: 34px;
+  }
+  .hero .lead {
+    margin: 10px 0 18px;
+    font-size: 15px;
+  }
+  .hero .btn {
+    width: auto;
+  }
+  .hero .benefits {
+    display: none;
+  }
+
+  /* Товар: фото слева, цена и покупка справа */
+  .pp-top {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .pp-thumbs {
+    display: none;
+  }
+  .pp-main {
+    max-height: calc(100svh - var(--header-h) - 32px);
+  }
+  .pp-dots {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 10px;
+  }
+  .pp-dots button {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .pp-dots button.is-active {
+    background: var(--primary);
+    width: 20px;
+    border-radius: 4px;
+  }
+  .pp-info h1 {
+    font-size: 28px;
+  }
+  .pp-price .price {
+    font-size: 34px;
+  }
+
+  /* Окна и меню: прокрутка внутри, если не помещаются по высоте */
+  .modal-box {
+    max-height: calc(100svh - 24px);
+  }
+  .mobile-menu {
+    padding-top: 12px;
+  }
+  .cats-banner {
+    padding: 32px 0 40px;
+  }
+}
