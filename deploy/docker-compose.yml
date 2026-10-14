@@ -5,7 +5,7 @@
 #   python3 deploy/prepare_frontend.py     # папка .public/ — только публичные файлы сайта (повторять после каждого обновления)
 #   docker compose -f deploy/docker-compose.yml --profile init run --rm --service-ports certbot-init   # первый сертификат HTTPS
 #   docker compose -f deploy/docker-compose.yml up -d --build
-#   docker compose -f deploy/docker-compose.yml exec backend python -m app.cli seed --frontend /frontend   # категории (+ --demo)
+#   docker compose -f deploy/docker-compose.yml exec backend python -m app.cli seed --frontend /frontend   # категории
 name: kbch
 
 x-logging: &logging # журналы контейнеров не разрастаются бесконечно

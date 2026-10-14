@@ -19,7 +19,6 @@ WEB_EXTENSIONS = {
     'css': {'.css'},
     'js': {'.js'},
     'texts': {'.js'},
-    'demo': {'.js'},
     'assets': {'.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.otf'},
 }
 PRIVATE_PARTS = {'private', 'personal', 'secrets', 'credentials', 'exports', 'backups', 'tmp', 'temp', 'tests', 'test-results', 'node_modules', '_local'}
@@ -36,6 +35,24 @@ def public_file(relative: Path) -> bool:
     if name.startswith(('secret', 'credentials', 'client_secret', 'service-account', 'service_account')):
         return False
     return len(relative.parts) > 1 and relative.suffix.lower() in WEB_EXTENSIONS.get(relative.parts[0], set())
+
+
+def copy_public(source: Path, destination: Path) -> int:
+    """Copy shared storefront assets into an already-created staging directory."""
+    count = 0
+    for directory, dirs, files in os.walk(source, followlinks=False):
+        parent = Path(directory)
+        dirs[:] = [name for name in dirs if not name.startswith('.') and name.lower() not in PRIVATE_PARTS and not (parent / name).is_symlink()]
+        for name in sorted(files):
+            item = parent / name
+            relative = item.relative_to(source)
+            if item.is_symlink() or not public_file(relative):
+                continue
+            target = destination / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(item, target)
+            count += 1
+    return count
 
 
 def validate_output() -> None:
@@ -69,19 +86,7 @@ def prepare(api_env: str | None) -> int:
     with tempfile.TemporaryDirectory(prefix='.public-build-', dir=PROJECT) as temp:
         stage = Path(temp) / 'site'
         stage.mkdir()
-        count = 0
-        for directory, dirs, files in os.walk(source, followlinks=False):
-            parent = Path(directory)
-            dirs[:] = [name for name in dirs if not name.startswith('.') and name.lower() not in PRIVATE_PARTS and not (parent / name).is_symlink()]
-            for name in sorted(files):
-                item = parent / name
-                relative = item.relative_to(source)
-                if item.is_symlink() or not public_file(relative):
-                    continue
-                destination = stage / relative
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(item, destination)
-                count += 1
+        count = copy_public(source, stage)
         if api_url is not None:
             if not (stage / 'env.js').exists():
                 count += 1

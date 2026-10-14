@@ -1,0 +1,168 @@
+/* Демо-аккаунты: вход в один клик */
+.demo-accounts {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.demo-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.demo-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 18px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s var(--ease);
+}
+.demo-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.demo-card .avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}
+.demo-card .avatar.is-admin {
+  background: var(--sage-soft);
+  color: var(--primary);
+}
+.demo-card .avatar .icon {
+  width: 24px;
+  height: 24px;
+}
+.demo-body {
+  flex: 1;
+  min-width: 0;
+}
+.demo-body b {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.demo-body small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.demo-body code {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.demo-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.demo-go .icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+.demo-card:hover .demo-go .icon {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Аватар демо-аккаунта слегка поворачивается при наведении */
+  .demo-card .avatar {
+    transition:
+      rotate 0.3s var(--ease),
+      scale 0.3s var(--ease);
+  }
+  .demo-card:hover .avatar {
+    rotate: -8deg;
+    scale: 1.06;
+  }
+}
+
+/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → вход и регистрация */
+@media (max-width: 480px) {
+  .demo-card {
+    flex-wrap: wrap;
+  }
+  .demo-go {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.card-form {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+}
+.demo-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.demo-note .icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--primary);
+}
+.card-number {
+  position: relative;
+}
+.card-number .input {
+  padding-right: 110px;
+  letter-spacing: 0.04em;
+}
+.card-brand {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+

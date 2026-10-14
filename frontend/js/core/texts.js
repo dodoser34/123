@@ -9,7 +9,7 @@
 (() => {
   const ui = App.ui;
   const texts = App.texts;
-  const EDITS_KEY = 'kbch.v1.text-edits';
+  const EDITS_KEY = (App.storagePrefix || 'kbch.v1.') + 'text-edits';
   const defaults = (App.textDefaults = {}); // исходные тексты из файлов — для «вернуть как было»
   const ready = {};
 

@@ -106,7 +106,7 @@
       );
     }
 
-    // v6: демо-наполнение переехало в отдельную папку frontend/demo/
+    // v6: демо-наполнение переехало в отдельную папку demo/
     if (from < 6) {
       const moved = (src) => (src || '').replace(/^assets\/images\/products\//, 'demo/images/products/');
       products = products.map((p) => Object.assign(p, { images: (p.images || []).map(moved) }));

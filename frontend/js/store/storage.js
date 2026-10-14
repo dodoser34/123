@@ -1,8 +1,8 @@
 /* Хранилище на localStorage — общая «полка» для всех частей App.db.
-   ВНИМАНИЕ: это фронтенд-демо. Пароли, роли и заказы хранятся в браузере пользователя.
+   В локальном режиме пароли, роли и заказы хранятся в браузере пользователя.
    При подключении бэкенда заменяется реализация файлов store/*.js — страницы менять не нужно. */
 (() => {
-  const P = 'kbch.v1.';
+  const P = App.storagePrefix || 'kbch.v1.';
   const KEYS = {
     products: 'products',
     categories: 'categories',
@@ -13,7 +13,6 @@
     orders: 'orders',
     reviews: 'reviews',
     version: 'data-version',
-    demoIds: 'demo-ids',
     voter: 'voter-id'
   };
 
@@ -55,7 +54,7 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const today = () => new Date().toISOString().slice(0, 10);
 
-  // Простой синхронный хеш (cyrb53) — только для демо, не криптостойкий.
+  // Простой синхронный хеш (cyrb53) — для локального режима, не криптостойкий.
   function hash(str, seed = 0) {
     let h1 = 0xdeadbeef ^ seed;
     let h2 = 0x41c6ce57 ^ seed;

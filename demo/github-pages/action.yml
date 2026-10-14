@@ -1,0 +1,21 @@
+name: Publish isolated demo
+description: Build, validate photos and publish the optional demo ecosystem
+outputs:
+  page_url:
+    description: Published demo URL
+    value: ${{ steps.publish.outputs.page_url }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/configure-pages@v5
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Build demo and validate every product photo
+      shell: bash
+      run: python demo/build.py
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: demo/.public
+    - id: publish
+      uses: actions/deploy-pages@v4

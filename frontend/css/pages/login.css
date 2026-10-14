@@ -101,98 +101,6 @@
   text-align: center;
   margin-top: 20px;
 }
-/* Демо-аккаунты: вход в один клик */
-.demo-accounts {
-  display: grid;
-  gap: 10px;
-  margin-top: 26px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-}
-.demo-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.demo-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  padding: 16px 18px;
-  text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    transform 0.2s var(--ease);
-}
-.demo-card:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-2px);
-}
-.demo-card .avatar {
-  width: 52px;
-  height: 52px;
-  font-size: 20px;
-}
-.demo-card .avatar.is-admin {
-  background: var(--sage-soft);
-  color: var(--primary);
-}
-.demo-card .avatar .icon {
-  width: 24px;
-  height: 24px;
-}
-.demo-body {
-  flex: 1;
-  min-width: 0;
-}
-.demo-body b {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 21px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-.demo-body small {
-  display: block;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.4;
-  margin-top: 2px;
-}
-.demo-body code {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-  background: var(--surface-2);
-  padding: 2px 8px;
-  border-radius: 6px;
-}
-.demo-go {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--primary);
-  font-weight: 700;
-  font-size: 14px;
-  white-space: nowrap;
-}
-.demo-go .icon {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.2s;
-}
-.demo-card:hover .demo-go .icon {
-  transform: translateX(3px);
-}
 /* Анимации страницы входа: фото медленно «дышит», надпись проявляется,
    элементы формы появляются по очереди, вкладки и поля мягко реагируют на действия */
 .auth-tabs a {
@@ -287,9 +195,9 @@
     }
   }
   .is-intro .auth-box > *,
-  .is-intro .auth-swap > :not(form, .demo-accounts),
+  .is-intro .auth-swap > :not(form, .auth-extra),
   .is-intro .auth-swap form > *,
-  .is-intro .demo-accounts > * {
+  .is-intro .auth-extra > * {
     animation: auth-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
   @keyframes auth-rise {
@@ -323,13 +231,13 @@
   .is-intro .auth-swap .auth-alt {
     animation-delay: 0.5s;
   }
-  .is-intro .demo-accounts > :nth-child(1) {
+  .is-intro .auth-extra > :nth-child(1) {
     animation-delay: 0.55s;
   }
-  .is-intro .demo-accounts > :nth-child(2) {
+  .is-intro .auth-extra > :nth-child(2) {
     animation-delay: 0.62s;
   }
-  .is-intro .demo-accounts > :nth-child(n + 3) {
+  .is-intro .auth-extra > :nth-child(n + 3) {
     animation-delay: 0.7s;
   }
   .is-intro .auth-box > .auth-local {
@@ -369,16 +277,7 @@
     }
   }
 
-  /* Аватар демо-аккаунта слегка поворачивается при наведении */
-  .demo-card .avatar {
-    transition:
-      rotate 0.3s var(--ease),
-      scale 0.3s var(--ease);
-  }
-  .demo-card:hover .avatar {
-    rotate: -8deg;
-    scale: 1.06;
-  }
+
 }
 
 /* Другие способы входа (с сервером): «Забыли пароль?», «или», Google, вход по коду из письма */

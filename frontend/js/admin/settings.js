@@ -55,7 +55,7 @@
       <div class="adm-grid-2">
         <section class="adm-card adm-card-pad">
           <h3>Данные магазина</h3>
-          <p class="muted" style="margin-bottom:16px">Сейчас сайт работает в демо-режиме: товары, заказы и пользователи хранятся в браузере (localStorage). Занято: <b>${kb} КБ</b> из ~5 000 КБ. Чтобы данные были общими для всех посетителей, подключите бэкенд — для этого переписываются файлы <code>js/store/</code>, остальной сайт менять не нужно.</p>
+          <p class="muted" style="margin-bottom:16px">Данные сохраняются в этом браузере. Занято: <b>${kb} КБ</b> из ~5 000 КБ. Для общего каталога и заказов подключите API в <code>env.js</code>.</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn btn-secondary btn-sm" type="button" id="exp">${ui.icon('upload')} Экспорт JSON</button>
             <label class="btn btn-secondary btn-sm" style="cursor:pointer">${ui.icon('folder')} Импорт JSON<input type="file" id="imp" accept="application/json" hidden></label>
@@ -63,8 +63,8 @@
         </section>
         <section class="adm-card adm-card-pad">
           <h3>Сброс</h3>
-          <p class="muted" style="margin-bottom:16px">${App.seed.products ? 'Вернуть стартовые категории и демо-наполнение (товары, отзывы, демо-аккаунты, демо-заказы). Новые товары и заказы будут удалены, зарегистрированные покупатели сохранятся.' : 'Очистить товары, отзывы и заказы и вернуть стартовые категории. Зарегистрированные покупатели и администраторы сохранятся.'}</p>
-          <button class="btn btn-danger btn-sm" type="button" id="reset">${ui.icon('refresh')} ${App.seed.products ? 'Сбросить к демо-данным' : 'Очистить магазин'}</button>
+          <p class="muted" style="margin-bottom:16px">${App.extensions.resetText || 'Очистить товары, отзывы и заказы и вернуть стартовые категории. Зарегистрированные покупатели и администраторы сохранятся.'}</p>
+          <button class="btn btn-danger btn-sm" type="button" id="reset">${ui.icon('refresh')} ${App.extensions.resetLabel || 'Очистить магазин'}</button>
         </section>
       </div>`;
     }

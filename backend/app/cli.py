@@ -3,7 +3,7 @@
     python -m app.cli check                    # проверить настройки .env (секреты, администратор, оплата, почта)
     python -m app.cli hash-password            # получить bcrypt-хеш пароля администратора для ADMIN_PASSWORD_HASH
     python -m app.cli secret                   # сгенерировать случайный SECRET_KEY
-    python -m app.cli seed [--demo]            # стартовое наполнение базы (категории, демо-товары)
+    python -m app.cli seed                     # стартовые категории магазина
     python -m app.cli admin                    # создать/обновить администратора из .env сейчас
 """
 import argparse
@@ -58,7 +58,7 @@ def cmd_secret(_args) -> int:
 def cmd_seed(args) -> int:
     from .services.seed import default_frontend, seed
 
-    asyncio.run(seed(Path(args.frontend) if args.frontend else default_frontend(), args.demo))
+    asyncio.run(seed(Path(args.frontend) if args.frontend else default_frontend()))
     return 0
 
 
@@ -79,7 +79,6 @@ def main() -> None:
     sub.add_parser('admin', help='создать/обновить администратора из .env').set_defaults(fn=cmd_admin)
     p = sub.add_parser('seed', help='стартовое наполнение базы')
     p.add_argument('--frontend', default='', help='папка фронтенда (по умолчанию — рядом с backend/)')
-    p.add_argument('--demo', action='store_true', help='добавить демо-товары и отзывы')
     p.set_defaults(fn=cmd_seed)
     args = parser.parse_args()
     sys.exit(args.fn(args))

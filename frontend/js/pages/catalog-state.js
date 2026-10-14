@@ -4,7 +4,7 @@
   const { db, ui } = App;
   const SORTS = ui.t('catalog.sorts'); // названия — texts/…/catalog.js
   const FLAGS = ui.t('common.flags');
-  const VIEW_KEY = 'kbch.v1.view';
+  const VIEW_KEY = App.storage.P + 'view';
   const TEXT_PARAMS = ['cat', 'sub', 'flag', 'q', 'tag'];
   const LIST_PARAMS = ['brand', 'purpose']; // параметры-списки: brand=A,B
 

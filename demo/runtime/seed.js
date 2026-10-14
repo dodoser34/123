@@ -1,16 +1,17 @@
 /* Стартовые данные и обновления формата данных.
-   • Первый запуск: заполняет хранилище категориями (js/data/) и демо-наполнением (frontend/demo/), если оно есть.
+   • Первый запуск: заполняет хранилище категориями (js/data/) и демо-наполнением (demo/), если оно есть.
    • Обновление сайта: аккуратно дополняет уже сохранённые данные новыми полями,
      не стирая правки администратора, корзину и заказы.
-   • Папку frontend/demo удалили: демо-товары, отзывы, заказы и аккаунты убираются и из браузеров,
+   • Папку demo удалили: демо-товары, отзывы, заказы и аккаунты убираются и из браузеров,
      где они уже были сохранены. Всё, что добавил администратор и покупатели, остаётся.
    Шаги обновления данных — migrations.js. Подключается последним из store/*.js. */
 (() => {
-  const { P, KEYS, read, write, remove, emit, clone, pwHash } = App.storage;
+  const { KEYS: STORE_KEYS, read, write, remove, emit, clone, pwHash } = App.storage;
+  const KEYS = Object.assign({}, STORE_KEYS, { demoIds: 'demo-ids' });
   const db = App.db;
   const VERSION = 6;
 
-  /** Демо-наполнение из frontend/demo/data/. Если папку удалили — всё пустое. */
+  /** Демо-наполнение из demo/data/. Если папку удалили — всё пустое. */
   const DEMO = {
     products: App.seed.products || [],
     reviews: App.seed.reviews || [],
@@ -109,21 +110,6 @@
     seedAll();
     emit('reset');
   };
-
-  /** Сколько байт занимают данные магазина в памяти браузера. */
-  db.usage = function () {
-    let total = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key.startsWith(P)) total += (localStorage.getItem(key) || '').length * 2;
-    }
-    return total;
-  };
-
-  // синхронизация между вкладками
-  window.addEventListener('storage', (e) => {
-    if (e.key && e.key.startsWith(P)) emit(e.key.slice(P.length));
-  });
 
   init();
 })();

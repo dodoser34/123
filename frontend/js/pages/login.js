@@ -3,7 +3,7 @@
    «Забыли пароль?» и вход через Google; шаги с кодом показываются на месте формы.
    Вкладки «Вход» ⇄ «Регистрация» переключаются без перезагрузки: старая форма уходит в сторону, высота плавно
    перетекает, новые поля «вплывают» по очереди, по фото пробегает блик, меняется надпись.
-   Под формой входа — быстрый вход под демо-аккаунтами (frontend/demo/data/accounts.js), если папка demo есть на сайте. */
+   Дополнительные способы входа может добавить модуль конкретной сборки. */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
   const root = document.getElementById('auth-root');
@@ -42,23 +42,7 @@ document.addEventListener('app:ready', () => {
       <span class="field-error" id="err-password"></span>
     </div>`;
 
-  const demoAccounts = () =>
-    (App.seed.users || []).length
-      ? `
-      <div class="demo-accounts">
-        <p class="demo-title">${T.demo.title}</p>
-        ${App.seed.users
-          .map(
-            (u) => `
-          <button type="button" class="demo-card" data-demo="${u.id}">
-            <span class="avatar${u.role === 'admin' ? ' is-admin' : ''}">${u.role === 'admin' ? ui.icon('settings') : ui.esc(u.name.charAt(0))}</span>
-            <span class="demo-body"><b>${ui.esc(u.demo.title)}</b><small>${ui.esc(u.demo.text)}</small><code>${ui.esc(u.email)} · ${ui.esc(u.password)}</code></span>
-            <span class="demo-go">${T.demo.go} ${ui.icon('arrow-right')}</span>
-          </button>`
-          )
-          .join('')}
-      </div>`
-      : '';
+  const extras = App.extensions.auth;
 
   const GOOGLE_LOGO =
     '<svg class="google-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
@@ -98,7 +82,7 @@ document.addEventListener('app:ready', () => {
       <p class="auth-alt">${askCode ? `<button type="button" class="link-btn" data-resend>${T.resend}</button> · ` : ''}<a href="#" data-back>${T.back}</a></p>`;
   }
 
-  /** Меняющаяся часть: заголовок, форма, ссылка на другую вкладку, демо-аккаунты. */
+  /** Меняющаяся часть: заголовок, форма, ссылка на другую вкладку, дополнительные способы входа. */
   function content(m) {
     const t = MODES[m];
     const registering = m === 'register';
@@ -115,7 +99,7 @@ document.addEventListener('app:ready', () => {
       </form>
       ${otherWays(m)}
       <p class="auth-alt">${t.altQuestion} <a href="${urlFor(t.alt)}" data-mode="${t.alt}">${t.altLink}</a></p>
-      ${registering ? '' : demoAccounts()}`;
+      ${!registering && extras ? extras.content() : ''}`;
   }
 
   root.innerHTML = `
@@ -251,7 +235,7 @@ document.addEventListener('app:ready', () => {
     );
 
     // 3. элементы «вплывают» по очереди с той стороны, где стоит выбранная вкладка
-    const items = [...swap.children].flatMap((el) => (el.matches('form, .demo-accounts') ? [...el.children] : [el]));
+    const items = [...swap.children].flatMap((el) => (el.matches('form, .auth-extra') ? [...el.children] : [el]));
     items.forEach((el, i) =>
       fly(
         el,
@@ -303,13 +287,7 @@ document.addEventListener('app:ready', () => {
       const res = await send(email);
       return res && res.error ? showError(res.error) : ui.toast({ title: T.resent, icon: 'mail' });
     }
-    const demo = e.target.closest('[data-demo]');
-    if (demo) {
-      const u = App.seed.users.find((x) => x.id === demo.dataset.demo);
-      const result = await db.users.login(u.email, u.password);
-      if (result.error) return ui.toast({ title: result.error, icon: 'x' });
-      return goNext(result.user);
-    }
+    if (extras && (await extras.click(e, goNext))) return;
     const eye = e.target.closest('[data-eye]');
     if (eye) {
       const input = form().elements.password;

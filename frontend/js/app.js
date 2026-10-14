@@ -1,10 +1,10 @@
 /* Загрузчик сайта. Подключается в <head> каждой страницы одной строкой:
      <script src="js/app.js?v=21" data-page="catalog"></script>
    и по порядку подгружает нужные файлы из js/.
-   Порядок важен: настройки → данные (и демо из frontend/demo/) → хранилище → компоненты → страница → запуск.
+   Порядок важен: настройки → данные → хранилище → компоненты → страница → запуск.
    VERSION — меняйте при каждой публикации, чтобы браузеры посетителей скачали свежие файлы. */
 (function () {
-  var VERSION = '21';
+  var VERSION = '22';
   var base = document.documentElement.getAttribute('data-base') || '';
   var page = document.currentScript.getAttribute('data-page');
   window.App = window.App || {};
@@ -29,15 +29,8 @@
     true
   );
 
-  /* Демо-наполнение: товары, отзывы, демо-аккаунты и демо-заказы лежат в отдельной папке frontend/demo/.
-     Чтобы запустить магазин без демо, просто удалите папку demo — сайт продолжит работать с пустым каталогом
-     (браузер один раз сообщит, что файлов нет, — это не ошибка). Подробнее: frontend/demo/README.md. */
-  var DEMO = ['data/products.js', 'data/reviews.js', 'data/accounts.js', 'data/orders.js'];
-  // Демо (демо-товары и быстрый вход в демо-аккаунты) — только на своём компьютере и на GitHub Pages.
-  // На настоящем домене магазина демо не подключается, даже если папка demo/ осталась.
-  var host = location.hostname;
-  var DEMO_HOST =
-    location.protocol === 'file:' || host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || /\.localhost$|\.github\.io$/.test(host);
+  // Дополнительные модули задаёт конфигурация конкретной сборки в env.js.
+  var EXTRA_DATA = [];
 
   var COMMON = [
     'config.js',
@@ -47,7 +40,7 @@
     'core/icons.js',
     'components/transitions.js',
     'data/categories.js',
-    DEMO,
+    EXTRA_DATA,
     'store/storage.js',
     'store/categories.js',
     'store/products.js',
@@ -58,8 +51,7 @@
     'store/favorites.js',
     'store/orders.js',
     'store/media.js',
-    'store/migrations.js',
-    'store/seed.js',
+    'store/init.js',
     'store/remote.js',
     'core/auth-guard.js',
     'components/images.js',
@@ -98,7 +90,7 @@
     about: ['texts:about', 'pages/about.js'],
     delivery: ['texts:delivery', 'pages/delivery.js'],
     cart: ['texts:cart', 'pages/cart.js'],
-    checkout: ['texts:checkout', 'components/payment-info.js', 'pages/checkout-payment.js', 'pages/checkout.js'],
+    checkout: ['texts:checkout', 'components/payment-info.js', 'pages/checkout.js'],
     favorites: ['texts:favorites', 'pages/favorites.js'],
     login: ['texts:login', 'pages/login.js'],
     account: ['texts:account', 'texts:checkout', 'components/payment-info.js', 'pages/account-views.js', 'pages/account.js'],
@@ -135,18 +127,19 @@
   };
 
   /* Сервер (бэкенд). Адрес API задаётся в frontend/env.js (KBCH_API_URL):
-     пусто — демо-режим, всё хранится в браузере; '/api' или https://… — данные берутся с сервера.
-     С сервером демо-файлы не подключаются: товары и отзывы лежат в базе. Без сервера — только на DEMO_HOST. */
+     пусто — локальное хранилище; '/api' или https://… — данные берутся с сервера. */
   function scriptsFor(api) {
     var files = [];
-    COMMON.concat(PAGES[page] || [], ['core/start.js']).forEach(function (src) {
-      if (src === DEMO) {
-        if (!api && DEMO_HOST)
-          DEMO.forEach(function (d) {
-            files.push('demo/' + d);
-          });
+    var extra = App.extensions;
+    var selected = PAGES[page] || [];
+    var pageTexts = selected.filter(function (src) { return src.indexOf('texts:') === 0; });
+    var pageCode = selected.filter(function (src) { return src.indexOf('texts:') !== 0; });
+    var modules = COMMON.concat(extra.runtime || [], pageTexts, (extra.pages || {})[page] || [], pageCode, ['core/start.js']);
+    modules.forEach(function (src) {
+      if (src === EXTRA_DATA) {
+        if (!api) (extra.data || []).forEach(function (file) { files.push(file); });
       } else if (src.indexOf('texts:') === 0) files.push('texts/' + LANG + '/' + src.slice(6) + '.js');
-      else files.push('js/' + src);
+      else files.push(src.indexOf('@') === 0 ? src.slice(1) : 'js/' + src);
     });
     return files;
   }
@@ -174,6 +167,13 @@
   addScript('env.js', function () {
     var api = String(window.KBCH_API_URL || '').replace(/\/+$/, '');
     App.apiUrl = api;
+    App.storagePrefix = window.KBCH_STORAGE_PREFIX || 'kbch.v1.';
+    App.extensions = api ? {} : window.KBCH_EXTENSIONS || {};
+    (App.extensions.styles || []).forEach(function (src) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet'; link.href = base + src + '?v=' + VERSION;
+      document.head.appendChild(link);
+    });
     if (!api)
       return scriptsFor('').forEach(function (f) {
         addScript(f);

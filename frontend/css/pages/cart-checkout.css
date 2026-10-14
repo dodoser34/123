@@ -231,7 +231,7 @@
   margin-top: 14px;
   text-align: center;
 }
-/* Оформление заказа: адрес, итог, демо-оплата картой */
+/* Оформление заказа: адрес и итог */
 .checkout-address {
   margin-top: 18px;
 }
@@ -264,57 +264,6 @@
 .success .muted:not(.lead) {
   margin-bottom: 28px;
 }
-.card-form {
-  margin-top: 18px;
-  padding: 18px;
-  border-radius: 14px;
-  background: var(--bg);
-  border: 1px dashed var(--border);
-}
-.demo-note {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-.demo-note .icon {
-  width: 18px;
-  height: 18px;
-  flex: none;
-  color: var(--primary);
-}
-.card-number {
-  position: relative;
-}
-.card-number .input {
-  padding-right: 110px;
-  letter-spacing: 0.04em;
-}
-.card-brand {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--primary);
-}
-.spinner {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* Реквизиты перевода на Kaspi (components/payment-info.js) */
 .pay-info {
   margin: 20px auto 0;

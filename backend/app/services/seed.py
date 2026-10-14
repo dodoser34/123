@@ -1,21 +1,11 @@
-"""Стартовое наполнение базы из файлов фронтенда: категории (frontend/js/data/categories.js)
-и, по желанию, демо-товары с отзывами (frontend/demo/data/*.js).
-
-    python -m app.cli seed                 # только категории
-    python -m app.cli seed --demo          # категории + демо-товары и отзывы
-    python -m app.cli seed --frontend ../frontend --demo
-
-Уже существующие категории и товары не перезаписываются — команду можно запускать повторно.
-"""
+"""Стартовые категории магазина из frontend/js/data/categories.js. Примерные товары не импортируются."""
 import json
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy import select
 
-from ..api.serializers import PRODUCT_COLUMNS
-from ..db.models import Category, Product, Review
+from ..db.models import Category
 from ..db.session import SessionLocal
 
 PROJECT_DIR = Path(__file__).resolve().parents[3]
@@ -70,7 +60,7 @@ def js_to_json(js: str) -> str:
     return text
 
 
-async def seed(frontend: Path, demo: bool) -> None:
+async def seed(frontend: Path) -> None:
     async with SessionLocal() as db:
         cats = read_js_array(frontend / 'js/data/categories.js', 'categories')
         added = 0
@@ -79,37 +69,4 @@ async def seed(frontend: Path, demo: bool) -> None:
                 db.add(Category(id=c['id'], name=c['name'], icon=c.get('icon', 'leaf'), position=i, subs=c.get('subs', [])))
                 added += 1
         print(f'Категории: добавлено {added} из {len(cats)}')
-        if demo:
-            products = read_js_array(frontend / 'demo/data/products.js', 'products')
-            added = 0
-            for p in products:
-                if await db.get(Product, p['id']) or (await db.execute(select(Product).where(Product.slug == p['slug']))).scalars().first():
-                    continue
-                db.add(
-                    Product(
-                        id=p['id'], slug=p['slug'], status=p.get('status', 'published'), category=p.get('category', ''), sub=p.get('sub', ''),
-                        name=p['name'], brand=p.get('brand', ''), price=int(p.get('price') or 0), old_price=p.get('oldPrice'),
-                        stock=int(p.get('stock') or 0), data={k: v for k, v in p.items() if k not in PRODUCT_COLUMNS},
-                        created_at=datetime.fromisoformat(p['createdAt']).replace(tzinfo=timezone.utc) if p.get('createdAt') else None,
-                    )
-                )
-                added += 1
-            print(f'Товары: добавлено {added} из {len(products)}')
-            await db.flush()
-            reviews = read_js_array(frontend / 'demo/data/reviews.js', 'reviews')
-            added = 0
-            for r in reviews:
-                if await db.get(Review, r['id']) or not await db.get(Product, r['productId']):
-                    continue
-                db.add(
-                    Review(
-                        id=r['id'], product_id=r['productId'], name=r.get('name', 'Покупатель')[:40], rating=int(r['rating']),
-                        title=r.get('title', ''), text=r['text'], pros=r.get('pros', ''), cons=r.get('cons', ''),
-                        recommend=r.get('recommend', True), period=r.get('period', ''), helpful=int(r.get('helpful', 0)),
-                        status=r.get('status', 'published'), verified=bool(r.get('verified')), reply=r.get('reply'),
-                        created_at=datetime.fromisoformat(r['date']).replace(tzinfo=timezone.utc) if r.get('date') else None,
-                    )
-                )
-                added += 1
-            print(f'Отзывы: добавлено {added} из {len(reviews)}')
         await db.commit()

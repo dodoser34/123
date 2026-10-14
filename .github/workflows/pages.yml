@@ -1,14 +1,10 @@
-# Публикация сайта на GitHub Pages.
-# При каждом push публикуются только публичные файлы из подготовленной папки .public/.
-# Если в репозитории задана переменная API_URL (Settings → Secrets and variables → Actions → Variables),
-# сайт работает с сервером по этому адресу; если нет — в демо-режиме (всё хранится в браузере).
-# Один раз включите в репозитории: Settings → Pages → Source: «GitHub Actions».
-name: Публикация на GitHub Pages
+# GitHub discovers workflows only here; implementation lives in demo/github-pages/.
+name: GitHub Pages — demo
 
 on:
   push:
     branches: [main]
-    paths: ['frontend/**', 'deploy/prepare_frontend.py', '.github/workflows/pages.yml']
+    paths: ['frontend/**', 'demo/**', 'deploy/prepare_frontend.py', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -21,23 +17,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  demo:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.publish.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Подготовить только публичные файлы сайта
-        env:
-          API_URL: ${{ vars.API_URL }}
-        run: python deploy/prepare_frontend.py --api-url-from-env API_URL
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .public
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - id: available
+        run: if test -f demo/github-pages/action.yml; then echo "enabled=true" >> "$GITHUB_OUTPUT"; fi
+      - id: publish
+        if: steps.available.outputs.enabled == 'true'
+        uses: ./demo/github-pages

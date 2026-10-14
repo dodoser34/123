@@ -1,0 +1,5 @@
+.public/
+.public-build.json
+.public-build-*/
+__pycache__/
+.pytest_cache/

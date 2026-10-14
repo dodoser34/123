@@ -3,9 +3,9 @@ name: Тесты сайта
 
 on:
   push:
-    paths: ['frontend/**', 'tests/**', 'deploy/prepare_frontend.py', 'pytest.ini', '.github/workflows/checks.yml']
+    paths: ['frontend/**', 'tests/**', 'demo/**', 'deploy/prepare_frontend.py', 'pytest.ini', '.github/workflows/checks.yml']
   pull_request:
-    paths: ['frontend/**', 'tests/**', 'deploy/prepare_frontend.py']
+    paths: ['frontend/**', 'tests/**', 'demo/**', 'deploy/prepare_frontend.py']
 
 jobs:
   frontend:
@@ -30,5 +30,7 @@ jobs:
       - run: pip install pytest==8.3.4 pytest-asyncio==0.24.0
       - name: Тесты сборки .public/
         run: python -m pytest -q
+      - name: Optional extension tests
+        run: if test -d demo/tests; then python -m pytest demo/tests -q; fi
       - name: Сборка .public/ проходит
         run: python deploy/prepare_frontend.py

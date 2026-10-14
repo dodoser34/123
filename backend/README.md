@@ -26,7 +26,7 @@ python -m pytest                                    # тесты: функции
 python -m app.cli check            # что настроено и чего не хватает
 python -m app.cli secret           # сгенерировать SECRET_KEY
 python -m app.cli hash-password    # хеш пароля администратора → ADMIN_PASSWORD_HASH
-python -m app.cli seed [--demo]    # стартовое наполнение базы
+python -m app.cli seed            # стартовые категории магазина
 python -m app.cli admin            # применить администратора из .env сейчас
 ```
 

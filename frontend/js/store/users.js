@@ -92,7 +92,7 @@
       emit('users');
     },
 
-    /** Удалить свой аккаунт (демо-режим): пароль подтверждает действие. */
+    /** Удалить свой локальный аккаунт: пароль подтверждает действие. */
     deleteAccount(password) {
       const me = db.session.user();
       const user = me && db.users.get(me.id);

@@ -3,6 +3,22 @@
    в заказ записываются только последние 4 цифры. Для настоящих платежей нужен платёжный сервис и сервер. */
 (() => {
   const { ui } = App;
+  Object.assign(App.texts.checkout.payment, {
+    card: { title: 'Картой онлайн', text: 'Visa, Mastercard и другие карты (демо-оплата)' },
+    cardOrderTitle: 'Картой онлайн (демо), •••• {last4}',
+    demoNote:
+      'Демо-оплата: деньги не списываются, данные карты не сохраняются. Для проверки подойдёт номер 4242 4242 4242 4242, любой будущий срок и любой CVC.',
+    cardNumber: 'Номер карты',
+    cardExp: 'Срок действия',
+    cardExpPlaceholder: 'ММ/ГГ',
+    cardDefault: 'Карта',
+    errorNumber: 'Проверьте номер карты',
+    errorExp: 'Срок указан неверно или карта просрочена',
+    errorCvc: '3 цифры с обратной стороны карты',
+    processing: 'Проводим оплату…'
+  });
+  App.extensions.paymentMethods = { card: App.texts.checkout.payment.card };
+  App.texts.checkout.done.paidCard = 'Оплачено картой {brand} •••• {last4} (демо-оплата).';
   const T = ui.t('checkout.payment'); // тексты — texts/…/checkout.js
 
   const digits = (v) => String(v || '').replace(/\D/g, '');

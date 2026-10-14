@@ -67,15 +67,15 @@ def check_settings() -> None:
 
 
 async def prepare_dev_database() -> None:
-    """Локальный запуск без настроек: таблицы в SQLite-файле создаются сами, пустая база заполняется демо-товарами.
+    """Локальный запуск: таблицы в SQLite-файле создаются сами, добавляются только категории.
     На сервере (PostgreSQL) схему создают миграции: alembic upgrade head."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     if await is_empty():
         try:
-            await seed(default_frontend(), demo=True)
+            await seed(default_frontend())
         except (OSError, SystemExit, ValueError):
-            log.warning('Демо-наполнение пропущено: не найдена папка фронтенда')
+            log.warning('Начальные категории пропущены: не найдена папка фронтенда')
 
 
 @asynccontextmanager

@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     db_max_overflow: int = 10
     db_statement_timeout_ms: int = 15000  # долгий запрос прерывается — защита от «зависания» базы
     db_ssl: bool = False  # шифровать соединение с базой (внешние облачные базы)
-    auto_create_tables: bool = True  # только разработка на SQLite: создать таблицы и демо-наполнение без миграций
+    auto_create_tables: bool = True  # только разработка на SQLite: создать таблицы и категории без миграций
 
     # ---------- Администратор (один). Создаётся/обновляется при каждом запуске ----------
     admin_email: str = ''

@@ -1,9 +1,9 @@
 /* Оформление заказа: контакты, доставка, оплата, проверка полей.
-   Демо-режим: демо-оплата картой (поля карты — checkout-payment.js) или наличными.
+   В локальном режиме способы оплаты могут дополняться модулем конкретной сборки.
    С сервером: способы оплаты приходят с сервера (перевод на Kaspi, наличные, Kaspi Pay), сумму считает сервер. */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
-  const payment = App.checkoutPayment;
+  const payment = App.checkoutPayment || { format: () => false };
   const root = document.getElementById('checkout-root');
   const user = db.session.user();
   const lastOrder = user ? db.orders.forUser(user.id)[0] : null;
@@ -18,7 +18,7 @@ document.addEventListener('app:ready', () => {
   };
   const PAYMENT = App.remote.enabled
     ? Object.fromEntries(db.orders.paymentMethods().map((m) => [m.code, T.payment[m.code] || { title: m.title, text: m.text }]))
-    : { card: T.payment.card, cash: T.payment.cash };
+    : Object.assign({ cash: T.payment.cash }, App.extensions.paymentMethods || {});
   form.payment = Object.keys(PAYMENT)[0] || '';
 
   function success(order) {

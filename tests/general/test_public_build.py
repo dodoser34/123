@@ -32,6 +32,11 @@ def test_reject_private_and_test_files(build, name):
     assert not build.public_file(Path(name))
 
 
+@pytest.mark.parametrize('name', ['demo/data/products.js', 'demo/images/products/a.jpg', 'demo/runtime/auth.js', 'demo/config.json'])
+def test_production_never_publishes_optional_extensions(build, name):
+    assert not build.public_file(Path(name))
+
+
 @pytest.mark.parametrize('url', ['https://user:pass@example.com/api', 'https://example.com/api?key=secret', 'https://example.com/api#token', 'ftp://example.com/api', '//example.com/api', 'relative/api'])
 def test_invalid_api_url_leaves_existing_output_untouched(build, monkeypatch, url):
     build.OUTPUT.mkdir()
