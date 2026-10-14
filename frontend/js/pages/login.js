@@ -49,7 +49,7 @@ document.addEventListener('app:ready', () => {
 
   /** Другие способы входа — только когда сайт работает с сервером. */
   function otherWays(m) {
-    if (!App.remote.enabled) return '';
+    if (!App.remote.enabled) return extras && extras.otherWays ? extras.otherWays(m) : '';
     const google = db.users.googleUrl(next);
     return `
       ${m === 'login' ? `<p class="auth-forgot"><a href="#" data-step="reset">${T.forgot}</a></p>` : ''}

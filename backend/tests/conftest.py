@@ -51,7 +51,7 @@ emails.send_code = _fake_send
 auth_router.send_code = _fake_send
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope='function')
 async def client():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -59,8 +59,12 @@ async def client():
     SENT.clear()
     limiter.reset()
     await ensure_admin()
-    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
-        yield c
+    try:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
+            yield c
+    finally:
+        # asyncpg connections belong to the current loop; close the pool before pytest closes it.
+        await engine.dispose()
 
 
 async def login(client, email='owner@example.com', password=ADMIN_PASSWORD) -> dict:

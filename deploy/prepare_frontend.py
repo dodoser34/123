@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
+import time
 from urllib.parse import urlsplit
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -55,6 +56,20 @@ def copy_public(source: Path, destination: Path) -> int:
     return count
 
 
+def replace_directory(source: Path, destination: Path) -> None:
+    """Windows scanners can temporarily lock freshly copied files during a directory rename."""
+    for attempt in range(5):
+        if destination.is_symlink():
+            raise ValueError('Unsafe public output path')
+        try:
+            source.replace(destination)
+            return
+        except PermissionError as error:
+            if os.name != 'nt' or error.winerror not in (5, 32, 33) or attempt == 4:
+                raise
+            time.sleep(0.1 * 2 ** attempt)
+
+
 def validate_output() -> None:
     # Only this reserved project directory can be replaced. Never follow symlinks.
     if OUTPUT.is_symlink() or OUTPUT.resolve() != PROJECT / '.public' or OWNER.is_symlink():
@@ -94,7 +109,7 @@ def prepare(api_env: str | None) -> int:
         validate_output()
         if OUTPUT.exists():
             shutil.rmtree(OUTPUT)  # resolved, reserved, non-symlink, ownership checked above
-        stage.replace(OUTPUT)
+        replace_directory(stage, OUTPUT)
         OWNER.write_text(json.dumps(IDENTITY) + '\n', encoding='utf-8')
     return count
 

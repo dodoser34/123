@@ -1,4 +1,6 @@
 /* Демо-аккаунты: вход в один клик */
+.demo-google-mark { font-size: 22px; font-weight: 800; color: #4285f4; }
+.demo-auth-note { font-size: 12px; margin-top: 12px; text-align: center; }
 .demo-accounts {
   display: grid;
   gap: 10px;

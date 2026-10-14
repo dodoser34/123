@@ -2,8 +2,8 @@
   "storagePrefix": "kbch.demo.v1.",
   "extensions": {
     "data": ["demo/data/products.js", "demo/data/reviews.js", "demo/data/accounts.js", "demo/data/orders.js"],
-    "runtime": ["@demo/runtime/migrations.js", "@demo/runtime/seed.js", "@demo/runtime/auth.js"],
-    "pages": {"checkout": ["@demo/runtime/checkout-payment.js"], "delivery": ["@demo/runtime/delivery.js"]},
+    "runtime": ["@demo/runtime/migrations.js", "@demo/runtime/seed.js"],
+    "pages": {"login": ["@demo/runtime/auth.js"], "checkout": ["@demo/runtime/checkout-payment.js"], "delivery": ["@demo/runtime/delivery.js"]},
     "styles": ["demo/css/ui.css"]
   }
 }

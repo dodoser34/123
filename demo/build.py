@@ -96,7 +96,7 @@ def build() -> dict:
         validate_output()
         if OUTPUT.exists():
             shutil.rmtree(OUTPUT)  # reserved, resolved and owned directory checked above
-        stage.replace(OUTPUT)
+        helper.replace_directory(stage, OUTPUT)
         OWNER.write_text(json.dumps(IDENTITY) + '\n', encoding='utf-8')
     return {'files': count, 'productPhotos': photos, 'bytes': size}
 
