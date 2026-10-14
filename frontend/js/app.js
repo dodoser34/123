@@ -4,7 +4,7 @@
    Порядок важен: настройки → данные → хранилище → компоненты → страница → запуск.
    VERSION — меняйте при каждой публикации, чтобы браузеры посетителей скачали свежие файлы. */
 (function () {
-  var VERSION = '22';
+  var VERSION = '23';
   var base = document.documentElement.getAttribute('data-base') || '';
   var page = document.currentScript.getAttribute('data-page');
   window.App = window.App || {};
