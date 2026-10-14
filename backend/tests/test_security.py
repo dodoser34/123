@@ -384,6 +384,8 @@ def test_production_accepts_good_settings():
         public_api_url='https://shop.kz/api',
         cors_origins='https://shop.kz',
         email_backend='smtp',
+        smtp_user='owner@gmail.com',
+        smtp_password='test-application-password',
     )
     assert s.problems() == []
     assert s.database_url.get_secret_value().startswith('postgresql+asyncpg://')

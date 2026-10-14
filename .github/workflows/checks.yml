@@ -18,7 +18,7 @@ jobs:
       - name: Синтаксис всех JS-файлов
         run: find frontend -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Тесты логики сайта
-        run: node --test tests/frontend/utils.test.cjs tests/frontend/store.test.cjs tests/frontend/catalog.test.cjs
+        run: node --test tests/frontend/*.test.cjs
 
   public-build:
     runs-on: ubuntu-latest

@@ -40,7 +40,8 @@ async def create_order(data: OrderIn, db: AsyncSession = Depends(get_db), user: 
     if data.delivery != 'pickup' and (not data.city or not data.address):
         raise HTTPException(422, 'Укажите город и адрес доставки')
     items, subtotal = [], 0
-    for line in data.items:
+    # Единый порядок блокировок исключает взаимную блокировку двух корзин с разным порядком товаров.
+    for line in sorted(data.items, key=lambda item: item.id):
         p = await db.get(Product, line.id, with_for_update=True)
         if not p or p.status == 'hidden' or p.stock <= 0:
             continue  # закончился или скрыт — в заказ не попадает, как и в корзине на сайте
@@ -89,16 +90,25 @@ async def all_orders(db: AsyncSession = Depends(get_db), _: User = Depends(admin
 
 @router.patch('/admin/orders/{order_id}', summary='Сменить статус заказа или оплаты')
 async def patch_order(order_id: str, data: OrderPatchIn, db: AsyncSession = Depends(get_db), _: User = Depends(admin_user)):
-    o = await first(db, select(Order).where(Order.id == order_id))
+    o = await first(db, select(Order).where(Order.id == order_id).with_for_update())
     if not o:
         raise HTTPException(404, 'Заказ не найден')
     if data.status and data.status != o.status:
         # отмена возвращает товары на склад, возврат из отмены — снова списывает
         sign = 1 if data.status == 'cancelled' else -1 if o.status == 'cancelled' else 0
+        quantities = {}
         for item in o.items if sign else []:
-            p = await db.get(Product, item['id'])
+            quantities[item['id']] = quantities.get(item['id'], 0) + item['qty']
+        products = []
+        for product_id, qty in sorted(quantities.items()):
+            p = await db.get(Product, product_id, with_for_update=True)
+            if sign < 0 and (not p or p.stock < qty):
+                await db.rollback()
+                raise HTTPException(409, 'Недостаточно товара для восстановления отменённого заказа')
             if p:
-                p.stock = max(0, p.stock + sign * item['qty'])
+                products.append((p, qty))
+        for p, qty in products:
+            p.stock += sign * qty
         o.status = data.status
     if data.paymentStatus:
         if data.paymentStatus == 'paid':
@@ -140,7 +150,7 @@ async def kaspi_webhook(request: Request, x_signature: str = Header(''), db: Asy
     if o.payment_status in ('paid', 'refunded'):
         return {'status': 'ok'}  # повтор уведомления
     if status == 'paid':
-        if amount is not None and amount != o.total:
+        if amount is None or amount != o.total:
             log.error('Kaspi webhook: сумма %s не совпадает с заказом №%s (%s)', amount, o.number, o.total)
             raise HTTPException(409, 'Сумма не совпадает с заказом')
         mark_paid(o)

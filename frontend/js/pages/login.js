@@ -389,7 +389,7 @@ document.addEventListener('app:ready', () => {
     history.replaceState(null, '', location.pathname + location.search);
     const user = db.session.user();
     const target = back.get('next') || '';
-    if (back.has('token') && user) {
+    if (back.has('token') && App.oauthReturn && user) {
       location.href =
         /^((pages|admin)\/)?[\w-]+\.html([?#][^:]*)?$/.test(target) && !/login\.html/.test(target)
           ? ui.base + target

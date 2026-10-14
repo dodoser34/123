@@ -178,11 +178,20 @@
       return scriptsFor('').forEach(function (f) {
         addScript(f);
       });
-    // вход через Google возвращает на страницу входа с #token=… — сохраняем токен до загрузки данных
-    var m = /[#&]token=([^&]+)/.exec(location.hash);
-    if (m) {
+    // Ответ Google принимаем один раз, только на странице входа и в начавшей вход вкладке.
+    // Сам по себе токен в ссылке не должен менять аккаунт посетителя.
+    var oauth = new URLSearchParams(location.hash.slice(1));
+    App.oauthReturn = false;
+    if (page === 'login' && (oauth.has('token') || oauth.has('error'))) {
       try {
-        localStorage.setItem('kbch.v1.token', decodeURIComponent(m[1]));
+        var pending = JSON.parse(sessionStorage.getItem('kbch.oauth.state') || 'null');
+        sessionStorage.removeItem('kbch.oauth.state');
+        var age = pending ? Date.now() - pending.createdAt : -1;
+        if (pending && age >= 0 && age <= 600000 && /^[A-Za-z0-9_-]{43}$/.test(pending.value) &&
+            oauth.get('login_state') === pending.value && /^[A-Za-z0-9_-]{43}$/.test(oauth.get('token') || '')) {
+          localStorage.setItem('kbch.v1.token', oauth.get('token'));
+          App.oauthReturn = true;
+        }
       } catch (e) {}
     }
     var boot = (App.boot = { ok: false, error: '' });

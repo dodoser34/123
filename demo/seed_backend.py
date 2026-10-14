@@ -1,8 +1,11 @@
 """Необязательный импорт примеров только в локальную БД: python demo/seed_backend.py.
 Существующие товары не перезаписываются; production запрещён.
+Фото примеров копируются в папку загрузок сервера (backend/media/products/demo/) и получают адреса /media/… —
+так же, как фото, загруженные из админки, поэтому основной сайт с API показывает их без папки demo.
 """
 import json
 import re
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
@@ -11,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'backend'))
 
 from sqlalchemy import select
 
+from app.api.routers.catalog import media_public_url
 from app.api.serializers import PRODUCT_COLUMNS
 from app.db.models import Category, Product, Review
 from app.db.session import SessionLocal
@@ -67,6 +71,30 @@ def js_to_json(js: str) -> str:
     return text
 
 
+DEMO_IMAGES = 'demo/images/products/'
+
+
+def local_images(value):
+    """Заменить пути demo/images/products/… на копии в папке загрузок сервера (во вложенных полях тоже)."""
+    from app.core.config import get_settings
+
+    if isinstance(value, str) and value.startswith(DEMO_IMAGES):
+        source = PROJECT_DIR / value
+        if not source.is_file():
+            return value
+        relative = 'products/demo/' + value[len(DEMO_IMAGES):]
+        target = Path(get_settings().media_dir) / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.exists():
+            shutil.copyfile(source, target)
+        return media_public_url(relative)
+    if isinstance(value, list):
+        return [local_images(v) for v in value]
+    if isinstance(value, dict):
+        return {k: local_images(v) for k, v in value.items()}
+    return value
+
+
 async def seed(frontend: Path, demo: bool) -> None:
     from app.core.config import get_settings
     if get_settings().is_production:
@@ -83,6 +111,7 @@ async def seed(frontend: Path, demo: bool) -> None:
             products = read_js_array(PROJECT_DIR / 'demo/data/products.js', 'products')
             added = 0
             for p in products:
+                p = local_images(p)
                 if await db.get(Product, p['id']) or (await db.execute(select(Product).where(Product.slug == p['slug']))).scalars().first():
                     continue
                 db.add(

@@ -138,8 +138,15 @@
     loginWithCode: (email, code) => safe(api.post('/auth/code/verify', { email, code }).then(afterLogin)),
     forgot: (email) => safe(api.post('/auth/password/forgot', { email })),
     resetPassword: (email, code, password) => safe(api.post('/auth/password/reset', { email, code, password }).then(afterLogin)),
-    googleUrl: (next) =>
-      App.boot && App.boot.data && App.boot.data.config.google ? `${API}/auth/google/login?next=${encodeURIComponent(next || '')}` : '',
+    googleUrl: (next) => {
+      if (!(App.boot && App.boot.data && App.boot.data.config.google)) return '';
+      try {
+        const bytes = crypto.getRandomValues(new Uint8Array(32));
+        const value = btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        sessionStorage.setItem('kbch.oauth.state', JSON.stringify({ value, createdAt: Date.now() }));
+        return `${API}/auth/google/login?next=${encodeURIComponent(next || '')}&login_state=${value}`;
+      } catch (e) { return ''; }
+    },
 
     async update(id, patch) {
       const me = db.session.user();

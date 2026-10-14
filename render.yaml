@@ -1,11 +1,15 @@
 # Render Blueprint (render.com → New → Blueprint → выбрать этот репозиторий).
-# Создаёт: базу PostgreSQL, API (FastAPI в Docker) и сайт (статические файлы frontend/).
+# Production: ПЛАТНЫЕ PostgreSQL, API и постоянный диск фото + статический сайт.
+# Ресурсы создаются только после подтверждения Blueprint в панели Render.
 # После создания заполните переменные с sync: false в панели Render (Environment) — они не хранятся в git.
 # Подробно — docs/11-Бэкенд-и-деплой.md.
 
 databases:
   - name: kbch-db
-    plan: free
+    plan: 0.1c-256mb
+    diskSizeGB: 5
+    postgresMajorVersion: '16'
+    ipAllowList: [] # база доступна API во внутренней сети Render
     databaseName: kbch
     user: kbch
 
@@ -14,7 +18,11 @@ services:
     name: kbch-api
     runtime: docker
     rootDir: backend
-    plan: free
+    plan: 0.5c-512mb
+    disk:
+      name: kbch-media
+      mountPath: /app/media
+      sizeGB: 1
     healthCheckPath: /api/health
     envVars:
       - key: ENVIRONMENT
@@ -27,6 +35,8 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: '1'
+      - key: MEDIA_DIR
+        value: /app/media
       - key: TRUST_PROXY # IP посетителя — из заголовка прокси Render (нужно для ограничения попыток входа)
         value: 'true'
       # адреса: подставьте свои после первого деплоя (https://kbch-site.onrender.com, https://kbch-api.onrender.com/api)

@@ -1,5 +1,6 @@
 # Бэкенд K-Beauty | C-Health — зависимости для запуска (pip install -r requirements.txt)
-fastapi==0.115.6
+fastapi==0.143.1
+starlette==1.8.0  # исправления Range/FileResponse DoS; пин проверен полным API-набором
 uvicorn[standard]==0.32.1
 gunicorn==23.0.0
 SQLAlchemy[asyncio]==2.0.36

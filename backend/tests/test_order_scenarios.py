@@ -126,3 +126,54 @@ async def test_failed_payment_start_rolls_back_entire_checkout(client, monkeypat
     async with SessionLocal() as db:
         assert (await db.get(Product, p['id'])).stock == 10
         assert (await db.scalars(select(Order))).all() == []
+
+
+async def test_cancelled_order_cannot_reopen_after_stock_is_sold(client):
+    admin, buyer, p = await setup_shop(client, stock=2)
+    original = (await client.post('/api/orders', json=checkout(p['id']), headers=buyer)).json()
+    url = '/api/admin/orders/' + original['id']
+    assert (await client.patch(url, json={'status': 'cancelled'}, headers=admin)).status_code == 200
+    assert (await client.post('/api/orders', json=checkout(p['id']), headers=buyer)).status_code == 201
+    response = await client.patch(url, json={'status': 'processing', 'paymentStatus': 'paid'}, headers=admin)
+    assert response.status_code == 409
+    async with SessionLocal() as db:
+        assert (await db.get(Product, p['id'])).stock == 0
+        saved = await db.scalar(select(Order).where(Order.id == original['id']))
+        assert saved.status == 'cancelled' and saved.payment_status != 'paid'
+
+
+async def test_reopen_checks_combined_quantity_of_duplicate_product_lines(client):
+    admin, buyer, p = await setup_shop(client, stock=3)
+    data = checkout(p['id'], items=[{'id': p['id'], 'qty': 2}, {'id': p['id'], 'qty': 1}])
+    original = (await client.post('/api/orders', json=data, headers=buyer)).json()
+    url = '/api/admin/orders/' + original['id']
+    assert (await client.patch(url, json={'status': 'cancelled'}, headers=admin)).status_code == 200
+    assert (await client.post('/api/orders', json=checkout(p['id'], items=[{'id': p['id'], 'qty': 1}]), headers=buyer)).status_code == 201
+    assert (await client.patch(url, json={'status': 'processing'}, headers=admin)).status_code == 409
+    async with SessionLocal() as db:
+        assert (await db.get(Product, p['id'])).stock == 2
+
+
+async def test_reopen_is_atomic_when_one_product_has_insufficient_stock(client):
+    admin, buyer, p = await setup_shop(client, stock=2)
+    q = (await client.post('/api/products', json={'name': 'Second', 'price': 1000, 'stock': 2}, headers=admin)).json()
+    data = checkout(p['id'], items=[{'id': p['id'], 'qty': 2}, {'id': q['id'], 'qty': 2}])
+    original = (await client.post('/api/orders', json=data, headers=buyer)).json()
+    url = '/api/admin/orders/' + original['id']
+    assert (await client.patch(url, json={'status': 'cancelled'}, headers=admin)).status_code == 200
+    assert (await client.post('/api/orders', json=checkout(q['id']), headers=buyer)).status_code == 201
+    assert (await client.patch(url, json={'status': 'processing'}, headers=admin)).status_code == 409
+    async with SessionLocal() as db:
+        assert (await db.get(Product, p['id'])).stock == 2
+        assert (await db.get(Product, q['id'])).stock == 0
+
+
+async def test_reopen_rejects_deleted_product(client):
+    admin, buyer, p = await setup_shop(client)
+    original = (await client.post('/api/orders', json=checkout(p['id']), headers=buyer)).json()
+    url = '/api/admin/orders/' + original['id']
+    assert (await client.patch(url, json={'status': 'cancelled'}, headers=admin)).status_code == 200
+    assert (await client.delete('/api/products/' + p['id'], headers=admin)).status_code == 200
+    assert (await client.patch(url, json={'status': 'processing'}, headers=admin)).status_code == 409
+    saved = (await client.get('/api/orders/my', headers=buyer)).json()[0]
+    assert saved['status'] == 'cancelled'

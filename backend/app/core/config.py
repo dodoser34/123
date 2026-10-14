@@ -192,6 +192,18 @@ class Settings(BaseSettings):
                 out.append('FRONTEND_URL / PUBLIC_API_URL: укажите адреса сайта, а не localhost')
             if self.email_backend != 'smtp':
                 out.append('EMAIL_BACKEND=smtp: иначе покупатели не получат коды подтверждения')
+            else:
+                if not self.smtp_host.strip():
+                    out.append('SMTP_HOST: укажите сервер отправки писем')
+                if not 1 <= self.smtp_port <= 65535:
+                    out.append('SMTP_PORT: нужен порт от 1 до 65535')
+                if '@' not in (self.smtp_from or self.smtp_user):
+                    out.append('SMTP_FROM / SMTP_USER: укажите адрес отправителя')
+                password = self.smtp_password.get_secret_value()
+                if bool(self.smtp_user.strip()) != bool(password):
+                    out.append('SMTP_USER / SMTP_PASSWORD: укажите и логин, и пароль SMTP')
+                elif self.smtp_host.lower() == 'smtp.gmail.com' and not self.smtp_user.strip():
+                    out.append('SMTP_USER / SMTP_PASSWORD: для Gmail нужны почта и пароль приложения')
             from ..services.payments import METHODS  # здесь, а не наверху: оплата сама читает настройки
 
             for code in self.payment_list:

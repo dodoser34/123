@@ -11,10 +11,11 @@ import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .api.routers import auth, catalog, orders, reviews, site
@@ -22,7 +23,7 @@ from .core.config import get_settings
 from .core.middleware import install as install_security
 from .core.security import hash_password, verify_password
 from .db.models import User
-from .db.session import Base, SessionLocal, engine
+from .db.session import Base, SessionLocal, engine, get_db
 from .services.seed import default_frontend, is_empty, seed
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
@@ -88,7 +89,12 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
         await ensure_admin()
     except Exception:  # noqa: BLE001 — таблиц ещё нет: сначала alembic upgrade head
         log.exception('Не удалось создать администратора. Выполнены ли миграции (alembic upgrade head)?')
-    yield
+        if s.is_production:
+            raise RuntimeError('Не удалось подготовить базу данных и администратора')
+    try:
+        yield
+    finally:
+        await engine.dispose()
 
 
 def create_app() -> FastAPI:
@@ -118,7 +124,12 @@ def create_app() -> FastAPI:
         app.include_router(r.router, prefix='/api')
 
     @app.get('/api/health', tags=['Сервис'], summary='Проверка, что сервер работает')
-    async def health():
+    async def health(db: AsyncSession = Depends(get_db)):
+        try:
+            await db.scalar(select(1))
+        except Exception as exc:
+            log.exception('Проверка готовности: база данных недоступна')
+            raise HTTPException(503, 'База данных недоступна') from exc
         return {'status': 'ok'}
 
     Path(s.media_dir).mkdir(parents=True, exist_ok=True)

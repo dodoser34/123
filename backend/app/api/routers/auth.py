@@ -3,6 +3,7 @@
 
 Защита: лимиты попыток (на IP и на почту), одинаковое время ответа для существующих и несуществующих аккаунтов,
 коды с ограниченным сроком и числом попыток, хеши паролей/токенов/кодов вместо самих значений, журнал событий."""
+import json
 import logging
 import re
 from datetime import datetime, timedelta, timezone
@@ -12,6 +13,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import delete, desc, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.config import get_settings
@@ -42,6 +44,9 @@ GOOGLE_AUTH = 'https://accounts.google.com/o/oauth2/v2/auth'
 GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token'
 GOOGLE_USERINFO = 'https://openidconnect.googleapis.com/v1/userinfo'
 SAFE_NEXT = re.compile(r'^((pages|admin)/)?[\w-]+\.html([?#][^:\\]*)?$')
+GOOGLE_LOGIN_STATE = re.compile(r'^[A-Za-z0-9_-]{43}$')
+GOOGLE_COOKIE = 'kbch_google_state'
+GOOGLE_COOKIE_PATH = '/api/auth/google'
 
 
 # ---------- Помощники ----------
@@ -128,21 +133,32 @@ async def register(data: RegisterIn, request: Request, db: AsyncSession = Depend
     user = await _user_by_email(db, email)
     if user and user.email_verified:
         raise HTTPException(409, 'Этот email уже зарегистрирован. Войдите в аккаунт.')
-    if user:  # регистрация начиналась, но почта не подтверждена — обновляем данные и шлём код заново
-        user.name, user.password_hash = data.name, hash_password(data.password)
-    else:
-        db.add(User(email=email, name=data.name, password_hash=hash_password(data.password)))
-    await db.commit()
-    await _issue_code(db, email, 'verify')
+    if user:
+        # Pending credentials are immutable: an older verification code must never
+        # activate a password supplied by another registration request.
+        raise HTTPException(409, 'Регистрация уже начата. Войдите по коду из письма или сбросьте пароль.')
+    db.add(User(email=email, name=data.name, password_hash=hash_password(data.password)))
+    try:
+        # _issue_code commits the user and its challenge together, before sending.
+        # A cooldown/error before that commit leaves neither a new user nor a new password.
+        await _issue_code(db, email, 'verify')
+    except IntegrityError as e:
+        await db.rollback()
+        # Two first registrations may race on the unique email in PostgreSQL/SQLite.
+        raise HTTPException(409, 'Регистрация уже начата. Войдите по коду из письма или сбросьте пароль.') from e
     return {'status': 'verify', 'email': email}
 
 
 @router.post('/verify', summary='Подтвердить почту кодом из письма → вход', dependencies=[Depends(limit('rate_login', 'verify'))])
 async def verify(data: CodeIn, db: AsyncSession = Depends(get_db)):
-    await _use_code(db, data.email, data.code, 'verify')
     user = await _user_by_email(db, data.email)
     if not user:
         raise HTTPException(404, 'Аккаунт не найден')
+    if user.blocked:
+        raise HTTPException(403, 'Аккаунт заблокирован. Свяжитесь с магазином.')
+    if user.email_verified:
+        raise HTTPException(400, 'Почта уже подтверждена. Войдите в аккаунт.')
+    await _use_code(db, data.email, data.code, 'verify')
     user.email_verified = True
     return await _session(db, user)
 
@@ -200,6 +216,11 @@ async def code_verify(data: CodeIn, db: AsyncSession = Depends(get_db)):
         db.add(user)
     if user.blocked:
         raise HTTPException(403, 'Аккаунт заблокирован. Свяжитесь с магазином.')
+    if not user.email_verified:
+        # Ownership of the mailbox does not prove ownership of a password from
+        # an unfinished registration, which may have been planted by somebody else.
+        user.password_hash = None
+        await db.execute(delete(EmailCode).where(EmailCode.email == user.email, EmailCode.purpose == 'verify'))
     user.email_verified = True
     await db.flush()
     return await _session(db, user)
@@ -207,28 +228,46 @@ async def code_verify(data: CodeIn, db: AsyncSession = Depends(get_db)):
 
 # ---------- Вход через Google ----------
 @router.get('/google/login', summary='Вход через Google: перенаправление на страницу Google', dependencies=[Depends(limit('rate_login', 'google'))])
-async def google_login(next: str = ''):
+async def google_login(next: str = '', login_state: str = ''):
     s = get_settings()
     if not s.google_enabled:
         raise HTTPException(404, 'Вход через Google не настроен')
+    if not GOOGLE_LOGIN_STATE.fullmatch(login_state):
+        raise HTTPException(400, 'Начните вход через Google на странице входа магазина.')
     params = {
         'client_id': s.google_client_id,
         'redirect_uri': f'{s.public_api_url}/auth/google/callback',
         'response_type': 'code',
         'scope': 'openid email profile',
-        'state': sign_state(next[:200] if SAFE_NEXT.match(next) else ''),
+        'state': sign_state(json.dumps({'next': next[:200] if SAFE_NEXT.fullmatch(next) else '', 'login_state': login_state}, separators=(',', ':'))),
         'prompt': 'select_account',
     }
-    return RedirectResponse(f'{GOOGLE_AUTH}?{urlencode(params)}')
+    response = RedirectResponse(f'{GOOGLE_AUTH}?{urlencode(params)}')
+    response.set_cookie(GOOGLE_COOKIE, params['state'], max_age=600, httponly=True, secure=s.is_production, samesite='lax', path=GOOGLE_COOKIE_PATH)
+    return response
 
 
 @router.get('/google/callback', include_in_schema=False, dependencies=[Depends(limit('rate_login', 'google'))])
-async def google_callback(code: str = '', state: str = '', error: str = '', db: AsyncSession = Depends(get_db)):
+async def google_callback(request: Request, code: str = '', state: str = '', error: str = '', db: AsyncSession = Depends(get_db)):
     s = get_settings()
     login_page = f'{s.frontend_url}/pages/login.html'
-    nxt = read_state(state)
-    if error or not code or nxt is None:
-        return RedirectResponse(f'{login_page}#error=google')
+
+    def redirect(url: str) -> RedirectResponse:
+        response = RedirectResponse(url)
+        response.delete_cookie(GOOGLE_COOKIE, path=GOOGLE_COOKIE_PATH, httponly=True, secure=s.is_production, samesite='lax')
+        return response
+
+    payload = read_state(state)
+    cookie = request.cookies.get(GOOGLE_COOKIE, '')
+    if error or not code or not cookie or not same(cookie, state) or payload is None:
+        return redirect(f'{login_page}#error=google')
+    try:
+        data = json.loads(payload)
+        nxt, login_state = data['next'], data['login_state']
+        if not isinstance(nxt, str) or not isinstance(login_state, str) or not GOOGLE_LOGIN_STATE.fullmatch(login_state) or (nxt and not SAFE_NEXT.fullmatch(nxt)):
+            raise ValueError('Invalid OAuth state')
+    except (ValueError, KeyError, TypeError):
+        return redirect(f'{login_page}#error=google')
     try:
         async with httpx.AsyncClient(timeout=15) as client:
             tok = await client.post(
@@ -244,21 +283,24 @@ async def google_callback(code: str = '', state: str = '', error: str = '', db: 
             tok.raise_for_status()
             info = (await client.get(GOOGLE_USERINFO, headers={'Authorization': f'Bearer {tok.json()["access_token"]}'})).json()
     except (httpx.HTTPError, KeyError, ValueError):
-        return RedirectResponse(f'{login_page}#error=google')
+        return redirect(f'{login_page}#error=google')
     email, sub = str(info.get('email', '')).lower(), str(info.get('sub', ''))
     if not email or not sub or not info.get('email_verified'):
-        return RedirectResponse(f'{login_page}#error=google')
+        return redirect(f'{login_page}#error=google')
     user = await first(db, select(User).where(User.google_sub == sub)) or await _user_by_email(db, email)
     if not user:
         user = User(email=email, name=(info.get('name') or email.split('@')[0])[:80])
         db.add(user)
     if user.blocked:
-        return RedirectResponse(f'{login_page}#error=blocked')
+        return redirect(f'{login_page}#error=blocked')
+    if not user.email_verified:
+        user.password_hash = None
+        await db.execute(delete(EmailCode).where(EmailCode.email == user.email, EmailCode.purpose == 'verify'))
     user.google_sub, user.email_verified = sub, True
     await db.flush()
     session = await _session(db, user)
     # токен — во фрагменте адреса (#…): он не уходит на сервер и не попадает в журналы
-    return RedirectResponse(f'{login_page}#' + urlencode({'token': session['token'], 'next': nxt}))
+    return redirect(f'{login_page}#' + urlencode({'token': session['token'], 'next': nxt, 'login_state': login_state}))
 
 
 # ---------- Сессия и профиль ----------
@@ -326,6 +368,7 @@ async def reset(data: ResetIn, db: AsyncSession = Depends(get_db)):
     if not user:
         raise HTTPException(404, 'Аккаунт не найден')
     user.password_hash, user.email_verified = hash_password(data.password), True
+    await db.execute(delete(EmailCode).where(EmailCode.email == user.email, EmailCode.purpose == 'verify'))
     await db.execute(delete(Session).where(Session.user_id == user.id))
     log.info('Сброс пароля: %s', user.email)
     return await _session(db, user)

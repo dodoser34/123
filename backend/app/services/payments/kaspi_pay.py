@@ -65,8 +65,16 @@ class KaspiPay(PaymentMethod):
     def parse_webhook(body: bytes) -> tuple[str, str, int | None]:
         """Возвращает (id заказа, новый статус оплаты paid | failed, сумма из уведомления)."""
         data = json.loads(body or b'{}')
+        if not isinstance(data, dict):
+            raise ValueError('Уведомление должно быть объектом')
         status = str(data.get('status', '')).lower()
-        amount = data.get('amount')
-        return str(data.get('orderId', '')), ('paid' if status in ('paid', 'success', 'completed') else 'failed'), (
-            int(amount) if isinstance(amount, (int, float, str)) and str(amount).replace('.', '', 1).isdigit() else None
+        paid = status in ('paid', 'success', 'completed')
+        raw_amount = data.get('amount')
+        amount = raw_amount if type(raw_amount) is int else (
+            int(raw_amount) if isinstance(raw_amount, str) and raw_amount.isascii() and raw_amount.isdigit() else None
         )
+        if amount is not None and amount < 0:
+            amount = None
+        if paid and amount is None:
+            raise ValueError('Для оплаты нужна целая сумма в тенге')
+        return str(data.get('orderId', '')), ('paid' if paid else 'failed'), amount
