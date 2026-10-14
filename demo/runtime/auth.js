@@ -38,10 +38,10 @@
   App.texts.login.steps.codeEnter.lead = 'Демо: письма не отправляются. Тестовый код для <b>{email}</b>: 246810.';
   App.texts.login.steps.resetEnter.lead = 'Демо: используйте тестовый код 246810 и придумайте пароль для этой локальной копии.';
   App.extensions.auth = {
-    otherWays: mode => `${mode === 'login' ? '<p class="auth-forgot"><a href="#" data-step="reset">Забыли пароль?</a></p>' : ''}
+    otherWays: (mode, googleLogo) => `${mode === 'login' ? '<p class="auth-forgot"><a href="#" data-step="reset">Забыли пароль?</a></p>' : ''}
       <div class="auth-or"><span>или</span></div>
       <div class="auth-ways">
-        <button type="button" class="btn btn-secondary btn-block auth-google" data-google-demo><span class="demo-google-mark" aria-hidden="true">G</span>Войти через Google</button>
+        <button type="button" class="btn btn-secondary btn-block auth-google" data-google-demo>${googleLogo}Войти через Google</button>
         <button type="button" class="btn btn-ghost btn-block" data-step="code">${ui.icon('mail')} Войти по коду из письма</button>
       </div><p class="muted demo-auth-note">Демонстрация: Google не подключён, письма не отправляются.</p>`,
     content: () => `<div class="auth-extra demo-accounts">
