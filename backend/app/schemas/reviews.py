@@ -1,4 +1,3 @@
-"""Отзывы."""
 from typing import Literal
 
 from pydantic import Field
@@ -19,7 +18,7 @@ class ReviewIn(In):
 
 
 class VoteIn(In):
-    voter: str = Field('', max_length=64, pattern=r'^[\w-]*$')  # анонимный id браузера
+    voter: str = Field('', max_length=64, pattern=r'^[\w-]*$')
 
 
 class ReplyIn(In):

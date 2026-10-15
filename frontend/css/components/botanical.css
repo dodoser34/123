@@ -1,4 +1,3 @@
-/* Декор растёт из границ блока: срезы стеблей скрыты, фотографии сохраняют пропорции. */
 .botanical-title {
   display: flex;
   align-items: center;
@@ -8,7 +7,7 @@
 .botanical-title h2 {
   min-width: 0;
 }
-/* У заголовков остаётся свободное пространство без отдельных вырезок. */
+
 .botanical-mark {
   display: none;
 }

@@ -34,7 +34,7 @@ test('query reads Unicode and missing values', () => {
 test('debounce invokes only latest arguments', () => {
   const pending = new Map();
   let seq = 0;
-  // Deterministic timers: no wall-clock delays.
+
   const vm = require('node:vm');
   const fs = require('node:fs');
   const path = require('node:path');
@@ -47,4 +47,14 @@ test('debounce invokes only latest arguments', () => {
   assert.equal(pending.size, 1);
   [...pending.values()][0]();
   assert.deepEqual(calls, ['latest']);
+});
+
+test('phone typed without country code is completed on blur', () => {
+  const ui = browser().App.ui;
+  let typed = '';
+  for (const ch of '7011234567') typed = ui.maskPhone(typed + ch);
+  assert.equal(ui.isPhoneComplete(typed), false);
+  assert.equal(ui.fixPhone(typed), '+7 (701) 123-45-67');
+  assert.equal(ui.fixPhone('+7 (701) 123-45-67'), '+7 (701) 123-45-67');
+  assert.equal(ui.fixPhone('+7 (701) 12'), '+7 (701) 12');
 });

@@ -1,4 +1,3 @@
-/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → страница товара и отзывы */
 @media (max-width: 560px) {
   .reviews-summary {
     grid-template-columns: 1fr;

@@ -1,20 +1,15 @@
-/* Мелкие помощники: экранирование текста, формат цены и телефона, ссылки, поиск элементов */
 (() => {
   const ui = (App.ui = {});
   const base = document.documentElement.dataset.base || '';
   ui.base = base;
 
-  /** Защитить текст перед вставкой в HTML. */
   ui.esc = (s) =>
     String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-  /** Путь к файлу сайта с учётом папки (админка лежит на уровень глубже). */
   ui.url = (p) => (!p ? '' : /^(data:|https?:|blob:|\/)/.test(p) ? p : base + p);
 
-  /** 12990 → «12 990 ₸» (с неразрывными пробелами). */
   ui.price = (n) => new Intl.NumberFormat('ru-RU').format(Math.round(n || 0)).replace(/\s/g, ' ') + ' ₸';
 
-  /** plural(5, 'отзыв', 'отзыва', 'отзывов') → «отзывов». */
   ui.plural = (n, one, few, many) => {
     const m10 = n % 10;
     const m100 = n % 100;
@@ -36,11 +31,6 @@
     };
   };
 
-  /**
-   * Адрес страницы сайта с учётом папки, где открыта текущая страница:
-   * ui.page('catalog', { cat: 'herbs' }) → pages/catalog.html?cat=herbs; 'home' — главная, 'admin' — админка.
-   * Все страницы, кроме главной и 404, лежат в frontend/pages/.
-   */
   ui.page = (name, params) =>
     base +
     (name === 'home' ? 'index.html' : name === 'admin' ? 'admin/index.html' : 'pages/' + name + '.html') +
@@ -49,12 +39,10 @@
   ui.catalogUrl = (params) => ui.page('catalog', params);
   ui.contactLink = (subject) => 'mailto:' + App.config.email + '?subject=' + encodeURIComponent(subject || ui.t('common.mailSubject'));
 
-  /** Маска казахстанского номера: «87011234567», «7011234567» → «+7 (701) 123-45-67». */
   ui.maskPhone = (value) => {
     const raw = String(value || '').trim();
     let d = raw.replace(/\D/g, '');
-    // 10 цифр без «+» — номер вставили без кода страны (701 123 45 67). В уже отформатированном поле всегда есть «+7»,
-    // поэтому набор по одной цифре это правило не задевает.
+
     if (!raw.startsWith('+') && d.length === 10 && d.startsWith('7')) d = '7' + d;
     if (d.startsWith('8')) d = '7' + d.slice(1);
     if (d && !d.startsWith('7')) d = '7' + d;
@@ -66,6 +54,11 @@
     if (parts[2]) out += '-' + parts[2];
     if (parts[3]) out += '-' + parts[3];
     return out;
+  };
+
+  ui.fixPhone = (value) => {
+    const d = String(value || '').replace(/\D/g, '');
+    return d.length === 10 ? ui.maskPhone('+7' + d) : value;
   };
   ui.isPhoneComplete = (value) => String(value || '').replace(/\D/g, '').length === 11;
 })();

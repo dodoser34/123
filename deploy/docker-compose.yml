@@ -1,19 +1,10 @@
-# Магазин на своём сервере (VPS): PostgreSQL + API (FastAPI) + Nginx (сайт, /api, /media, HTTPS) + резервные копии.
-# Все настройки — в одном файле deploy/.env (образец: deploy/.env.example). Подробно — docs/11-Бэкенд-и-деплой.md.
-#
-#   cp deploy/.env.example deploy/.env    # заполнить
-#   python3 deploy/prepare_frontend.py     # папка .public/ — только публичные файлы сайта (повторять после каждого обновления)
-#   docker compose --env-file deploy/.env -f deploy/docker-compose.yml --profile init run --rm --service-ports certbot-init   # первый сертификат HTTPS
-#   docker compose --env-file deploy/.env -f deploy/docker-compose.yml up -d --build
-#   docker compose --env-file deploy/.env -f deploy/docker-compose.yml exec backend python -m app.cli seed --frontend /frontend   # категории
 name: kbch
 
-x-logging: &logging # журналы контейнеров не разрастаются бесконечно
+x-logging: &logging
   driver: json-file
   options: { max-size: '10m', max-file: '5' }
 
 services:
-  # ---------- База данных: только во внутренней сети, из интернета недоступна ----------
   db:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -38,19 +29,18 @@ services:
       timeout: 5s
       retries: 20
 
-  # ---------- API ----------
   backend:
     build: ../backend
     restart: unless-stopped
-    env_file: .env # SECRET_KEY, администратор, почта, Google, оплата — см. deploy/.env.example
-    environment: # то, что вычисляется из DOMAIN и пароля базы, — менять не нужно
+    env_file: .env
+    environment:
       ENVIRONMENT: production
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-kbch}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kbch}
       FRONTEND_URL: https://${DOMAIN:?заполните DOMAIN в deploy/.env}
       PUBLIC_API_URL: https://${DOMAIN}/api
       CORS_ORIGINS: https://${DOMAIN},https://www.${DOMAIN}
       ALLOWED_HOSTS: ${DOMAIN},www.${DOMAIN},backend,localhost
-      TRUST_PROXY: 'true' # IP посетителя берётся из заголовка, который ставит Nginx
+      TRUST_PROXY: 'true'
       PROXY_HOPS: '1'
       EMAIL_BACKEND: smtp
       MEDIA_DIR: /app/media
@@ -58,9 +48,9 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - media:/app/media # загруженные из админки фото переживают пересборку
-      - ../.public:/frontend:ro # для стартового наполнения: python -m app.cli seed --frontend /frontend
-    networks: [internal, public] # public — только исходящие соединения: почта, Google, Kaspi (порты наружу не открыты)
+      - media:/app/media
+      - ../.public:/frontend:ro
+    networks: [internal, public]
     expose: ['8000']
     security_opt: ['no-new-privileges:true']
     logging: *logging
@@ -71,7 +61,6 @@ services:
       retries: 3
       start_period: 30s
 
-  # ---------- Nginx: сайт, прокси к API, HTTPS, ограничение запросов ----------
   web:
     image: nginx:1.27-alpine
     restart: unless-stopped
@@ -79,8 +68,6 @@ services:
     ports: ['80:80', '443:443']
     environment:
       DOMAIN: ${DOMAIN}
-    # Nginx держит сертификат в памяти: после renew нужно перечитать его.
-    # Вложенный официальный entrypoint по-прежнему обрабатывает шаблон ${DOMAIN}.
     command:
       - /bin/sh
       - -c
@@ -91,8 +78,8 @@ services:
         done &
         exec /docker-entrypoint.sh nginx -g 'daemon off;'
     volumes:
-      - ../.public:/usr/share/nginx/html:ro # только публичные файлы (deploy/prepare_frontend.py)
-      - ./env.js:/usr/share/nginx/html/env.js:ro # сайт работает с API на этом же домене (/api)
+      - ../.public:/usr/share/nginx/html:ro
+      - ./env.js:/usr/share/nginx/html/env.js:ro
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./nginx/security.conf:/etc/nginx/conf.d/00-security.conf:ro
       - ./nginx/headers.conf:/etc/nginx/snippets/headers.conf:ro
@@ -103,7 +90,6 @@ services:
     security_opt: ['no-new-privileges:true']
     logging: *logging
 
-  # ---------- Продление HTTPS-сертификата (Let's Encrypt выдаёт его на 90 дней) ----------
   certbot:
     image: certbot/certbot:v2.11.0
     restart: unless-stopped
@@ -114,7 +100,6 @@ services:
     logging: *logging
     entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done'
 
-  # первый выпуск сертификата: запускается один раз вручную, пока Nginx ещё не работает (порт 80 свободен)
   certbot-init:
     image: certbot/certbot:v2.11.0
     profiles: ['init']
@@ -127,7 +112,6 @@ services:
       -m ${LETSENCRYPT_EMAIL:?заполните LETSENCRYPT_EMAIL в deploy/.env}
       -d ${DOMAIN} -d www.${DOMAIN}
 
-  # ---------- Копии базы и фото: раз в сутки в deploy/backups/ ----------
   backup:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -161,7 +145,7 @@ services:
 
 networks:
   internal:
-    internal: true # без выхода в интернет: база и резервные копии
+    internal: true
   public: {}
 
 volumes:

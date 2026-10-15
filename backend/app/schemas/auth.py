@@ -1,4 +1,3 @@
-"""Аккаунт: регистрация, вход, коды из писем, профиль, пароль."""
 from pydantic import EmailStr, Field
 
 from .base import In

@@ -1,5 +1,3 @@
-"""Тесты работают на временной SQLite-базе (или на PostgreSQL из TEST_DATABASE_URL — так в CI);
-письма не отправляются — коды перехватываются."""
 import os
 import tempfile
 
@@ -19,24 +17,23 @@ os.environ.update(
     DOCS_ENABLED='true',
 )
 
-import pytest_asyncio  # noqa: E402
-from httpx import ASGITransport, AsyncClient  # noqa: E402
-from sqlalchemy import event  # noqa: E402
 
-from app.api.routers import auth as auth_router  # noqa: E402
-from app.core.rate_limit import limiter  # noqa: E402
-from app.db.session import Base, engine  # noqa: E402
-from app.main import app, ensure_admin  # noqa: E402
-from app.services import emails  # noqa: E402
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import event
+
+from app.api.routers import auth as auth_router
+from app.core.rate_limit import limiter
+from app.db.session import Base, engine
+from app.main import app, ensure_admin
+from app.services import emails
 
 ADMIN_PASSWORD = 'Owner-Strong-Pass-71'
-
-
 
 if engine.dialect.name == 'sqlite':
 
     @event.listens_for(engine.sync_engine, 'connect')
-    def _fk_on(dbapi_conn, _):  # в SQLite внешние ключи (каскадное удаление) включаются вручную
+    def _fk_on(dbapi_conn, _):
         dbapi_conn.execute('PRAGMA foreign_keys=ON')
 
 
@@ -63,7 +60,6 @@ async def client():
         async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as c:
             yield c
     finally:
-        # asyncpg connections belong to the current loop; close the pool before pytest closes it.
         await engine.dispose()
 
 

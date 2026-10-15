@@ -1,12 +1,9 @@
-/* Каталог → боковая панель: дерево категорий, «Новинки», «Скидки», фильтры «Для чего» и «Бренд»
-   (с количеством товаров в текущей подборке). */
 (() => {
   const { ui, db } = App;
   const { FLAGS } = App.catalogState;
   const T = ui.t('catalog.aside');
   const $ = (id) => document.getElementById(id);
 
-  /** Флажки фильтра: значения и количество товаров с ними (в текущей категории). */
   function checkboxFilter(state, title, key, values) {
     if (values.length < 2) return '';
     return `
@@ -27,7 +24,6 @@
     return [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ru'));
   }
 
-  /** state — фильтры каталога, base — товары подборки (для счётчиков у флажков). */
   function render(state, base) {
     const link = (params) => ui.catalogUrl(params);
     const group = (c) => `

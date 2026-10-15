@@ -1,16 +1,9 @@
-/* Админка → общие элементы форм:
-   • chips — метки (теги, «Для чего», «Кому подходит») с подсказками из уже введённых значений;
-   • list  — список строк с кнопками «выше / ниже / удалить» (преимущества, шаги применения, компоненты);
-   • pairs — таблица «название — значение» (дополнительные характеристики);
-   • blocks — свои разделы товара: заголовок + текст (отдельные вкладки на странице товара).
-   Разметку возвращают функции A.chips / A.list / A.pairs, поведение подключает A.initControls(form). */
 (() => {
   const { ui } = App;
   const A = App.admin;
 
   const label = (text, hint, forId) => `<label${forId ? ` for="${forId}"` : ''}>${text}${hint ? ` <small>— ${hint}</small>` : ''}</label>`;
 
-  /* ---------- Метки ---------- */
   const chip = (value) =>
     `<span class="chip" data-chip-value="${ui.esc(value)}">${ui.esc(value)}<button type="button" data-chip-remove aria-label="Убрать «${ui.esc(value)}»">${ui.icon('x')}</button></span>`;
 
@@ -24,7 +17,6 @@
       <datalist id="dl-${name}">${suggestions.map((s) => `<option value="${ui.esc(s)}">`).join('')}</datalist>
     </div>`;
 
-  /* ---------- Список строк ---------- */
   const listRow = (value, placeholder) => `
     <div class="list-row">
       <input class="input" value="${ui.esc(value)}" placeholder="${ui.esc(placeholder)}">
@@ -42,7 +34,6 @@
       <button type="button" class="btn btn-ghost btn-sm list-add" data-list-add>${ui.icon('plus')} ${addText}</button>
     </div>`;
 
-  /* ---------- Пары «название — значение» ---------- */
   const pairRow = (p = {}) => `
     <div class="list-row pair-row">
       <input class="input" data-pair="label" value="${ui.esc(p.label || '')}" placeholder="Например: Текстура">
@@ -57,7 +48,6 @@
       <button type="button" class="btn btn-ghost btn-sm list-add" data-pair-add>${ui.icon('plus')} Добавить характеристику</button>
     </div>`;
 
-  /* ---------- Свои разделы: заголовок + текст ---------- */
   const blockRow = (b = {}) => `
     <div class="list-row block-row">
       <div class="block-fields">
@@ -78,7 +68,6 @@
       <button type="button" class="btn btn-ghost btn-sm list-add" data-block-add>${ui.icon('plus')} Добавить раздел</button>
     </div>`;
 
-  /* ---------- Чтение значений ---------- */
   A.readChips = (form, name) => ui.$$(`[data-chips="${name}"] [data-chip-value]`, form).map((c) => c.dataset.chipValue);
   A.readList = (form, name) =>
     ui
@@ -102,7 +91,6 @@
       }))
       .filter((b) => b.title && b.text);
 
-  /* ---------- Поведение ---------- */
   A.initControls = (form, onChange) => {
     const changed = () => onChange && onChange();
 
@@ -134,7 +122,7 @@
         }
       }
     });
-    // выбор из подсказки или уход с поля тоже добавляет метку
+
     form.addEventListener('change', (e) => e.target.matches('.chips-input') && addChip(e.target));
     form.addEventListener('focusout', (e) => e.target.matches('.chips-input') && e.target.value.trim() && addChip(e.target));
 

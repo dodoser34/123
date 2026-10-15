@@ -1,4 +1,3 @@
-/* Админка → пользователи и роли */
 (() => {
   const { ui, db } = App;
   const A = App.admin;

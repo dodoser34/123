@@ -1,4 +1,3 @@
-/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → личный кабинет */
 @media (max-width: 1024px) {
   .account-layout {
     grid-template-columns: 1fr;

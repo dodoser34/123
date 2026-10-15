@@ -1,9 +1,8 @@
-/* Страница «Доставка и оплата». Все тексты — в texts/…/delivery.js */
 document.addEventListener('app:ready', () => {
   const { ui } = App;
   const D = ui.t('delivery');
   const C = App.config;
-  // у самовывоза текст зависит от того, указан ли адрес в js/config.js
+
   const text = (r) => (r.textNoAddress && !C.address ? r.textNoAddress : r.text.replace('{address}', C.address));
   const row = (r) => `
     <div class="info-row">

@@ -1,4 +1,3 @@
-"""Каталог: категории, товары, загрузка фото."""
 import json
 from typing import Literal
 
@@ -8,7 +7,7 @@ from ..core.sanitize import clean_text, safe_url
 from .base import In
 
 SLUG = r'^[a-z0-9][a-z0-9-]*$'
-MAX_PRODUCT_JSON = 200_000  # предельный размер описания товара (символов) — защита от «раздутых» записей
+MAX_PRODUCT_JSON = 200_000
 
 
 class SubIn(In):
@@ -24,7 +23,6 @@ class CategoryIn(In):
 
 
 def _clean_deep(value, depth=0):
-    """Почистить вложенные строки товара от управляющих символов; ограничить глубину вложенности."""
     if depth > 5:
         raise ValueError('Слишком сложная структура данных')
     if isinstance(value, str):
@@ -37,7 +35,6 @@ def _clean_deep(value, depth=0):
 
 
 class ProductIn(BaseModel):
-    """Товар целиком, как его собирает форма админки. Остальные поля (описание, состав…) сохраняются в data."""
 
     model_config = ConfigDict(extra='allow', str_strip_whitespace=True)
     name: str = Field(min_length=1, max_length=160)
@@ -74,5 +71,5 @@ class ProductIn(BaseModel):
 
 
 class UploadIn(BaseModel):
-    data: str = Field(max_length=20_000_000)  # фото в виде data:image/jpeg;base64,…
+    data: str = Field(max_length=20_000_000)
     folder: Literal['products', 'site'] = 'products'

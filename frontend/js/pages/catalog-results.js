@@ -1,4 +1,3 @@
-/* Каталог → всё вокруг списка товаров: хлебные крошки, «Найдено: N» с чипами активных фильтров, страницы и «Показать ещё». */
 (() => {
   const { ui, db } = App;
   const { FLAGS, LIST_PARAMS } = App.catalogState;
@@ -16,7 +15,6 @@
     $('crumbs').innerHTML = items.join('<span aria-hidden="true">/</span>');
   }
 
-  /** Чипы активных фильтров: ключ data-chip говорит, какой фильтр снять (см. onChip в catalog.js). */
   function chips(state, total, range) {
     const list = [];
     if (state.q) list.push(['q', `«${state.q}»`]);
@@ -37,7 +35,6 @@
       (list.length > 1 ? `<button class="btn-ghost chip-reset" type="button" data-chip="all">${ui.t('catalog.resetAll')}</button>` : '');
   }
 
-  /** Страницы: показаны страницы с page по page + more (после «Показать ещё»). */
   function pagination(state, pages) {
     const last = state.page + state.more;
     let html = '';

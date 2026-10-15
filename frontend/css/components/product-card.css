@@ -1,4 +1,3 @@
-/* Карточка товара, вид «список», звёзды */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -28,7 +27,20 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s var(--ease);
+  transition:
+    transform 0.5s var(--ease),
+    opacity 0.5s var(--ease);
+}
+
+.pc-media .pc-alt {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .pc-alt {
+    opacity: 1;
+  }
 }
 .pc-fav {
   position: absolute;
@@ -191,7 +203,6 @@
   text-align: center;
 }
 
-/* Вид «список» */
 .products-grid.is-list {
   grid-template-columns: 1fr;
 }
@@ -246,7 +257,6 @@
   height: 100%;
 }
 
-/* Звёзды рейтинга */
 .stars {
   display: inline-flex;
   gap: 2px;

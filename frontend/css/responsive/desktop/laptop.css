@@ -1,4 +1,3 @@
-/* НОУТБУКИ (1025–1365 px и до 1280 / 1200 px), а также правила «только для компьютера» (от 1025 px) */
 @media (min-width: 1025px) and (max-width: 1365px) {
   .site-header .logo-text {
     display: none;

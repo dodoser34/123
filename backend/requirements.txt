@@ -1,11 +1,10 @@
-# Бэкенд K-Beauty | C-Health — зависимости для запуска (pip install -r requirements.txt)
 fastapi==0.143.1
-starlette==1.8.0  # исправления Range/FileResponse DoS; пин проверен полным API-набором
+starlette==1.8.0
 uvicorn[standard]==0.32.1
 gunicorn==23.0.0
 SQLAlchemy[asyncio]==2.0.36
 asyncpg==0.30.0
-aiosqlite==0.20.0  # локальный запуск без PostgreSQL (база-файл dev.db)
+aiosqlite==0.20.0
 alembic==1.14.0
 pydantic-settings==2.6.1
 email-validator==2.2.0

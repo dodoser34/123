@@ -1,11 +1,9 @@
-/* Отзывы: публикация, «полезно», ответ магазина, скрытие, «покупка подтверждена» */
 (() => {
   const { KEYS, read, write, emit, uid, today } = App.storage;
   const db = App.db;
 
-  const USAGE_PERIODS = App.ui.t('common.usagePeriods'); // названия — texts/…/common.js
+  const USAGE_PERIODS = App.ui.t('common.usagePeriods');
 
-  /** Привести отзыв к полному формату (старые отзывы были короче). */
   function normalize(r) {
     return Object.assign(
       {
@@ -24,7 +22,6 @@
     );
   }
 
-  /** Анонимный id браузера — чтобы голосовать «полезно» только один раз. */
   function voterId() {
     let id = read(KEYS.voter, null);
     if (!id) {
@@ -50,21 +47,19 @@
 
   db.reviews = {
     USAGE_PERIODS,
-    /** Все отзывы, включая скрытые (для админки), новые сверху. */
+
     all: () =>
       read(KEYS.reviews, [])
         .map(normalize)
         .sort((a, b) => b.date.localeCompare(a.date)),
-    /** Опубликованные отзывы о товаре. */
+
     forProduct: (productId) => db.reviews.all().filter((r) => r.productId === productId && r.status !== 'hidden'),
     byUser: (productId, userId) => (userId ? db.reviews.all().find((r) => r.productId === productId && r.userId === userId) : null),
     get: (id) => db.reviews.all().find((r) => r.id === id),
 
-    /** Покупал ли пользователь этот товар (заказ не отменён). */
     hasPurchased: (productId, userId) =>
       !!userId && db.orders.forUser(userId).some((o) => o.status !== 'cancelled' && o.items.some((i) => i.id === productId)),
 
-    /** Создать или обновить отзыв. Если у вошедшего пользователя уже есть отзыв — он обновляется. */
     save(data) {
       const list = read(KEYS.reviews, []);
       const existing = data.userId && list.find((r) => r.productId === data.productId && r.userId === data.userId);
@@ -93,7 +88,6 @@
       return { updated: !!existing };
     },
 
-    /** Отметить отзыв полезным (один голос с браузера). Возвращает false, если голос уже был. */
     vote(id) {
       const voter = voterId();
       const list = read(KEYS.reviews, []);

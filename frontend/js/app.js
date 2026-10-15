@@ -1,23 +1,13 @@
-/* Загрузчик сайта. Подключается в <head> каждой страницы одной строкой:
-     <script src="js/app.js?v=21" data-page="catalog"></script>
-   и по порядку подгружает нужные файлы из js/.
-   Порядок важен: настройки → данные → хранилище → компоненты → страница → запуск.
-   VERSION — меняйте при каждой публикации, чтобы браузеры посетителей скачали свежие файлы. */
 (function () {
   var VERSION = '23';
   var base = document.documentElement.getAttribute('data-base') || '';
   var page = document.currentScript.getAttribute('data-page');
   window.App = window.App || {};
-  App.page = page; // нужен core/auth-guard.js раньше, чем нарисуется страница
-  App.texts = App.texts || {}; // тексты сайта: frontend/texts/<язык>/*.js
+  App.page = page;
+  App.texts = App.texts || {};
 
-  /* Язык сайта — из <html lang="ru">. Тексты лежат в frontend/texts/<язык>/; чтобы добавить язык,
-     скопируйте папку texts/ru в texts/<код языка>, переведите и поменяйте lang у страниц. */
   var LANG = document.documentElement.lang || 'ru';
 
-  // Картинка не загрузилась → заглушка с лотосом (декор просто убирается). Один общий перехватчик вместо
-  // onerror="…" в разметке: встроенные обработчики запрещены политикой безопасности (CSP).
-  // До запуска сайта такие картинки только помечаются, а заменяются в core/start.js.
   document.addEventListener(
     'error',
     function (e) {
@@ -29,7 +19,6 @@
     true
   );
 
-  // Дополнительные модули задаёт конфигурация конкретной сборки в env.js.
   var EXTRA_DATA = [];
 
   var COMMON = [
@@ -91,11 +80,12 @@
     delivery: ['texts:delivery', 'pages/delivery.js'],
     cart: ['texts:cart', 'pages/cart.js'],
     checkout: ['texts:checkout', 'components/payment-info.js', 'pages/checkout.js'],
+    pay: ['texts:pay', 'pages/pay.js'],
     favorites: ['texts:favorites', 'pages/favorites.js'],
     login: ['texts:login', 'pages/login.js'],
     account: ['texts:account', 'texts:checkout', 'components/payment-info.js', 'pages/account-views.js', 'pages/account.js'],
     404: ['texts:not-found'],
-    // админке нужны все тексты сайта — для раздела «Тексты сайта»
+
     admin: [
       'texts:home',
       'texts:catalog',
@@ -120,14 +110,11 @@
       'admin/orders.js',
       'admin/users.js',
       'admin/reviews.js',
-      'admin/site-texts.js',
       'admin/site-photos.js',
       'admin/settings.js'
     ]
   };
 
-  /* Сервер (бэкенд). Адрес API задаётся в frontend/env.js (KBCH_API_URL):
-     пусто — локальное хранилище; '/api' или https://… — данные берутся с сервера. */
   function scriptsFor(api) {
     var files = [];
     var extra = App.extensions;
@@ -147,14 +134,13 @@
   function addScript(src, onload) {
     var s = document.createElement('script');
     s.src = base + src + (src.includes('?') ? '&' : '?') + 'v=' + VERSION;
-    s.async = false; // сохранить порядок выполнения
-    // страница показывается, когда всё подключено и нарисовано, — без мигания пустой шапки и плавный переход между страницами
+    s.async = false;
+
     s.setAttribute('blocking', 'render');
     if (onload) s.onload = s.onerror = onload;
     document.head.appendChild(s);
   }
 
-  // пока данные и скрипты загружаются, страница скрыта (start.js показывает её); на всякий случай — не дольше 6 секунд
   var hide = document.createElement('style');
   hide.id = 'boot-hide';
   hide.textContent = 'html.is-booting body{opacity:0}';
@@ -178,22 +164,6 @@
       return scriptsFor('').forEach(function (f) {
         addScript(f);
       });
-    // Ответ Google принимаем один раз, только на странице входа и в начавшей вход вкладке.
-    // Сам по себе токен в ссылке не должен менять аккаунт посетителя.
-    var oauth = new URLSearchParams(location.hash.slice(1));
-    App.oauthReturn = false;
-    if (page === 'login' && (oauth.has('token') || oauth.has('error'))) {
-      try {
-        var pending = JSON.parse(sessionStorage.getItem('kbch.oauth.state') || 'null');
-        sessionStorage.removeItem('kbch.oauth.state');
-        var age = pending ? Date.now() - pending.createdAt : -1;
-        if (pending && age >= 0 && age <= 600000 && /^[A-Za-z0-9_-]{43}$/.test(pending.value) &&
-            oauth.get('login_state') === pending.value && /^[A-Za-z0-9_-]{43}$/.test(oauth.get('token') || '')) {
-          localStorage.setItem('kbch.v1.token', oauth.get('token'));
-          App.oauthReturn = true;
-        }
-      } catch (e) {}
-    }
     var boot = (App.boot = { ok: false, error: '' });
     var token = '';
     var voter = '';
@@ -210,7 +180,7 @@
         boot.ok = true;
         boot.data = data;
         try {
-          // данные сервера кладутся в тот же кеш, из которого читают страницы (js/store/*)
+
           var P = 'kbch.v1.';
           var set = function (k, v) {
             localStorage.setItem(P + k, JSON.stringify(v));
@@ -220,17 +190,16 @@
           set('reviews', data.reviews);
           set('orders', data.orders);
           set('users', data.users);
-          set('text-edits', data.site.textEdits || {});
           set('site-photos', data.site.sitePhotos || {});
           if (data.user) set('session', { userId: data.user.id });
           else {
             localStorage.removeItem(P + 'session');
-            if (token) localStorage.removeItem(P + 'token'); // токен устарел или аккаунт заблокирован
+            if (token) localStorage.removeItem(P + 'token');
           }
         } catch (e) {}
       })
       .catch(function (e) {
-        boot.error = e.message || 'network'; // сервер недоступен — страница откроется с последними сохранёнными данными
+        boot.error = e.message || 'network';
       })
       .then(function () {
         scriptsFor(api).forEach(function (f) {

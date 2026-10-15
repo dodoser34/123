@@ -1,8 +1,6 @@
-/* Корзина: количество, удаление, итог, прогресс до бесплатной доставки.
-   Товары, которые закончились или скрыты, показываются отдельно и в итог не входят. */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
-  const T = ui.t('cart'); // тексты — texts/…/cart.js
+  const T = ui.t('cart');
   const root = document.getElementById('cart-root');
 
   const row = ({ product: p, qty, available }) => `

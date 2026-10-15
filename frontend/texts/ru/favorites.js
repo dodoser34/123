@@ -1,4 +1,3 @@
-/* ИЗБРАННОЕ (pages/favorites.html). Правьте только текст в кавычках. */
 App.texts.favorites = {
   meta: { title: 'Избранное — {shop}' },
 

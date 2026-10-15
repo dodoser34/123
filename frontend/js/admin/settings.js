@@ -1,9 +1,7 @@
-/* Админка → настройки: экспорт, импорт, сброс */
 (() => {
   const { ui, db } = App;
   const A = App.admin;
 
-  /* Что настроено на сервере (deploy/.env): почта, вход через Google, способы оплаты. Сами секреты сервер не присылает. */
   async function renderSystem() {
     const box = document.getElementById('system');
     let s;
@@ -27,7 +25,6 @@
       <p class="muted" style="margin-bottom:8px">Режим сервера: <b>${s.environment === 'production' ? 'рабочий' : 'разработка'}</b>. Настройки меняются в файле <code>deploy/.env</code> на сервере (docs/11-Бэкенд-и-деплой.md).</p>
       <ul style="list-style:none;padding:0;margin:0">
         ${row(s.email.ready, 'Письма с кодами', s.email.ready ? 'отправляются через SMTP' : 'не настроены — коды пишутся только в журнал сервера (SMTP_USER, SMTP_PASSWORD)')}
-        ${row(s.google, 'Вход через Google', s.google ? 'включён' : 'не настроен (необязательно): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET')}
         ${pays.join('')}
         ${s.problems.map((p) => row(false, p.split(':')[0], p.split(':').slice(1).join(':').trim())).join('')}
       </ul>`;
@@ -37,7 +34,7 @@
     A.setTitle('Настройки');
     const kb = Math.round(db.usage() / 1024);
     if (App.remote.enabled) {
-      // данные на сервере: сброс и импорт отключены, резервную копию делает сервер (бэкап PostgreSQL)
+
       A.$content.innerHTML = `
         <section class="adm-card adm-card-pad">
           <h3>Данные магазина</h3>

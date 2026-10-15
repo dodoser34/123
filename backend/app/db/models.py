@@ -1,7 +1,3 @@
-"""Таблицы базы данных.
-
-Ограничения CHECK и индексы заданы прямо в базе: даже при ошибке в коде база не примет отрицательную цену,
-оценку вне 1–5 или неизвестный статус."""
 import secrets
 from datetime import datetime, timezone
 
@@ -30,10 +26,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(80))
     phone: Mapped[str] = mapped_column(String(32), default='')
-    password_hash: Mapped[str | None] = mapped_column(String(100), nullable=True)  # нет у тех, кто входит только через Google
-    role: Mapped[str] = mapped_column(String(16), default='customer')  # customer | admin
+    password_hash: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    role: Mapped[str] = mapped_column(String(16), default='customer')
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
-    google_sub: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
     blocked: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
@@ -41,7 +36,6 @@ class User(Base):
 
 
 class Session(Base):
-    """Сессия входа. В базе хранится только хеш токена — сам токен знает лишь браузер пользователя."""
 
     __tablename__ = 'sessions'
     __table_args__ = (Index('ix_sessions_expires_at', 'expires_at'),)
@@ -55,17 +49,16 @@ class Session(Base):
 
 
 class EmailCode(Base):
-    """Одноразовый код из письма: подтверждение почты, вход по коду, сброс пароля."""
 
     __tablename__ = 'email_codes'
     __table_args__ = (
-        CheckConstraint("purpose IN ('verify', 'login', 'reset')", name='ck_email_codes_purpose'),
+        CheckConstraint("purpose IN ('verify', 'reset')", name='ck_email_codes_purpose'),
         Index('ix_email_codes_email_purpose', 'email', 'purpose'),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(254), index=True)
-    purpose: Mapped[str] = mapped_column(String(16))  # verify | login | reset
+    purpose: Mapped[str] = mapped_column(String(16))
     code_hash: Mapped[str] = mapped_column(String(64))
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     used: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -76,15 +69,14 @@ class EmailCode(Base):
 class Category(Base):
     __tablename__ = 'categories'
 
-    id: Mapped[str] = mapped_column(String(60), primary_key=True)  # латиница, как в адресе каталога: ?cat=herbs
+    id: Mapped[str] = mapped_column(String(60), primary_key=True)
     name: Mapped[str] = mapped_column(String(80))
     icon: Mapped[str] = mapped_column(String(32), default='leaf')
     position: Mapped[int] = mapped_column(Integer, default=0)
-    subs: Mapped[list] = mapped_column(JSONType, default=list)  # [{id, name}]
+    subs: Mapped[list] = mapped_column(JSONType, default=list)
 
 
 class Product(Base):
-    """Товар. Часто используемые поля — отдельными колонками, остальное (описание, состав, фото…) — в data."""
 
     __tablename__ = 'products'
     __table_args__ = (
@@ -96,7 +88,7 @@ class Product(Base):
 
     id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: new_id('p'))
     slug: Mapped[str] = mapped_column(String(120), unique=True, index=True)
-    status: Mapped[str] = mapped_column(String(16), default='published')  # published | hidden
+    status: Mapped[str] = mapped_column(String(16), default='published')
     category: Mapped[str] = mapped_column(String(60), index=True, default='')
     sub: Mapped[str] = mapped_column(String(60), default='')
     name: Mapped[str] = mapped_column(String(160))
@@ -130,15 +122,14 @@ class Review(Base):
     recommend: Mapped[bool] = mapped_column(Boolean, default=True)
     period: Mapped[str] = mapped_column(String(16), default='')
     helpful: Mapped[int] = mapped_column(Integer, default=0)
-    status: Mapped[str] = mapped_column(String(16), default='published')  # published | hidden
+    status: Mapped[str] = mapped_column(String(16), default='published')
     verified: Mapped[bool] = mapped_column(Boolean, default=False)
-    reply: Mapped[dict | None] = mapped_column(JSONType, nullable=True)  # {text, date}
+    reply: Mapped[dict | None] = mapped_column(JSONType, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     edited_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class ReviewVote(Base):
-    """Голос «полезно»: один на отзыв от пользователя или браузера."""
 
     __tablename__ = 'review_votes'
     __table_args__ = (UniqueConstraint('review_id', 'voter'),)
@@ -157,28 +148,24 @@ class Order(Base):
         Index('ix_orders_created_at', 'created_at'),
     )
 
-    seq: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)  # номер заказа = seq + 1000
+    seq: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     id: Mapped[str] = mapped_column(String(40), unique=True, index=True, default=lambda: new_id('o'))
     user_id: Mapped[str | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
-    status: Mapped[str] = mapped_column(String(16), default='new')  # new | processing | shipped | done | cancelled
-    # покупатель
+    status: Mapped[str] = mapped_column(String(16), default='new')
     name: Mapped[str] = mapped_column(String(80))
     phone: Mapped[str] = mapped_column(String(32))
     email: Mapped[str] = mapped_column(String(254), default='')
-    # доставка
-    delivery: Mapped[str] = mapped_column(String(16))  # courier | kazakhstan | pickup
+    delivery: Mapped[str] = mapped_column(String(16))
     delivery_title: Mapped[str] = mapped_column(String(120), default='')
     city: Mapped[str] = mapped_column(String(80), default='')
     address: Mapped[str] = mapped_column(String(200), default='')
     comment: Mapped[str] = mapped_column(Text, default='')
-    # оплата
-    payment: Mapped[str] = mapped_column(String(24))  # kaspi_transfer | kaspi_pay | cash
+    payment: Mapped[str] = mapped_column(String(24))
     payment_title: Mapped[str] = mapped_column(String(120), default='')
-    payment_status: Mapped[str] = mapped_column(String(16), default='pending')  # pending | awaiting | paid | failed | refunded
-    payment_ref: Mapped[str] = mapped_column(String(120), default='')  # номер счёта/платежа во внешней системе
+    payment_status: Mapped[str] = mapped_column(String(16), default='pending')
+    payment_ref: Mapped[str] = mapped_column(String(120), default='')
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    # состав и суммы (тенге)
-    items: Mapped[list] = mapped_column(JSONType, default=list)  # [{id, name, price, qty, image}]
+    items: Mapped[list] = mapped_column(JSONType, default=list)
     subtotal: Mapped[int] = mapped_column(Integer, default=0)
     delivery_price: Mapped[int] = mapped_column(Integer, default=0)
     total: Mapped[int] = mapped_column(Integer, default=0)
@@ -190,7 +177,6 @@ class Order(Base):
 
 
 class SiteSetting(Base):
-    """Настройки сайта из админки: правки текстов (text-edits), заменённые фото (site-photos)."""
 
     __tablename__ = 'site_settings'
 

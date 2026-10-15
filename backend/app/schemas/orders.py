@@ -1,4 +1,3 @@
-"""Заказы."""
 from typing import Literal
 
 from pydantic import Field
@@ -27,3 +26,10 @@ class OrderIn(In):
 class OrderPatchIn(In):
     status: Literal['new', 'processing', 'shipped', 'done', 'cancelled'] | None = None
     paymentStatus: Literal['pending', 'awaiting', 'paid', 'failed', 'refunded'] | None = None
+
+
+class SandboxPayIn(In):
+    action: Literal['pay', 'cancel'] = 'pay'
+    card: str = Field('', max_length=23, pattern=r'^[\d ]*$')
+    expiry: str = Field('', max_length=5, pattern=r'^(\d{2}/\d{2})?$')
+    cvc: str = Field('', max_length=4, pattern=r'^\d{0,4}$')

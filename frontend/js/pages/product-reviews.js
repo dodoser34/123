@@ -1,9 +1,7 @@
-/* Страница товара → отзывы: сводка (средняя оценка, % рекомендаций, распределение по звёздам),
-   фильтр по звёздам, сортировка, «Полезно», ответы магазина, «Показать ещё». */
 (() => {
   const { ui, db } = App;
   const PAGE = 5;
-  const T = ui.t('product.reviews'); // тексты — texts/…/product.js
+  const T = ui.t('product.reviews');
   const SORTS = T.sorts;
   const state = { sort: 'new', star: 0, shown: PAGE };
 
@@ -91,7 +89,6 @@
     return summary + toolbar + filtered.slice(0, state.shown).map(review).join('') + more;
   }
 
-  /** Обработчики внутри блока отзывов. rerender() перерисовывает только этот блок. */
   function bind(container, p, rerender, openForm) {
     container.addEventListener('click', async (e) => {
       const star = e.target.closest('[data-star]');

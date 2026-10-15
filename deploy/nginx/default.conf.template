@@ -1,15 +1,10 @@
-# Nginx: отдаёт сайт, проксирует /api на FastAPI, отдаёт загруженные фото, включает HTTPS и защиту.
-# ${DOMAIN} подставляется из deploy/.env. Лимиты и таймауты — security.conf, заголовки — headers.conf.
-
 server {
   listen 80;
   server_name ${DOMAIN} www.${DOMAIN};
-  # проверка домена при продлении сертификата
   location /.well-known/acme-challenge/ { root /var/www/certbot; }
   location / { return 301 https://${DOMAIN}$request_uri; }
 }
 
-# запросы на IP сервера или чужой домен — закрыть соединение без ответа
 server {
   listen 80 default_server;
   listen 443 ssl default_server;
@@ -29,13 +24,12 @@ server {
   ssl_session_cache shared:SSL:10m;
   ssl_session_tickets off;
 
-  # www → без www
   if ($host = www.${DOMAIN}) { return 301 https://${DOMAIN}$request_uri; }
 
   limit_conn perip 30;
   include /etc/nginx/snippets/headers.conf;
 
-  client_max_body_size 12m; # фото из админки приходят в теле запроса (остальные запросы API само ограничивает 1 МБ)
+  client_max_body_size 12m;
 
   gzip on;
   gzip_types text/css application/javascript application/json image/svg+xml;
@@ -44,17 +38,15 @@ server {
   index index.html;
   error_page 404 /404.html;
 
-  # ---------- API ----------
   location ^~ /api/ {
     limit_req zone=api burst=40 nodelay;
     proxy_pass http://backend:8000;
     proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-For $remote_addr; # только настоящий IP — подделать его посетитель не может
+    proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_read_timeout 60s;
     proxy_hide_header Server;
 
-    # вход, регистрация, коды из писем, сброс пароля — строже
     location ~ ^/api/auth/(login|register|verify|resend|code|password) {
       limit_req zone=auth burst=10 nodelay;
       proxy_pass http://backend:8000;
@@ -65,7 +57,6 @@ server {
     }
   }
 
-  # ---------- Загруженные из админки фото (имена и типы файлов задаёт сервер: только jpg/png/webp) ----------
   location ^~ /media/ {
     limit_req zone=site burst=100 nodelay;
     alias /srv/media/;
@@ -74,16 +65,13 @@ server {
     add_header Cache-Control "public";
   }
 
-  # служебные и скрытые файлы (.env, .git, README…) не отдаются никогда
   location ~ /\. { return 404; }
   location ~* \.(md|py|sh|ini|ya?ml|log|bak|sql|dump|tmp)$ { return 404; }
 
-  # ---------- Сайт ----------
   location / {
     limit_req zone=site burst=100 nodelay;
     try_files $uri $uri/ =404;
   }
-  # env.js — никогда не кешировать; файлы с ?v=… можно кешировать надолго
   location = /env.js {
     include /etc/nginx/snippets/headers.conf;
     add_header Cache-Control "no-store";

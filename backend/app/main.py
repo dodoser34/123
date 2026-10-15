@@ -1,12 +1,3 @@
-"""Бэкенд магазина K-Beauty | C-Health на FastAPI. Документация API: /api/docs (только в разработке).
-
-Слои приложения (подробно — docs/12-Архитектура.md):
-    core/      настройки, безопасность, лимиты запросов, очистка ввода, защитный middleware
-    db/        подключение к PostgreSQL и таблицы
-    schemas/   проверка входящих данных
-    services/  письма, оплата, стартовое наполнение
-    api/       маршруты /api/…
-"""
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -31,9 +22,6 @@ log = logging.getLogger('kbch')
 
 
 async def ensure_admin() -> None:
-    """Администратор один — тот, чья почта и пароль указаны в .env (ADMIN_EMAIL + ADMIN_PASSWORD или ADMIN_PASSWORD_HASH).
-    При каждом запуске: создаётся, если его нет; пароль обновляется, если его поменяли в .env;
-    у остальных аккаунтов роль администратора снимается. В базе хранится только bcrypt-хеш пароля."""
     s = get_settings()
     email = s.admin_email.strip().lower()
     pwd, pwd_hash = s.admin_password.get_secret_value(), s.admin_password_hash.get_secret_value().strip()
@@ -56,7 +44,6 @@ async def ensure_admin() -> None:
 
 
 def check_settings() -> None:
-    """Небезопасные настройки: в production сервер не запустится, в разработке — предупреждение в логе."""
     s = get_settings()
     problems = s.problems()
     if problems and s.is_production:
@@ -68,8 +55,6 @@ def check_settings() -> None:
 
 
 async def prepare_dev_database() -> None:
-    """Локальный запуск: таблицы в SQLite-файле создаются сами, добавляются только категории.
-    На сервере (PostgreSQL) схему создают миграции: alembic upgrade head."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     if await is_empty():
@@ -80,14 +65,14 @@ async def prepare_dev_database() -> None:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):  # noqa: ARG001
+async def lifespan(app: FastAPI):
     check_settings()
     s = get_settings()
     if not s.is_production and s.is_sqlite and s.auto_create_tables:
         await prepare_dev_database()
     try:
         await ensure_admin()
-    except Exception:  # noqa: BLE001 — таблиц ещё нет: сначала alembic upgrade head
+    except Exception:
         log.exception('Не удалось создать администратора. Выполнены ли миграции (alembic upgrade head)?')
         if s.is_production:
             raise RuntimeError('Не удалось подготовить базу данных и администратора')
@@ -107,13 +92,12 @@ def create_app() -> FastAPI:
         openapi_url='/api/openapi.json' if s.show_docs else None,
         lifespan=lifespan,
     )
-    # порядок: последний добавленный middleware выполняется первым
     install_security(app)
     if s.cors_list:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=s.cors_list,
-            allow_credentials=False,  # вход по токену в заголовке Authorization, cookie не используются → CSRF невозможен
+            allow_credentials=False,
             allow_methods=['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
             allow_headers=['Authorization', 'Content-Type'],
             max_age=600,

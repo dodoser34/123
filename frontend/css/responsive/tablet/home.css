@@ -1,4 +1,3 @@
-/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → главная */
 @media (max-width: 1024px) {
   .cats-banner .cats-row {
     grid-auto-columns: 124px;

@@ -1,15 +1,13 @@
-/* Заказы: оформление, статусы, удаление */
 (() => {
   const { KEYS, read, write, emit, uid } = App.storage;
   const db = App.db;
 
   db.orders = {
-    STATUSES: App.ui.t('common.orderStatuses'), // названия — в texts/…/common.js
+    STATUSES: App.ui.t('common.orderStatuses'),
     all: () => read(KEYS.orders, []).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
     get: (id) => db.orders.all().find((o) => o.id === id),
     forUser: (userId) => db.orders.all().filter((o) => o.userId === userId),
 
-    /** Оформить заказ из корзины. В заказ попадают только доступные товары; они же списываются со склада. */
     create(data) {
       const totals = db.cart.totals(data.delivery);
       if (!totals.items.length) return { error: App.ui.t('common.errors.cartEmpty') };

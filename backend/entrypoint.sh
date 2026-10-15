@@ -1,8 +1,5 @@
 #!/bin/sh
-# Запуск бэкенда в Docker / на Render: обновить схему базы, затем запустить сервер.
-# IP посетителя за прокси определяет само приложение (TRUST_PROXY, PROXY_HOPS) — заголовкам от кого попало не доверяем.
 set -e
-# docker compose run backend python -m app.cli ... должен выполнить именно эту команду.
 if [ "$#" -gt 0 ]; then
   exec "$@"
 fi

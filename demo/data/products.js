@@ -1,10 +1,7 @@
-/* ДЕМО: товары для показа сайта. Фото — в demo/images/products/.
-   Удалите папку demo, чтобы запустить магазин без демо (см. demo/README.md).
-   Описание полей товара — в docs/05-Инструкция-по-админке.md. */
 App.seed = App.seed || {};
 
 App.seed.products = [
-  /* ---------------- Уход за лицом ---------------- */
+
   {
     id: 'p1',
     slug: 'anua-heartleaf-77-soothing-toner',
@@ -242,7 +239,6 @@ App.seed.products = [
     createdAt: '2026-04-15'
   },
 
-  /* ---------------- Волосы ---------------- */
   {
     id: 'p7',
     slug: 'mise-en-scene-perfect-serum',
@@ -278,7 +274,6 @@ App.seed.products = [
     createdAt: '2026-10-01'
   },
 
-  /* ---------------- Декоративная косметика ---------------- */
   {
     id: 'p8',
     slug: 'romand-juicy-lasting-tint',
@@ -399,7 +394,6 @@ App.seed.products = [
     createdAt: '2026-10-13'
   },
 
-  /* ---------------- Уход за телом ---------------- */
   {
     id: 'p11',
     slug: 'illiyoon-ceramide-ato-body-lotion',
@@ -512,7 +506,6 @@ App.seed.products = [
     createdAt: '2026-10-13'
   },
 
-  /* ---------------- Травы и сборы ---------------- */
   {
     id: 'h1',
     slug: 'sbor-dlya-immuniteta',
@@ -728,7 +721,6 @@ App.seed.products = [
     createdAt: '2026-03-14'
   },
 
-  /* ---------------- Наборы ---------------- */
   {
     id: 's1',
     slug: 'nabor-siyanie-kozhi',

@@ -1,17 +1,9 @@
-/* Стартовые данные и обновления формата данных.
-   • Первый запуск: заполняет хранилище категориями (js/data/) и демо-наполнением (demo/), если оно есть.
-   • Обновление сайта: аккуратно дополняет уже сохранённые данные новыми полями,
-     не стирая правки администратора, корзину и заказы.
-   • Папку demo удалили: демо-товары, отзывы, заказы и аккаунты убираются и из браузеров,
-     где они уже были сохранены. Всё, что добавил администратор и покупатели, остаётся.
-   Шаги обновления данных — migrations.js. Подключается последним из store/*.js. */
 (() => {
   const { KEYS: STORE_KEYS, read, write, remove, emit, clone, pwHash } = App.storage;
   const KEYS = Object.assign({}, STORE_KEYS, { demoIds: 'demo-ids' });
   const db = App.db;
   const VERSION = 6;
 
-  /** Демо-наполнение из demo/data/. Если папку удалили — всё пустое. */
   const DEMO = {
     products: App.seed.products || [],
     reviews: App.seed.reviews || [],
@@ -21,7 +13,6 @@
   const hasDemo = Object.values(DEMO).some((list) => list.length);
   const idsOf = (list) => list.map((x) => x.id);
 
-  /** Запомнить, какие записи — демо, чтобы убрать их, когда папку demo удалят. */
   function rememberDemo() {
     if (!hasDemo) return;
     write(KEYS.demoIds, {
@@ -32,7 +23,6 @@
     });
   }
 
-  /** Папку demo удалили — убрать демо-записи из сохранённых данных, не трогая остальные. */
   function removeDemo() {
     const ids = read(KEYS.demoIds, null);
     if (!ids) return;
@@ -62,7 +52,6 @@
     remove(KEYS.demoIds);
   }
 
-  /** Демо-аккаунты из demo/data/accounts.js в формате хранилища (с хешем пароля). */
   const demoUsers = () =>
     DEMO.users.map((s) => {
       const u = Object.assign({}, s, { passwordHash: pwHash(s.id, s.password) });
@@ -71,14 +60,12 @@
       return u;
     });
 
-  /** Записать демо-аккаунты, сохранив остальных пользователей. */
   function writeUsers() {
     const demo = demoUsers();
     const others = read(KEYS.users, []).filter((u) => !demo.some((d) => d.email === u.email || d.id === u.id));
     write(KEYS.users, demo.concat(others));
   }
 
-  /** Полное заполнение стартовыми данными (первый запуск или «Сброс» в админке). */
   function seedAll() {
     write(KEYS.products, DEMO.products.map(db.products.normalize));
     write(KEYS.categories, clone(App.seed.categories));
@@ -90,14 +77,13 @@
     write(KEYS.version, VERSION);
   }
 
-  /** Обновление данных, сохранённых старыми версиями сайта (шаги — в migrations.js). */
   function migrate(from) {
     App.migrations.run(from, { demo: DEMO, writeUsers, rememberDemo });
     write(KEYS.version, VERSION);
   }
 
   function init() {
-    if (App.apiUrl) return; // данные приходят с сервера (store/remote.js) — демо-заполнение не нужно
+    if (App.apiUrl) return;
     const version = read(KEYS.version, 0);
     if (version < VERSION) {
       if (!read(KEYS.products, null)) seedAll();

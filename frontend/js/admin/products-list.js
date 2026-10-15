@@ -1,5 +1,3 @@
-/* Админка → список товаров: поиск, фильтры (категория, наличие, публикация), сортировка,
-   остатки прямо в таблице, скрыть/показать на сайте, копирование, удаление (в т.ч. нескольких). */
 (() => {
   const { ui, db } = App;
   const A = App.admin;
@@ -138,7 +136,7 @@
         delete copy.id;
         copy.name += ' (копия)';
         copy.slug = A.uniqueSlug(db.products.slugify(copy.name));
-        copy.status = 'hidden'; // копия не появляется на сайте, пока её не отредактируют
+        copy.status = 'hidden';
         const saved = await db.products.save(copy);
         if (saved) {
           ui.toast({ title: 'Копия создана', text: 'Она скрыта с сайта — проверьте и опубликуйте' });
@@ -177,7 +175,6 @@
     };
   }
 
-  /** Свободный адрес страницы: если занят, добавляется -2, -3… */
   A.uniqueSlug = (base, exceptId) => {
     const all = db.products.all();
     let slug = base;

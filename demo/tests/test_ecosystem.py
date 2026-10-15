@@ -1,4 +1,3 @@
-"""All demo-specific tests disappear with the optional demo/ package."""
 import importlib.util
 import json
 from pathlib import Path
@@ -59,7 +58,7 @@ def test_missing_photo_prevents_replacement_of_good_demo(builder):
     builder.build()
     original = (builder.OUTPUT / 'demo/data/products.js').read_bytes()
     (builder.ROOT / 'images/products/tea.jpg').unlink()
-    with pytest.raises(ValueError, match='Missing demo product photo'):
+    with pytest.raises(ValueError, match='Не найдено фото демо-товара'):
         builder.build()
     assert (builder.OUTPUT / 'demo/data/products.js').read_bytes() == original
     assert (builder.OUTPUT / 'demo/images/products/tea.jpg').is_file()
@@ -69,7 +68,7 @@ def test_demo_build_refuses_unmanaged_output(builder):
     builder.OUTPUT.mkdir()
     sentinel = builder.OUTPUT / 'manual.txt'
     sentinel.write_text('keep', encoding='utf-8')
-    with pytest.raises(ValueError, match='unmanaged'):
+    with pytest.raises(ValueError, match='создана не этим скриптом'):
         builder.build()
     assert sentinel.read_text(encoding='utf-8') == 'keep'
 

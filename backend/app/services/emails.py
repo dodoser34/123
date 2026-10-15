@@ -1,4 +1,3 @@
-"""Письма с кодами. EMAIL_BACKEND=console — код печатается в лог (для разработки), smtp — настоящая отправка."""
 import logging
 from email.message import EmailMessage
 
@@ -10,12 +9,12 @@ log = logging.getLogger('kbch.email')
 
 SUBJECTS = {
     'verify': 'Подтвердите почту',
-    'login': 'Код для входа',
     'reset': 'Сброс пароля',
 }
+
+
 INTROS = {
     'verify': 'Чтобы завершить регистрацию, введите на сайте код:',
-    'login': 'Ваш код для входа на сайт:',
     'reset': 'Код для смены пароля:',
 }
 

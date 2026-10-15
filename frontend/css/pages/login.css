@@ -1,11 +1,9 @@
-/* Вход */
 .auth-wrap {
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: calc(100vh / var(--zoom) - var(--header-h));
 }
-/* Фото занимает ровно экран и остаётся на месте при прокрутке длинной формы,
-   поэтому кадр и надпись не «прыгают» при переключении «Вход» ⇄ «Регистрация» */
+
 .auth-side {
   position: sticky;
   top: var(--header-h);
@@ -88,7 +86,7 @@
   color: var(--primary);
   border-color: var(--primary);
 }
-/* с бегунком (ui.tabsInk) подчёркивание рисует он и плавно переезжает между вкладками */
+
 .auth-tabs.has-ink a[aria-current] {
   border-color: transparent;
 }
@@ -101,8 +99,7 @@
   text-align: center;
   margin-top: 20px;
 }
-/* Анимации страницы входа: фото медленно «дышит», надпись проявляется,
-   элементы формы появляются по очереди, вкладки и поля мягко реагируют на действия */
+
 .auth-tabs a {
   position: relative;
   transition: color 0.25s;
@@ -119,11 +116,11 @@
 .auth-form .input:focus {
   box-shadow: 0 0 0 4px rgba(31, 58, 45, 0.08);
 }
-/* Смена вкладки: высота формы перетекает, лишнее не вылезает */
+
 .auth-swap.is-switching {
   overflow: clip;
 }
-/* Блик, пробегающий по фото при смене вкладки */
+
 .auth-light {
   position: absolute;
   inset: 0;
@@ -132,16 +129,14 @@
   transform: translateX(-100%);
   pointer-events: none;
 }
-/* Ветка в углу формы */
+
 .auth-decor {
   right: -60px;
   bottom: -40px;
   width: 260px;
   opacity: 0.5;
 }
-/* Анимации: фото медленно «дышит», надпись проявляется, при первом открытии элементы формы
-   появляются каскадом (класс .is-intro ставит js/pages/login.js), поля мягко реагируют на действия.
-   Переключение «Вход» ⇄ «Регистрация» анимирует сам login.js. */
+
 .auth-tabs a {
   position: relative;
   transition: color 0.25s;
@@ -183,7 +178,6 @@
     }
   }
 
-  /* Первое открытие: логотип раскрывается, остальное поднимается по очереди */
   .is-intro .auth-box .logo svg {
     transform-origin: 50% 90%;
     animation: auth-bloom 1s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
@@ -244,7 +238,6 @@
     animation-delay: 0.75s;
   }
 
-  /* По кнопке отправки при наведении пробегает блик */
   .auth-form .btn-primary {
     position: relative;
     overflow: hidden;
@@ -261,7 +254,6 @@
     translate: 120% 0;
   }
 
-  /* Ошибка в поле — лёгкое покачивание */
   .auth-form .field.has-error .input {
     animation: auth-shake 0.4s ease-in-out;
   }
@@ -277,10 +269,8 @@
     }
   }
 
-
 }
 
-/* Другие способы входа (с сервером): «Забыли пароль?», «или», Google, вход по коду из письма */
 .auth-forgot {
   margin-top: 12px;
   text-align: right;
@@ -295,35 +285,7 @@
 .link-btn:hover {
   text-decoration: underline;
 }
-.auth-or {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 20px 0 14px;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-.auth-or::before,
-.auth-or::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-.auth-ways {
-  display: grid;
-  gap: 10px;
-}
-.auth-google {
-  gap: 10px;
-  background: var(--surface);
-}
-.google-logo {
-  width: 20px;
-  height: 20px;
-  flex: none;
-}
-/* поле кода: крупные цифры с разрядкой */
+
 .auth-code {
   font-size: 24px;
   letter-spacing: 0.4em;

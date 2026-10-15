@@ -1,4 +1,3 @@
-/* Стартовые категории и подкатегории каталога */
 App.seed = App.seed || {};
 
 App.seed.categories = [

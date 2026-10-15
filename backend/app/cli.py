@@ -1,11 +1,3 @@
-"""Служебные команды бэкенда.
-
-    python -m app.cli check                    # проверить настройки .env (секреты, администратор, оплата, почта)
-    python -m app.cli hash-password            # получить bcrypt-хеш пароля администратора для ADMIN_PASSWORD_HASH
-    python -m app.cli secret                   # сгенерировать случайный SECRET_KEY
-    python -m app.cli seed                     # стартовые категории магазина
-    python -m app.cli admin                    # создать/обновить администратора из .env сейчас
-"""
 import argparse
 import asyncio
 import getpass
@@ -26,7 +18,6 @@ def cmd_check(_args) -> int:
     if not problems:
         print('  ✓ секреты и администратор настроены')
     print(f'Почта: {s.email_backend}' + (' (письма не отправляются — только в лог)' if s.email_backend != 'smtp' else ''))
-    print('Вход через Google: ' + ('включён' if s.google_enabled else 'не настроен'))
     print('Оплата:')
     for m in readiness(s):
         state = ('готов' if not m['missing'] else 'не хватает: ' + ', '.join(m['missing'])) if m['enabled'] else 'выключен'
@@ -45,7 +36,6 @@ def cmd_hash_password(_args) -> int:
         print('Нужен пароль не короче 12 символов', file=sys.stderr)
         return 1
     print('\nДобавьте в deploy/.env (а ADMIN_PASSWORD оставьте пустым):\n')
-    # одинарные кавычки обязательны: иначе Docker Compose примет $2b$12… за переменные
     print("ADMIN_PASSWORD_HASH='" + hash_password(pwd) + "'")
     return 0
 

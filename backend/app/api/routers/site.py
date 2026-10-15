@@ -1,4 +1,3 @@
-"""Пользователи (админка), тексты и фото сайта, общий запрос при открытии страницы (/bootstrap)."""
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +7,7 @@ from ...db.session import get_db
 from ..deps import admin_user, optional_user
 from ...db.models import Order, Product, SiteSetting, User
 from ...services.payments import enabled_methods, readiness
-from ...schemas import SitePhotoIn, TextEditsIn, UserPatchIn
+from ...schemas import SitePhotoIn, UserPatchIn
 from ..serializers import product_out, user_out
 from .catalog import categories_list
 from .orders import orders_out
@@ -17,7 +16,6 @@ from .reviews import reviews_list
 router = APIRouter(tags=['Сайт и пользователи'])
 
 
-# ---------- Пользователи ----------
 @router.get('/admin/users', summary='Все пользователи')
 async def users(db: AsyncSession = Depends(get_db), _: User = Depends(admin_user)):
     return [user_out(u) for u in (await db.execute(select(User).order_by(User.created_at))).scalars().all()]
@@ -50,7 +48,6 @@ async def delete_user(user_id: str, db: AsyncSession = Depends(get_db), me: User
     return {'status': 'deleted'}
 
 
-# ---------- Тексты и фото сайта ----------
 async def _setting(db: AsyncSession, key: str) -> dict:
     row = await db.get(SiteSetting, key)
     return dict(row.value) if row else {}
@@ -64,17 +61,11 @@ async def _save_setting(db: AsyncSession, key: str, value: dict) -> None:
 
 
 async def site_data(db: AsyncSession) -> dict:
-    return {'textEdits': await _setting(db, 'text-edits'), 'sitePhotos': await _setting(db, 'site-photos')}
+    return {'sitePhotos': await _setting(db, 'site-photos')}
 
 
-@router.get('/site', summary='Правки текстов и заменённые фото')
+@router.get('/site', summary='Заменённые из админки фото страницы «О нас»')
 async def get_site(db: AsyncSession = Depends(get_db)):
-    return await site_data(db)
-
-
-@router.put('/site/texts', summary='Сохранить правки текстов сайта (все разом)')
-async def save_texts(data: TextEditsIn, db: AsyncSession = Depends(get_db), _: User = Depends(admin_user)):
-    await _save_setting(db, 'text-edits', data.edits)
     return await site_data(db)
 
 
@@ -91,8 +82,7 @@ async def save_photo(data: SitePhotoIn, db: AsyncSession = Depends(get_db), _: U
     return await site_data(db)
 
 
-# ---------- Всё для открытия страницы одним запросом ----------
-@router.get('/bootstrap', summary='Данные для сайта: пользователь, каталог, отзывы, заказы, тексты')
+@router.get('/bootstrap', summary='Данные для сайта: пользователь, каталог, отзывы, заказы, фото')
 async def bootstrap(voter: str = Query('', max_length=64, pattern=r'^[\w-]*$'), db: AsyncSession = Depends(get_db), user: User | None = Depends(optional_user)):
     s = get_settings()
     admin = bool(user and user.role == 'admin')
@@ -116,18 +106,16 @@ async def bootstrap(voter: str = Query('', max_length=64, pattern=r'^[\w-]*$'), 
         'users': users_,
         'site': await site_data(db),
         'payments': [m.info(s) for m in enabled_methods(s)],
-        'config': {'freeShippingFrom': s.free_shipping_from, 'courierPrice': s.courier_price, 'google': s.google_enabled},
+        'config': {'freeShippingFrom': s.free_shipping_from, 'courierPrice': s.courier_price},
     }
 
 
-# ---------- Готовность к запуску (админка → Настройки) ----------
-@router.get('/admin/system', summary='Что настроено на сервере: почта, Google, оплата, предупреждения (без секретов)')
+@router.get('/admin/system', summary='Что настроено на сервере: почта, оплата, предупреждения (без секретов)')
 async def system(_: User = Depends(admin_user)):
     s = get_settings()
     return {
         'environment': s.environment,
         'email': {'backend': s.email_backend, 'ready': s.email_backend == 'smtp' and bool(s.smtp_user and s.smtp_password.get_secret_value())},
-        'google': s.google_enabled,
         'payments': readiness(s),
         'problems': s.problems(),
     }

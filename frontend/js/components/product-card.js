@@ -1,15 +1,12 @@
-/* Карточка товара и звёзды рейтинга */
 (() => {
   const ui = App.ui;
 
-  /** Пять звёзд; дробный рейтинг округляется до ближайшей звезды. */
   ui.stars = (rating, cls) => {
     let html = `<span class="stars${cls ? ' ' + cls : ''}" role="img" aria-label="${ui.t('common.card.rating', { rating })}">`;
     for (let i = 1; i <= 5; i++) html += ui.icon('star', rating >= i - 0.25 ? '' : 'off');
     return html + '</span>';
   };
 
-  /** Метки «Хит», «Новинка», «−15%». */
   ui.badges = (p) =>
     [
       p.isHit ? `<span class="tag">${ui.t('common.card.hit')}</span>` : '',
@@ -17,10 +14,6 @@
       p.oldPrice > p.price ? `<span class="tag tag-sale">−${Math.round((1 - p.price / p.oldPrice) * 100)}%</span>` : ''
     ].join('');
 
-  /**
-   * variant: 'compact' — квадратная кнопка корзины рядом с ценой (карусели на главной),
-   *          'full'    — широкая кнопка «В корзину» (каталог, похожие товары).
-   */
   ui.productCard = (p, variant) => {
     const fav = App.db.favs.has(p.id);
     const out = p.stock <= 0;
@@ -38,7 +31,7 @@
 
     return `
       <article class="product-card" data-id="${p.id}">
-        <a class="pc-media" href="${ui.productUrl(p)}" tabindex="-1" aria-hidden="true">${ui.img(p.images[0], p.name)}</a>
+        <a class="pc-media" href="${ui.productUrl(p)}" tabindex="-1" aria-hidden="true">${ui.img(p.images[0], p.name)}${p.images[1] ? ui.img(p.images[1], '', 'pc-alt', 'data-decor') : ''}</a>
         <div class="pc-badges">${ui.badges(p)}</div>
         <button class="pc-fav${fav ? ' is-active' : ''}" type="button" data-fav="${p.id}" aria-pressed="${fav}" aria-label="${ui.t(fav ? 'common.card.favRemove' : 'common.card.favAdd')}">${ui.icon('heart')}</button>
         <div class="pc-body">

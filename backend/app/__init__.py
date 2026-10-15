@@ -1,1 +1,1 @@
-"""Бэкенд магазина K-Beauty | C-Health."""
+pass

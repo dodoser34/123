@@ -1,4 +1,3 @@
-/* Сессия: кто сейчас вошёл на сайт */
 (() => {
   const { KEYS, read, write, remove, emit } = App.storage;
   const db = App.db;

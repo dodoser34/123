@@ -1,17 +1,7 @@
-"""Аккаунт: регистрация с подтверждением почты, вход по паролю, по коду из письма и через Google,
-выход, профиль, смена и сброс пароля, удаление аккаунта.
-
-Защита: лимиты попыток (на IP и на почту), одинаковое время ответа для существующих и несуществующих аккаунтов,
-коды с ограниченным сроком и числом попыток, хеши паролей/токенов/кодов вместо самих значений, журнал событий."""
-import json
 import logging
-import re
 from datetime import datetime, timedelta, timezone
-from urllib.parse import urlencode
 
-import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
 from sqlalchemy import delete, desc, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,12 +14,12 @@ from ...core.security import (
     new_code,
     new_token,
     password_problem,
-    read_state,
     same,
-    sign_state,
     token_hash,
     verify_password,
 )
+
+
 from ...db.models import EmailCode, Session, User
 from ...db.session import get_db
 from ...schemas import CodeIn, DeleteMeIn, EmailIn, LoginIn, PasswordIn, ProfileIn, RegisterIn, ResetIn
@@ -40,16 +30,7 @@ from ..serializers import user_out
 router = APIRouter(prefix='/auth', tags=['Аккаунт'])
 log = logging.getLogger('kbch.security')
 
-GOOGLE_AUTH = 'https://accounts.google.com/o/oauth2/v2/auth'
-GOOGLE_TOKEN = 'https://oauth2.googleapis.com/token'
-GOOGLE_USERINFO = 'https://openidconnect.googleapis.com/v1/userinfo'
-SAFE_NEXT = re.compile(r'^((pages|admin)/)?[\w-]+\.html([?#][^:\\]*)?$')
-GOOGLE_LOGIN_STATE = re.compile(r'^[A-Za-z0-9_-]{43}$')
-GOOGLE_COOKIE = 'kbch_google_state'
-GOOGLE_COOKIE_PATH = '/api/auth/google'
 
-
-# ---------- Помощники ----------
 def _utc(dt: datetime) -> datetime:
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
@@ -61,7 +42,6 @@ async def _user_by_email(db: AsyncSession, email: str) -> User | None:
 async def _session(db: AsyncSession, user: User) -> dict:
     token = new_token()
     db.add(Session(token_hash=token_hash(token), user_id=user.id, expires_at=datetime.now(timezone.utc) + timedelta(days=get_settings().session_days)))
-    # заодно убираем просроченные сессии этого пользователя
     await db.execute(delete(Session).where(Session.user_id == user.id, Session.expires_at < datetime.now(timezone.utc)))
     await db.commit()
     return {'token': token, 'user': user_out(user)}
@@ -80,25 +60,22 @@ def _check_domain(email: str) -> None:
 
 
 def _per_email(request: Request, email: str, rule: str = 'rate_codes') -> None:
-    """Лимит на конкретную почту — чтобы нельзя было «бомбить» письмами или подбирать пароль к одному аккаунту."""
     enforce(f'{rule}:{email.lower()}', getattr(get_settings(), rule))
 
 
 async def _issue_code(db: AsyncSession, email: str, purpose: str) -> None:
-    """Создать код и отправить письмо. Повторно — не чаще раза в CODE_RESEND_SECONDS."""
     s = get_settings()
     email = email.lower()
     last = await first(db, select(EmailCode).where(EmailCode.email == email, EmailCode.purpose == purpose).order_by(desc(EmailCode.id)))
     if last and (datetime.now(timezone.utc) - _utc(last.created_at)).total_seconds() < s.code_resend_seconds:
         raise HTTPException(429, f'Код уже отправлен. Повторно можно запросить через {s.code_resend_seconds} секунд.')
     code = new_code()
-    # старые коды этой почты и назначения больше не действуют
     await db.execute(delete(EmailCode).where(EmailCode.email == email, EmailCode.purpose == purpose, EmailCode.used.is_(False)))
     db.add(EmailCode(email=email, purpose=purpose, code_hash=code_hash(email, code), expires_at=datetime.now(timezone.utc) + timedelta(minutes=s.code_ttl_minutes)))
     await db.commit()
     try:
         await send_code(email, code, purpose)
-    except Exception as e:  # noqa: BLE001 — понятная ошибка пользователю, подробности в лог
+    except Exception as e:
         logging.getLogger('kbch.email').exception('Не удалось отправить письмо: %s', e)
         raise HTTPException(502, 'Не удалось отправить письмо. Попробуйте позже.') from e
 
@@ -123,7 +100,6 @@ async def _use_code(db: AsyncSession, email: str, code: str, purpose: str) -> No
     await db.commit()
 
 
-# ---------- Регистрация и подтверждение почты ----------
 @router.post('/register', summary='Регистрация: создаёт аккаунт и отправляет код подтверждения на почту', dependencies=[Depends(limit('rate_register', 'register'))])
 async def register(data: RegisterIn, request: Request, db: AsyncSession = Depends(get_db)):
     email = data.email.lower()
@@ -134,17 +110,12 @@ async def register(data: RegisterIn, request: Request, db: AsyncSession = Depend
     if user and user.email_verified:
         raise HTTPException(409, 'Этот email уже зарегистрирован. Войдите в аккаунт.')
     if user:
-        # Pending credentials are immutable: an older verification code must never
-        # activate a password supplied by another registration request.
         raise HTTPException(409, 'Регистрация уже начата. Войдите по коду из письма или сбросьте пароль.')
     db.add(User(email=email, name=data.name, password_hash=hash_password(data.password)))
     try:
-        # _issue_code commits the user and its challenge together, before sending.
-        # A cooldown/error before that commit leaves neither a new user nor a new password.
         await _issue_code(db, email, 'verify')
     except IntegrityError as e:
         await db.rollback()
-        # Two first registrations may race on the unique email in PostgreSQL/SQLite.
         raise HTTPException(409, 'Регистрация уже начата. Войдите по коду из письма или сбросьте пароль.') from e
     return {'status': 'verify', 'email': email}
 
@@ -169,16 +140,14 @@ async def resend(data: EmailIn, request: Request, db: AsyncSession = Depends(get
     user = await _user_by_email(db, data.email)
     if user and not user.email_verified:
         await _issue_code(db, data.email, 'verify')
-    return {'status': 'sent'}  # одинаковый ответ — по нему нельзя узнать, есть ли такой аккаунт
+    return {'status': 'sent'}
 
 
-# ---------- Вход ----------
 @router.post('/login', summary='Вход по email и паролю', dependencies=[Depends(limit('rate_login', 'login'))])
 async def login(data: LoginIn, request: Request, db: AsyncSession = Depends(get_db)):
     email = data.email.lower()
     _per_email(request, email, 'rate_login_email')
     user = await _user_by_email(db, email)
-    # проверка пароля выполняется всегда (даже без аккаунта) — время ответа не выдаёт, есть ли почта в базе
     if not verify_password(data.password, user.password_hash if user else None) or not user:
         log.warning('Неудачный вход: %s с IP %s', email, client_ip(request))
         raise HTTPException(401, 'Неверный email или пароль')
@@ -195,115 +164,6 @@ async def login(data: LoginIn, request: Request, db: AsyncSession = Depends(get_
     return await _session(db, user)
 
 
-@router.post('/code/request', summary='Вход без пароля: отправить код на почту (новый email — новый аккаунт)', dependencies=[Depends(limit('rate_codes', 'codes'))])
-async def code_request(data: EmailIn, request: Request, db: AsyncSession = Depends(get_db)):
-    _per_email(request, data.email)
-    user = await _user_by_email(db, data.email)
-    if user and user.blocked:
-        raise HTTPException(403, 'Аккаунт заблокирован. Свяжитесь с магазином.')
-    if not user:
-        _check_domain(data.email)
-    await _issue_code(db, data.email, 'login')
-    return {'status': 'sent', 'email': data.email.lower()}
-
-
-@router.post('/code/verify', summary='Вход по коду из письма', dependencies=[Depends(limit('rate_login', 'login'))])
-async def code_verify(data: CodeIn, db: AsyncSession = Depends(get_db)):
-    await _use_code(db, data.email, data.code, 'login')
-    user = await _user_by_email(db, data.email)
-    if not user:
-        user = User(email=data.email.lower(), name=data.email.split('@')[0][:80] or 'Покупатель')
-        db.add(user)
-    if user.blocked:
-        raise HTTPException(403, 'Аккаунт заблокирован. Свяжитесь с магазином.')
-    if not user.email_verified:
-        # Ownership of the mailbox does not prove ownership of a password from
-        # an unfinished registration, which may have been planted by somebody else.
-        user.password_hash = None
-        await db.execute(delete(EmailCode).where(EmailCode.email == user.email, EmailCode.purpose == 'verify'))
-    user.email_verified = True
-    await db.flush()
-    return await _session(db, user)
-
-
-# ---------- Вход через Google ----------
-@router.get('/google/login', summary='Вход через Google: перенаправление на страницу Google', dependencies=[Depends(limit('rate_login', 'google'))])
-async def google_login(next: str = '', login_state: str = ''):
-    s = get_settings()
-    if not s.google_enabled:
-        raise HTTPException(404, 'Вход через Google не настроен')
-    if not GOOGLE_LOGIN_STATE.fullmatch(login_state):
-        raise HTTPException(400, 'Начните вход через Google на странице входа магазина.')
-    params = {
-        'client_id': s.google_client_id,
-        'redirect_uri': f'{s.public_api_url}/auth/google/callback',
-        'response_type': 'code',
-        'scope': 'openid email profile',
-        'state': sign_state(json.dumps({'next': next[:200] if SAFE_NEXT.fullmatch(next) else '', 'login_state': login_state}, separators=(',', ':'))),
-        'prompt': 'select_account',
-    }
-    response = RedirectResponse(f'{GOOGLE_AUTH}?{urlencode(params)}')
-    response.set_cookie(GOOGLE_COOKIE, params['state'], max_age=600, httponly=True, secure=s.is_production, samesite='lax', path=GOOGLE_COOKIE_PATH)
-    return response
-
-
-@router.get('/google/callback', include_in_schema=False, dependencies=[Depends(limit('rate_login', 'google'))])
-async def google_callback(request: Request, code: str = '', state: str = '', error: str = '', db: AsyncSession = Depends(get_db)):
-    s = get_settings()
-    login_page = f'{s.frontend_url}/pages/login.html'
-
-    def redirect(url: str) -> RedirectResponse:
-        response = RedirectResponse(url)
-        response.delete_cookie(GOOGLE_COOKIE, path=GOOGLE_COOKIE_PATH, httponly=True, secure=s.is_production, samesite='lax')
-        return response
-
-    payload = read_state(state)
-    cookie = request.cookies.get(GOOGLE_COOKIE, '')
-    if error or not code or not cookie or not same(cookie, state) or payload is None:
-        return redirect(f'{login_page}#error=google')
-    try:
-        data = json.loads(payload)
-        nxt, login_state = data['next'], data['login_state']
-        if not isinstance(nxt, str) or not isinstance(login_state, str) or not GOOGLE_LOGIN_STATE.fullmatch(login_state) or (nxt and not SAFE_NEXT.fullmatch(nxt)):
-            raise ValueError('Invalid OAuth state')
-    except (ValueError, KeyError, TypeError):
-        return redirect(f'{login_page}#error=google')
-    try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            tok = await client.post(
-                GOOGLE_TOKEN,
-                data={
-                    'code': code,
-                    'client_id': s.google_client_id,
-                    'client_secret': s.google_client_secret.get_secret_value(),
-                    'redirect_uri': f'{s.public_api_url}/auth/google/callback',
-                    'grant_type': 'authorization_code',
-                },
-            )
-            tok.raise_for_status()
-            info = (await client.get(GOOGLE_USERINFO, headers={'Authorization': f'Bearer {tok.json()["access_token"]}'})).json()
-    except (httpx.HTTPError, KeyError, ValueError):
-        return redirect(f'{login_page}#error=google')
-    email, sub = str(info.get('email', '')).lower(), str(info.get('sub', ''))
-    if not email or not sub or not info.get('email_verified'):
-        return redirect(f'{login_page}#error=google')
-    user = await first(db, select(User).where(User.google_sub == sub)) or await _user_by_email(db, email)
-    if not user:
-        user = User(email=email, name=(info.get('name') or email.split('@')[0])[:80])
-        db.add(user)
-    if user.blocked:
-        return redirect(f'{login_page}#error=blocked')
-    if not user.email_verified:
-        user.password_hash = None
-        await db.execute(delete(EmailCode).where(EmailCode.email == user.email, EmailCode.purpose == 'verify'))
-    user.google_sub, user.email_verified = sub, True
-    await db.flush()
-    session = await _session(db, user)
-    # токен — во фрагменте адреса (#…): он не уходит на сервер и не попадает в журналы
-    return redirect(f'{login_page}#' + urlencode({'token': session['token'], 'next': nxt, 'login_state': login_state}))
-
-
-# ---------- Сессия и профиль ----------
 @router.post('/logout', summary='Выйти (завершить текущую сессию)')
 async def logout(session_hash: str | None = Depends(current_session_hash), db: AsyncSession = Depends(get_db)):
     if session_hash:
@@ -334,7 +194,7 @@ async def update_me(data: ProfileIn, user: User = Depends(current_user), db: Asy
     return user_out(user)
 
 
-@router.post('/password/change', summary='Сменить пароль (у входивших только через Google — задать пароль)', dependencies=[Depends(limit('rate_login', 'password'))])
+@router.post('/password/change', summary='Сменить пароль', dependencies=[Depends(limit('rate_login', 'password'))])
 async def change_password(
     data: PasswordIn,
     user: User = Depends(current_user),
@@ -345,7 +205,6 @@ async def change_password(
         raise HTTPException(400, 'Текущий пароль указан неверно')
     _check_password(data.new, user.email)
     user.password_hash = hash_password(data.new)
-    # остальные сессии завершаются — если пароль меняют из-за взлома, злоумышленник выйдет
     await db.execute(delete(Session).where(Session.user_id == user.id, Session.token_hash != session_hash))
     await db.commit()
     log.info('Смена пароля: %s', user.email)
@@ -381,6 +240,6 @@ async def delete_me(data: DeleteMeIn, user: User = Depends(current_user), db: As
     if user.password_hash and not verify_password(data.password, user.password_hash):
         raise HTTPException(400, 'Пароль указан неверно')
     log.info('Удалён аккаунт: %s', user.email)
-    await db.delete(user)  # сессии удаляются вместе с аккаунтом; заказы и отзывы остаются без привязки к аккаунту
+    await db.delete(user)
     await db.commit()
     return {'status': 'deleted'}

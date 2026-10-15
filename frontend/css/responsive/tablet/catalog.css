@@ -1,4 +1,3 @@
-/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → каталог */
 @media (max-width: 1024px) {
   .catalog-layout {
     grid-template-columns: 1fr;
@@ -28,7 +27,7 @@
   }
 }
 @media (max-width: 1024px) {
-  /* окно цены раскрывается влево от кнопки, чтобы не уходить за правый край экрана */
+
   #price-dd .dropdown-menu {
     left: auto;
     right: 0;

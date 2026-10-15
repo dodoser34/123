@@ -1,4 +1,3 @@
-"""Отзывы: читать — всем, писать — покупателям, «полезно» — один голос, модерация и ответы — администратору."""
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -31,7 +30,7 @@ async def reviews_list(db: AsyncSession, user: User | None, voter: str = '', pro
     if who and rows:
         voted = set((await db.execute(select(ReviewVote.review_id).where(ReviewVote.voter == who))).scalars().all())
     out = [review_out(r, r.id in voted) for r in rows]
-    if user and not everything:  # свои скрытые отзывы автор тоже видит (в личном кабинете)
+    if user and not everything:
         own = (await db.execute(select(Review).where(Review.user_id == user.id, Review.status == 'hidden'))).scalars().all()
         out += [review_out(r) for r in own if not product_id or r.product_id == product_id]
     return out

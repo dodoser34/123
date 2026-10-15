@@ -1,8 +1,8 @@
-"""Collect public frontend files in .public/; never deploy the source folder wholesale."""
-
 import argparse
 import json
 import os
+import posixpath
+import re
 from pathlib import Path
 import shutil
 import tempfile
@@ -22,6 +22,8 @@ WEB_EXTENSIONS = {
     'texts': {'.js'},
     'assets': {'.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.otf'},
 }
+
+
 PRIVATE_PARTS = {'private', 'personal', 'secrets', 'credentials', 'exports', 'backups', 'tmp', 'temp', 'tests', 'test-results', 'node_modules', '_local'}
 
 
@@ -39,7 +41,6 @@ def public_file(relative: Path) -> bool:
 
 
 def copy_public(source: Path, destination: Path) -> int:
-    """Copy shared storefront assets into an already-created staging directory."""
     count = 0
     for directory, dirs, files in os.walk(source, followlinks=False):
         parent = Path(directory)
@@ -56,11 +57,44 @@ def copy_public(source: Path, destination: Path) -> int:
     return count
 
 
+IMPORT = re.compile(r"""@import\s+url\(\s*['"]?([^'")?]+)(?:\?[^'")]*)?['"]?\s*\)\s*;""")
+URL = re.compile(r"""url\(\s*(['"]?)([^'")]+)\1\s*\)""")
+
+
+def inline_css(path: Path, entry_dir: Path, seen: set) -> str:
+    real = path.resolve()
+    if real in seen:
+        return ''
+    seen.add(real)
+    text = path.read_text(encoding='utf-8')
+
+    def rebase(match):
+        quote, target = match.group(1), match.group(2)
+        if target.startswith(('data:', 'http:', 'https:', '//', '/', '#')):
+            return match.group(0)
+        base, _, suffix = target.partition('?')
+        moved = os.path.relpath(path.parent / base, entry_dir).replace(os.sep, '/')
+        return f'url({quote}{posixpath.normpath(moved)}{"?" + suffix if suffix else ""}{quote})'
+
+    parts, last = [], 0
+    for match in IMPORT.finditer(text):
+        parts.append(URL.sub(rebase, text[last:match.start()]))
+        parts.append(inline_css(path.parent / match.group(1), entry_dir, seen))
+        last = match.end()
+    parts.append(URL.sub(rebase, text[last:]))
+    return ''.join(parts)
+
+
+def bundle_css(stage: Path) -> None:
+    for entry in sorted((stage / 'css').glob('*.css')):
+        if IMPORT.search(entry.read_text(encoding='utf-8')):
+            entry.write_text(inline_css(entry, entry.parent, set()), encoding='utf-8')
+
+
 def replace_directory(source: Path, destination: Path) -> None:
-    """Windows scanners can temporarily lock freshly copied files during a directory rename."""
     for attempt in range(5):
         if destination.is_symlink():
-            raise ValueError('Unsafe public output path')
+            raise ValueError('Небезопасный путь для папки .public')
         try:
             source.replace(destination)
             return
@@ -71,44 +105,44 @@ def replace_directory(source: Path, destination: Path) -> None:
 
 
 def validate_output() -> None:
-    # Only this reserved project directory can be replaced. Never follow symlinks.
     if OUTPUT.is_symlink() or OUTPUT.resolve() != PROJECT / '.public' or OWNER.is_symlink():
-        raise ValueError('Unsafe public output path')
+        raise ValueError('Небезопасный путь для папки .public')
     if OUTPUT.exists():
         if not OUTPUT.is_dir():
-            raise ValueError('Public output is not a directory')
+            raise ValueError('.public — не папка')
         owned = OWNER.is_file() and json.loads(OWNER.read_text(encoding='utf-8')) == IDENTITY
         if any(OUTPUT.iterdir()) and not owned:
-            raise ValueError('Refusing to replace an unmanaged .public directory')
+            raise ValueError('Папка .public создана не этим скриптом — заменять её не будем')
 
 
 def prepare(api_env: str | None) -> int:
     source = PROJECT / 'frontend'
     if source.is_symlink() or (source / 'index.html').is_symlink() or not (source / 'index.html').is_file():
-        raise ValueError('Frontend source with index.html is required')
+        raise ValueError('Нужна папка frontend с файлом index.html')
     api_url = None
     if api_env:
         api_url = os.environ.get(api_env, '').strip()
         parsed = urlsplit(api_url)
         if parsed.username or parsed.password or parsed.query or parsed.fragment:
-            raise ValueError('API address must not contain credentials, query parameters or fragments')
+            raise ValueError('Адрес API не должен содержать логин, пароль, параметры (?) или якорь (#)')
         if parsed.scheme and (parsed.scheme not in {'http', 'https'} or not parsed.netloc):
-            raise ValueError('API address must use HTTP(S)')
+            raise ValueError('Адрес API должен начинаться с http:// или https://')
         if not parsed.scheme and api_url and (not api_url.startswith('/') or api_url.startswith('//')):
-            raise ValueError('Relative API address must start with a single slash')
+            raise ValueError('Относительный адрес API должен начинаться с одного /')
     validate_output()
-    # Build completely before replacing a previously generated artifact.
     with tempfile.TemporaryDirectory(prefix='.public-build-', dir=PROJECT) as temp:
         stage = Path(temp) / 'site'
         stage.mkdir()
         count = copy_public(source, stage)
+        if (stage / 'css').is_dir():
+            bundle_css(stage)
         if api_url is not None:
             if not (stage / 'env.js').exists():
                 count += 1
             (stage / 'env.js').write_text('window.KBCH_API_URL = ' + json.dumps(api_url) + ';\n', encoding='utf-8')
         validate_output()
         if OUTPUT.exists():
-            shutil.rmtree(OUTPUT)  # resolved, reserved, non-symlink, ownership checked above
+            shutil.rmtree(OUTPUT)
         replace_directory(stage, OUTPUT)
         OWNER.write_text(json.dumps(IDENTITY) + '\n', encoding='utf-8')
     return count
@@ -116,10 +150,10 @@ def prepare(api_env: str | None) -> int:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--api-url-from-env', metavar='VARIABLE', help='public API address; never pass a secret here')
+    parser.add_argument('--api-url-from-env', metavar='VARIABLE', help='имя переменной окружения с публичным адресом API (не секрет)')
     args = parser.parse_args()
     try:
         total = prepare(args.api_url_from_env)
     except (ValueError, OSError) as error:
-        parser.exit(1, f'Cannot prepare public frontend: {error}\n')
-    print(f'Prepared {total} public files in .public/')
+        parser.exit(1, f'Не удалось собрать .public: {error}\n')
+    print(f'Готово: {total} публичных файлов в .public/')

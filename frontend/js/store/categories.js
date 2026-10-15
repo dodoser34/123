@@ -1,4 +1,3 @@
-/* Категории каталога */
 (() => {
   const { KEYS, read, write, emit } = App.storage;
   const db = App.db;

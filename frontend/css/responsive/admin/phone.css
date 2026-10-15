@@ -1,4 +1,3 @@
-/* АДМИНКА на телефонах (до 520 px) */
 @media (max-width: 520px) {
   .kpis {
     grid-template-columns: 1fr;

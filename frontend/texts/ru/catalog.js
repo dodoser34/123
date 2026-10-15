@@ -1,5 +1,3 @@
-/* КАТАЛОГ (pages/catalog.html). Правьте только текст в кавычках.
-   {count} — число, {count|товар|товара|товаров} — слово для числа, {query} — поисковый запрос, {tag} — тег. */
 App.texts.catalog = {
   meta: {
     title: 'Каталог — {shop}',
@@ -14,7 +12,6 @@ App.texts.catalog = {
 
   search: { label: 'Поиск по товарам', placeholder: 'Поиск по товарам…' },
 
-  // Боковая панель
   aside: {
     label: 'Категории и фильтры',
     title: 'Фильтры',
@@ -25,7 +22,6 @@ App.texts.catalog = {
     brand: 'Бренд'
   },
 
-  // Панель над товарами
   toolbar: {
     filters: 'Категории и фильтры',
     price: 'Цена',
@@ -39,7 +35,6 @@ App.texts.catalog = {
     views: { large: 'Крупная сетка', grid: 'Сетка', list: 'Список' }
   },
 
-  // Варианты сортировки
   sorts: {
     popular: 'Популярные',
     'price-asc': 'Сначала дешевле',

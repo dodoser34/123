@@ -1,8 +1,6 @@
-/* Страница товара → данные для поисковиков: заголовок вкладки, описание и разметка schema.org (JSON-LD). */
 (() => {
   const { ui } = App;
 
-  /** Заголовок страницы и meta description. */
   function meta(p) {
     const shop = App.config.shopName;
     document.title = p.seoTitle ? p.seoTitle + ' | ' + shop : ui.t('product.seoTitle', { name: p.name, shop });
@@ -15,7 +13,6 @@
     tag.content = p.seoDescription || p.short;
   }
 
-  /** Разметка товара для поисковиков: цена, наличие, фото, рейтинг. Обновляется при новых отзывах. */
   function jsonLd(p, rating, images) {
     let s = document.getElementById('ld-product');
     if (!s) {

@@ -1,6 +1,3 @@
-/* Оформление заказа: контакты, доставка, оплата, проверка полей.
-   В локальном режиме способы оплаты могут дополняться модулем конкретной сборки.
-   С сервером: способы оплаты приходят с сервера (перевод на Kaspi, наличные, Kaspi Pay), сумму считает сервер. */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
   const payment = App.checkoutPayment || { format: () => false };
@@ -9,7 +6,7 @@ document.addEventListener('app:ready', () => {
   const lastOrder = user ? db.orders.forUser(user.id)[0] : null;
   const form = { delivery: 'courier', payment: '', agree: true };
 
-  const T = ui.t('checkout'); // тексты — texts/…/checkout.js
+  const T = ui.t('checkout');
   const D = T.delivery;
   const DELIVERY = {
     courier: D.courier,
@@ -110,11 +107,10 @@ document.addEventListener('app:ready', () => {
       </form>`;
   }
 
-  /* ---------- События ---------- */
   root.addEventListener('input', (e) => {
     const el = e.target;
     if (!el.name) return;
-    if (payment.format(el)) return; // поля карты не сохраняем даже в памяти страницы
+    if (payment.format(el)) return;
     if (el.name === 'phone') el.value = ui.maskPhone(el.value);
     form[el.name] = el.type === 'checkbox' ? el.checked : el.value;
     const field = el.closest('.field');
@@ -122,6 +118,7 @@ document.addEventListener('app:ready', () => {
   });
 
   root.addEventListener('change', (e) => {
+    if (e.target.name === 'phone') form.phone = e.target.value = ui.fixPhone(e.target.value);
     if (e.target.name === 'delivery' || e.target.name === 'payment') {
       form[e.target.name] = e.target.value;
       render();
@@ -135,6 +132,8 @@ document.addEventListener('app:ready', () => {
       if (el.name && !el.name.startsWith('card')) form[el.name] = el.type === 'checkbox' ? el.checked : el.value;
     });
 
+    form.phone = ui.fixPhone(form.phone);
+    if (f.elements.phone) f.elements.phone.value = form.phone;
     const errors = {};
     if ((form.name || '').trim().length < 2) errors.name = T.errors.name;
     if (!ui.isPhoneComplete(form.phone)) errors.phone = T.errors.phone;
@@ -192,9 +191,10 @@ document.addEventListener('app:ready', () => {
       render();
       return;
     }
-    // Kaspi Pay и другие онлайн-оплаты: переход на страницу оплаты
+
     const pay = res.order.paymentInstructions;
     if (pay && pay.type === 'redirect' && pay.url) return (location.href = pay.url);
+    if (pay && pay.type === 'test_payment') return (location.href = ui.base + pay.url);
     success(res.order);
   });
 

@@ -1,5 +1,3 @@
-/* Админка → форма товара. Разделы: основное, фото, «для чего и кому», состав, применение, характеристики, SEO.
-   Справа: публикация, цена и наличие, метки, заполненность карточки и превью. */
 (() => {
   const { ui, db } = App;
   const A = App.admin;
@@ -29,7 +27,6 @@
         (c ? '<option value="__new">＋ Новая подкатегория…</option>' : '');
     };
 
-    /** Создать категорию или подкатегорию прямо из формы товара, если подходящей ещё нет. */
     async function createCategory(isSub) {
       const all = db.categories.all();
       const parent = isSub ? all.find((c) => c.id === F.category.value) : null;
@@ -44,7 +41,7 @@
       for (let n = 2, base = id; taken.some((x) => x.id === id); n++) id = base + '-' + n;
       if (isSub) parent.subs.push({ id, name });
       else all.push({ id, name, icon: 'leaf', subs: [] });
-      if ((await db.categories.saveAll(all)) === false) return false; // false — сервер отказал
+      if ((await db.categories.saveAll(all)) === false) return false;
       ui.toast({
         title: isSub ? 'Подкатегория создана' : 'Категория создана',
         text: name + ' — её можно переименовать в разделе «Категории».'
@@ -164,7 +161,7 @@
     A.$content.querySelector('.pf-nav').addEventListener('click', (e) => {
       const link = e.target.closest('[data-jump]');
       if (!link) return;
-      e.preventDefault(); // не менять адрес #product/… — иначе сработает переход
+      e.preventDefault();
       document.getElementById(link.dataset.jump).scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 

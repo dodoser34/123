@@ -49,18 +49,19 @@ async def test_slug_stable_on_update_and_unique_on_collision(client):
     ('DELETE', '/api/admin/orders/missing', None),
     ('PATCH', '/api/admin/users/missing', {'blocked': True}),
 ])
+
+
 async def test_missing_resource_returns_404(client, method, path, body):
     admin = await login(client)
     response = await client.request(method, path, json=body, headers=admin)
     assert response.status_code == 404
 
 
-async def test_site_texts_replace_previous_edits(client):
+async def test_site_texts_cannot_be_edited_through_api(client):
     admin = await login(client)
-    for edits in [{'home.hero.title': 'First'}, {'home.hero.text': 'Second'}, {}]:
-        response = await client.put('/api/site/texts', json={'edits': edits}, headers=admin)
-        assert response.status_code == 200
-        assert (await client.get('/api/site')).json()['textEdits'] == edits
+    response = await client.put('/api/site/texts', json={'edits': {'home.hero.title': 'Взлом'}}, headers=admin)
+    assert response.status_code in (404, 405)
+    assert 'textEdits' not in (await client.get('/api/site')).json()
 
 
 async def test_photo_reset_preserves_other_photo(client):

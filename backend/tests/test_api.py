@@ -8,11 +8,9 @@ CATS = [{'id': 'herbs', 'name': 'Травы', 'icon': 'leaf', 'subs': [{'id': 't
 PRODUCT = {'name': 'Ромашка', 'brand': 'C-Health', 'category': 'herbs', 'price': 1990, 'stock': 3, 'images': ['a.jpg'], 'tags': ['сон']}
 
 
-# ---------- Аккаунт ----------
 async def test_register_requires_email_code(client):
     r = await client.post('/api/auth/register', json={'name': 'Аня', 'email': 'Anya@Example.com', 'password': 'secret-123'})
     assert r.json() == {'status': 'verify', 'email': 'anya@example.com'}
-    # до подтверждения войти нельзя — приходит код
     r = await client.post('/api/auth/login', json={'email': 'anya@example.com', 'password': 'secret-123'})
     assert r.status_code == 403 and r.json()['detail']['code'] == 'email_not_verified'
     r = await client.post('/api/auth/verify', json={'email': 'anya@example.com', 'code': '000000'})
@@ -45,15 +43,11 @@ async def test_passwords_are_hashed(client):
     assert user.password_hash.startswith('$2b$') and 'plain-password-1' not in user.password_hash
 
 
-async def test_code_login_creates_account_and_limits_attempts(client):
-    await client.post('/api/auth/code/request', json={'email': 'new@example.com'})
-    for _ in range(5):
-        r = await client.post('/api/auth/code/verify', json={'email': 'new@example.com', 'code': '111111'})
-    r = await client.post('/api/auth/code/verify', json={'email': 'new@example.com', 'code': SENT[('new@example.com', 'login')]})
-    assert r.status_code == 429  # после 5 ошибок код сгорает
-    await client.post('/api/auth/code/request', json={'email': 'new@example.com'})
-    r = await client.post('/api/auth/code/verify', json={'email': 'new@example.com', 'code': SENT[('new@example.com', 'login')]})
-    assert r.status_code == 200 and r.json()['user']['email'] == 'new@example.com'
+async def test_only_password_login_exists(client):
+    for method, url in [('POST', '/api/auth/code/request'), ('POST', '/api/auth/code/verify'), ('GET', '/api/auth/google/login'), ('GET', '/api/auth/google/callback')]:
+        r = await client.request(method, url, json={'email': 'new@example.com', 'code': '123456'} if method == 'POST' else None)
+        assert r.status_code in (404, 405), (url, r.status_code)
+    assert 'google' not in (await client.get('/api/bootstrap')).json()['config']
 
 
 async def test_logout_profile_password_delete(client):
@@ -89,15 +83,9 @@ async def test_single_admin_from_env(client):
     me = (await client.get('/api/auth/me', headers=admin)).json()
     assert me['role'] == 'admin'
     r = await client.request('DELETE', '/api/auth/me', json={'password': ADMIN_PASSWORD}, headers=admin)
-    assert r.status_code == 403  # администратора из .env удалить нельзя
+    assert r.status_code == 403
 
 
-async def test_google_login_disabled_without_keys(client):
-    r = await client.get('/api/auth/google/login')
-    assert r.status_code == 404
-
-
-# ---------- Каталог: права ----------
 async def test_products_crud_admin_only(client):
     admin = await login(client)
     buyer = await register_verified(client)
@@ -108,18 +96,15 @@ async def test_products_crud_admin_only(client):
     assert r.status_code == 201
     p = r.json()
     assert p['slug'] == 'romashka' and p['tags'] == ['сон'] and p['images'] == ['a.jpg']
-    # одинаковое название — адрес не повторяется
     assert (await client.post('/api/products', json=PRODUCT, headers=admin)).json()['slug'] == 'romashka-2'
     r = await client.put(f'/api/products/{p["id"]}', json={**PRODUCT, 'status': 'hidden', 'price': 2490}, headers=admin)
     assert r.json()['price'] == 2490
-    assert (await client.get(f'/api/products/{p["slug"]}')).status_code == 404  # скрытый товар гостю не виден
+    assert (await client.get(f'/api/products/{p["slug"]}')).status_code == 404
     assert len((await client.get('/api/products?all=1', headers=admin)).json()) == 2
     assert (await client.delete(f'/api/products/{p["id"]}', headers=admin)).status_code == 200
-    # категорию с товарами удалить нельзя
     assert (await client.put('/api/categories', json=[], headers=admin)).status_code == 409
 
 
-# ---------- Заказы и оплата ----------
 async def test_order_uses_server_prices_and_kaspi(client):
     admin = await login(client)
     await client.put('/api/categories', json=CATS, headers=admin)
@@ -135,16 +120,14 @@ async def test_order_uses_server_prices_and_kaspi(client):
     r = await client.post('/api/orders', json=order, headers=buyer)
     assert r.status_code == 201, r.text
     o = r.json()
-    assert o['items'][0]['qty'] == 3  # не больше, чем на складе
+    assert o['items'][0]['qty'] == 3
     assert o['subtotal'] == 1990 * 3 and o['deliveryPrice'] == 1000 and o['total'] == 1990 * 3 + 1000
     assert o['paymentStatus'] == 'awaiting' and o['paymentInstructions']['phone'] == '+7 700 000 00 00'
     assert o['number'] == 1001
     assert (await client.get(f'/api/products/{p["id"]}')).status_code == 404 or True
     stock = [x for x in (await client.get('/api/products?all=1', headers=admin)).json() if x['id'] == p['id']][0]['stock']
     assert stock == 0
-    # нет в наличии — заказ не создаётся
     assert (await client.post('/api/orders', json=order, headers=buyer)).status_code == 409
-    # администратор подтверждает оплату, отмена возвращает товар на склад
     r = await client.patch(f'/api/admin/orders/{o["id"]}', json={'paymentStatus': 'paid'}, headers=admin)
     assert r.json()['paid'] is True and 'paymentInstructions' not in r.json()
     assert (await client.patch(f'/api/admin/orders/{o["id"]}', json={'status': 'cancelled'}, headers=buyer)).status_code == 403
@@ -156,7 +139,6 @@ async def test_order_uses_server_prices_and_kaspi(client):
     assert (await client.post('/api/orders', json={**order, 'payment': 'kaspi_pay'}, headers=buyer)).status_code == 400
 
 
-# ---------- Отзывы ----------
 async def test_reviews_votes_and_moderation(client):
     admin = await login(client)
     await client.put('/api/categories', json=CATS, headers=admin)
@@ -176,22 +158,20 @@ async def test_reviews_votes_and_moderation(client):
     assert (await client.get(f'/api/reviews?productId={p["id"]}', headers=buyer)).json()[0]['reply']['text'] == 'Спасибо!'
 
 
-# ---------- Сайт, пользователи, загрузки ----------
 async def test_bootstrap_site_users_uploads(client):
     admin = await login(client)
     buyer = await register_verified(client)
     guest = (await client.get('/api/bootstrap')).json()
     assert guest['user'] is None and guest['orders'] == [] and guest['users'] == []
-    assert (await client.put('/api/site/texts', json={'edits': {'home.hero.lead': 'Новый'}}, headers=buyer)).status_code == 403
-    await client.put('/api/site/texts', json={'edits': {'home.hero.lead': 'Новый'}}, headers=admin)
+    assert (await client.put('/api/site/photos', json={'index': 1, 'url': 'https://x/y.jpg'}, headers=buyer)).status_code == 403
     await client.put('/api/site/photos', json={'index': 1, 'url': 'https://x/y.jpg'}, headers=admin)
     site = (await client.get('/api/site')).json()
-    assert site['textEdits']['home.hero.lead'] == 'Новый' and site['sitePhotos']['gallery']['1'] == 'https://x/y.jpg'
+    assert site == {'sitePhotos': {'gallery': {'1': 'https://x/y.jpg'}}}
     boot = (await client.get('/api/bootstrap', headers=admin)).json()
     assert boot['user']['role'] == 'admin' and len(boot['users']) == 2
     buyer_id = [u for u in boot['users'] if u['role'] == 'customer'][0]['id']
     await client.patch(f'/api/admin/users/{buyer_id}', json={'blocked': True}, headers=admin)
-    assert (await client.get('/api/auth/me', headers=buyer)).status_code == 401  # заблокированный выходит сразу
+    assert (await client.get('/api/auth/me', headers=buyer)).status_code == 401
     png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
     r = await client.post('/api/uploads', json={'data': png}, headers=admin)
     assert r.status_code == 201 and r.json()['url'].endswith('.png')

@@ -1,4 +1,3 @@
-"""Реальные ограничения SQL и каскады на изолированной SQLite из conftest."""
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -60,9 +59,10 @@ async def test_database_rejects_invalid_review(client, changes):
 
 @pytest.mark.parametrize('model,first,second', [
     (User, {'email': 'same@example.com', 'name': 'A'}, {'email': 'same@example.com', 'name': 'B'}),
-    (User, {'email': 'a@example.com', 'name': 'A', 'google_sub': 'same'}, {'email': 'b@example.com', 'name': 'B', 'google_sub': 'same'}),
     (Product, {'slug': 'same', 'name': 'A'}, {'slug': 'same', 'name': 'B'}),
 ])
+
+
 async def test_unique_identity_constraints(client, model, first, second):
     async with SessionLocal() as db:
         db.add(model(**first)); await db.commit()

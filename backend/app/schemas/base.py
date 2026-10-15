@@ -1,4 +1,3 @@
-"""Общая основа схем: пробелы по краям обрезаются, управляющие символы удаляются."""
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from ..core.sanitize import clean_text

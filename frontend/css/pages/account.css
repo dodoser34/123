@@ -1,4 +1,3 @@
-/* Личный кабинет */
 .account-layout {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -56,7 +55,7 @@
 .acc-nav .is-active .icon {
   color: var(--primary);
 }
-/* Активный раздел — мягкая плашка с полоской слева */
+
 .acc-nav .is-active,
 .acc-nav .is-active:hover {
   background: var(--sage-soft);
@@ -213,7 +212,6 @@
   padding-top: 24px;
 }
 
-/* Приветствие: аватар, имя, плитки статистики */
 .acc-hero {
   position: relative;
   overflow: hidden;
@@ -321,7 +319,6 @@ a.acc-stat:hover {
   font-size: 12px;
 }
 
-/* Шкала статуса заказа */
 .order-progress {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -412,7 +409,7 @@ a.acc-stat:hover {
   .avatar-lg {
     animation: acc-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   }
-  /* карточки раздела появляются по очереди */
+
   .acc-content > * {
     animation: acc-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
@@ -447,7 +444,6 @@ a.acc-stat:hover {
   }
 }
 
-/* «Удалить аккаунт» — отдельный блок под профилем */
 .acc-danger {
   margin-top: 36px;
   padding-top: 24px;
@@ -465,7 +461,6 @@ a.acc-stat:hover {
   margin-bottom: 16px;
 }
 
-/* Статус оплаты заказа */
 .order-pay {
   margin-top: 10px;
   font-size: 13px;

@@ -1,17 +1,11 @@
-/* Обновления формата данных (миграции): по шагам дописывают в уже сохранённые данные новые поля товаров,
-   отзывы и пути к фото, не затирая правки администратора. Вызывается из seed.js.
-   Меняете формат данных — добавьте шаг «if (from < N)» в конец и поднимите VERSION в seed.js. */
 (() => {
   const { KEYS, read, write, remove, clone } = App.storage;
   const db = App.db;
 
-  /** Перевести данные, сохранённые версией from, в текущий формат.
-      demo — демо-наполнение, writeUsers и rememberDemo — помощники из seed.js. */
   function run(from, { demo, writeUsers, rememberDemo }) {
     const seedById = Object.fromEntries(demo.products.map((p) => [p.id, p]));
     let products = read(KEYS.products, []);
 
-    // v2: товары, добавленные в каталог позже (если их ещё нет и они не были удалены осознанно)
     if (from < 2 && !read('catalog-expansion-20261013', false)) {
       const additions = ['p8', 'p9', 'p10', 'p11', 'p12', 'p13']
         .map((id) => seedById[id])
@@ -21,13 +15,12 @@
     remove('catalog-expansion-20261013');
     remove('seeded');
 
-    // v3: новые поля товара (для чего, кому, теги, состав, применение, характеристики) и новый формат отзывов
     if (from < 3) {
       const FIELDS = ['purpose', 'audience', 'tags', 'keyIngredients', 'whenToUse', 'frequency', 'warnings', 'specs', 'attributes'];
       products = products.map((stored) => {
         const p = db.products.normalize(stored);
         const s = seedById[p.id];
-        if (s && Array.isArray(stored.skinTypes)) p.audience = clone(s.audience); // старое поле «Подходит для» → «Кому подходит»
+        if (s && Array.isArray(stored.skinTypes)) p.audience = clone(s.audience);
         if (s) {
           FIELDS.forEach((k) => {
             const empty = Array.isArray(p[k]) ? !p[k].length : k === 'specs' ? !Object.values(p.specs).some(Boolean) : !p[k];
@@ -40,13 +33,12 @@
       demo.reviews.forEach((r) => {
         const i = reviews.findIndex((x) => x.id === r.id);
         if (i < 0) reviews.push(clone(r));
-        else if (!('title' in reviews[i])) reviews[i] = clone(r); // стартовый отзыв в старом формате → новая версия
+        else if (!('title' in reviews[i])) reviews[i] = clone(r);
       });
       write(KEYS.reviews, reviews);
-      writeUsers(); // новый формат хеша пароля у демо-аккаунтов
+      writeUsers();
     }
 
-    // v4: русские названия товаров (только если администратор не менял название сам)
     if (from < 4) {
       const RENAMED = {
         p1: ['Anua Heartleaf 77% Soothing Toner', 'Успокаивающий тонер Anua Heartleaf 77%'],
@@ -66,7 +58,6 @@
       products = products.map((p) => (RENAMED[p.id] && p.name === RENAMED[p.id][0] ? Object.assign(p, { name: RENAMED[p.id][1] }) : p));
     }
 
-    // v5: фото товаров разложены по папкам разделов: products/anua-toner.jpg → products/face/anua-toner.jpg
     if (from < 5) {
       const FOLDERS = {
         face: [
@@ -96,7 +87,7 @@
       products = products.map((p) => {
         p.images = (p.images || []).map(fix);
         const s = seedById[p.id];
-        // дополнительные ракурсы для галереи, если у товара было только стартовое фото
+
         if (s && p.images.length === 1 && p.images[0] === s.images[0]) p.images = clone(s.images);
         return p;
       });
@@ -106,7 +97,6 @@
       );
     }
 
-    // v6: демо-наполнение переехало в отдельную папку demo/
     if (from < 6) {
       const moved = (src) => (src || '').replace(/^assets\/images\/products\//, 'demo/images/products/');
       products = products.map((p) => Object.assign(p, { images: (p.images || []).map(moved) }));

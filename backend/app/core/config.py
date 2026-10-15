@@ -1,12 +1,3 @@
-"""Настройки бэкенда.
-
-Локально (ENVIRONMENT=development, по умолчанию) ничего настраивать не нужно: база — файл backend/dev.db,
-администратор — admin@demo.kz / admin12345, письма — в лог и backend/dev-mail.log.
-
-На сервере (ENVIRONMENT=production) всё берётся из переменных окружения — файл deploy/.env
-(образец: deploy/.env.example) или панель хостинга. Секреты живут ТОЛЬКО там: в git и в ответы API они не попадают.
-С небезопасными или незаполненными настройками сервер в production не запускается (см. problems()).
-"""
 from functools import lru_cache
 from pathlib import Path
 
@@ -16,85 +7,69 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 WEAK_SECRETS = ('change-me', 'changeme', 'password', 'secret', '12345', 'admin')
 
-# значения только для локальной разработки — в production они не подставляются
 DEV_DATABASE_URL = f'sqlite+aiosqlite:///{(BACKEND_DIR / "dev.db").as_posix()}'
 DEV_ADMIN_EMAIL = 'admin@demo.kz'
 DEV_ADMIN_PASSWORD = 'admin12345'
 
 
 class Settings(BaseSettings):
-    # .env ищется в текущей папке и в папке backend/ — сервер можно запускать из любой из них
     model_config = SettingsConfigDict(env_file=('.env', BACKEND_DIR / '.env'), env_file_encoding='utf-8', extra='ignore')
 
-    # ---------- Общее ----------
     app_name: str = 'K-Beauty | C-Health'
-    environment: str = 'development'  # development | production
+    environment: str = 'development'
     secret_key: SecretStr = Field(SecretStr('change-me-in-production-0000'), description='подпись кодов и state; ≥ 32 символов в production')
-    frontend_url: str = 'http://localhost:5174'  # адрес сайта: сюда возвращает вход через Google
-    public_api_url: str = 'http://localhost:8000/api'  # адрес API снаружи: для Google и ссылок на фото
-    cors_origins: str = 'http://localhost:5174,http://127.0.0.1:5174'  # с каких сайтов можно обращаться к API
-    allowed_hosts: str = '*'  # имена хостов, на которые отвечает API (через запятую): shop.kz,www.shop.kz
-    docs_enabled: bool | None = None  # /api/docs; по умолчанию включено в development и выключено в production
-    trust_proxy: bool = False  # за Nginx/Render: брать IP посетителя из X-Forwarded-For (нужно для ограничения запросов)
-    proxy_hops: int = 1  # сколько прокси стоит перед бэкендом (Nginx — 1; Cloudflare + Nginx — 2)
+    frontend_url: str = 'http://localhost:5174'
+    public_api_url: str = 'http://localhost:8000/api'
+    cors_origins: str = 'http://localhost:5174,http://127.0.0.1:5174'
+    allowed_hosts: str = '*'
+    docs_enabled: bool | None = None
+    trust_proxy: bool = False
+    proxy_hops: int = 1
 
-    # ---------- База данных PostgreSQL ----------
-    database_url: SecretStr = SecretStr('')  # пусто в разработке → SQLite-файл backend/dev.db
+    database_url: SecretStr = SecretStr('')
     db_pool_size: int = 5
     db_max_overflow: int = 10
-    db_statement_timeout_ms: int = 15000  # долгий запрос прерывается — защита от «зависания» базы
-    db_ssl: bool = False  # шифровать соединение с базой (внешние облачные базы)
-    auto_create_tables: bool = True  # только разработка на SQLite: создать таблицы и категории без миграций
+    db_statement_timeout_ms: int = 15000
+    db_ssl: bool = False
+    auto_create_tables: bool = True
 
-    # ---------- Администратор (один). Создаётся/обновляется при каждом запуске ----------
     admin_email: str = ''
-    # можно указать пароль (ADMIN_PASSWORD) или его bcrypt-хеш (ADMIN_PASSWORD_HASH — тогда пароль нигде не хранится открыто).
-    # хеш: python -m app.cli hash-password
     admin_password: SecretStr = SecretStr('')
     admin_password_hash: SecretStr = SecretStr('')
     admin_name: str = 'Администратор'
 
-    # ---------- Сессии, пароли, коды из писем ----------
     session_days: int = 30
     password_min_length: int = 8
     code_ttl_minutes: int = 10
     code_resend_seconds: int = 60
     code_max_attempts: int = 5
-    allowed_email_domains: str = ''  # с каких почт можно регистрироваться (через запятую); пусто — с любых
+    allowed_email_domains: str = ''
 
-    # ---------- Ограничение частоты запросов (защита от перебора паролей и DDoS) ----------
     rate_limit_enabled: bool = True
-    rate_login: str = '10/minute'  # вход с одного IP
-    rate_login_email: str = '5/minute'  # попытки входа в один аккаунт
-    rate_codes: str = '5/minute'  # отправка писем с кодами
-    rate_register: str = '5/hour'  # регистраций с одного IP
-    rate_write: str = '60/minute'  # заказы, отзывы, голоса с одного IP
-    rate_global: str = '300/minute'  # любые запросы к API с одного IP
-    max_body_kb: int = 1024  # предельный размер запроса (кроме загрузки фото)
+    rate_login: str = '10/minute'
+    rate_login_email: str = '5/minute'
+    rate_codes: str = '5/minute'
+    rate_register: str = '5/hour'
+    rate_write: str = '60/minute'
+    rate_global: str = '300/minute'
+    max_body_kb: int = 1024
 
-    # ---------- Отправка писем ----------
-    email_backend: str = 'console'  # console — коды пишутся в лог (разработка); smtp — настоящая отправка
-    email_log_file: str = ''  # разработка: при console письма ещё и дописываются в файл
+    email_backend: str = 'console'
+    email_log_file: str = ''
     smtp_host: str = 'smtp.gmail.com'
     smtp_port: int = 587
     smtp_user: str = ''
-    smtp_password: SecretStr = SecretStr('')  # Gmail — «пароль приложения»
+    smtp_password: SecretStr = SecretStr('')
     smtp_from: str = ''
     smtp_tls: bool = True
 
-    # ---------- Вход через Google ----------
-    google_client_id: str = ''
-    google_client_secret: SecretStr = SecretStr('')
-
-    # ---------- Магазин, доставка, фото ----------
     free_shipping_from: int = 15000
     courier_price: int = 1000
     media_dir: str = str(BACKEND_DIR / 'media')
     media_url: str = '/media'
     max_upload_mb: int = 8
 
-    # ---------- Оплата (см. docs/14-Платежи.md) ----------
-    payment_methods: str = 'kaspi_transfer,cash'  # kaspi_transfer, cash, kaspi_pay
+    payment_methods: str = 'kaspi_transfer,cash,test_card,test_kaspi'
     kaspi_phone: str = ''
     kaspi_receiver: str = ''
     kaspi_pay_link: str = ''
@@ -103,11 +78,9 @@ class Settings(BaseSettings):
     kaspi_api_key: SecretStr = SecretStr('')
     kaspi_webhook_secret: SecretStr = SecretStr('')
 
-    # ---------- Проверки ----------
     @field_validator('database_url', mode='before')
     @classmethod
     def async_driver(cls, url):
-        # Render и другие хостинги выдают адрес вида postgres://… — переводим на асинхронный драйвер asyncpg
         url = url.get_secret_value() if isinstance(url, SecretStr) else str(url)
         for prefix in ('postgres://', 'postgresql://'):
             if url.startswith(prefix):
@@ -116,7 +89,6 @@ class Settings(BaseSettings):
 
     @model_validator(mode='after')
     def dev_defaults(self):
-        # локальный запуск без .env: всё нужное подставляется само. В production — только явные значения.
         if not self.is_production:
             if not self.database_url.get_secret_value():
                 self.database_url = SecretStr(DEV_DATABASE_URL)
@@ -163,15 +135,10 @@ class Settings(BaseSettings):
         return self._list(self.payment_methods)
 
     @property
-    def google_enabled(self) -> bool:
-        return bool(self.google_client_id and self.google_client_secret.get_secret_value())
-
-    @property
     def secret(self) -> bytes:
         return self.secret_key.get_secret_value().encode()
 
     def problems(self) -> list[str]:
-        """Что настроено небезопасно. В production при любой проблеме сервер не запускается."""
         out = []
         key = self.secret_key.get_secret_value()
         if len(key) < 32 or any(w in key.lower() for w in WEAK_SECRETS):
@@ -204,7 +171,7 @@ class Settings(BaseSettings):
                     out.append('SMTP_USER / SMTP_PASSWORD: укажите и логин, и пароль SMTP')
                 elif self.smtp_host.lower() == 'smtp.gmail.com' and not self.smtp_user.strip():
                     out.append('SMTP_USER / SMTP_PASSWORD: для Gmail нужны почта и пароль приложения')
-            from ..services.payments import METHODS  # здесь, а не наверху: оплата сама читает настройки
+            from ..services.payments import METHODS
 
             for code in self.payment_list:
                 if code not in METHODS:

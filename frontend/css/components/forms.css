@@ -1,4 +1,3 @@
-/* Поля форм, количество, панели */
 .field {
   display: flex;
   flex-direction: column;
@@ -141,7 +140,6 @@
   width: 34px;
 }
 
-/* Panels */
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);

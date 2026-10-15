@@ -1,4 +1,3 @@
-/* Шапка сайта и поиск */
 .site-header {
   position: sticky;
   top: 0;
@@ -263,7 +262,7 @@
 .header-cancel {
   display: none;
 }
-/* Название магазина рядом с логотипом */
+
 .site-header .logo-text {
   font-size: 21px;
   white-space: nowrap;

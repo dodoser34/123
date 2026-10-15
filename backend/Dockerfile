@@ -1,4 +1,3 @@
-# Образ бэкенда: Python 3.11 + FastAPI под gunicorn/uvicorn
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -14,5 +13,4 @@ RUN chmod +x entrypoint.sh && useradd --create-home app && mkdir -p media && cho
 USER app
 
 EXPOSE 8000
-# при запуске: миграции базы → сервер
 ENTRYPOINT ["./entrypoint.sh"]

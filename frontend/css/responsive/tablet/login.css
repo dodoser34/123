@@ -1,4 +1,3 @@
-/* ПЛАНШЕТЫ (до 1024 px; 761–1024 px — планшет горизонтально) → вход и регистрация */
 @media (max-width: 1024px) {
   .auth-wrap {
     grid-template-columns: 1fr;

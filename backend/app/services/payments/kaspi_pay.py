@@ -1,13 +1,3 @@
-"""Kaspi Pay для бизнеса: счёт создаётся через API Kaspi, покупатель платит в приложении Kaspi.kz,
-Kaspi присылает уведомление (webhook) — заказ становится «Оплачен».
-
-Как включить (когда магазин получит доступ к API в кабинете Kaspi Pay):
-    1. в .env: KASPI_MERCHANT_ID, KASPI_API_KEY, KASPI_WEBHOOK_SECRET (и при необходимости KASPI_API_URL);
-    2. добавить kaspi_pay в PAYMENT_METHODS;
-    3. в кабинете Kaspi указать адрес уведомлений: <PUBLIC_API_URL>/payments/kaspi/webhook;
-    4. сверить с документацией Kaspi места, помеченные «KASPI API» (адрес запроса, названия полей, подпись).
-Всё остальное (статусы, проверка суммы, повторные уведомления) уже готово.
-"""
 import hashlib
 import hmac
 import json
@@ -27,7 +17,6 @@ class KaspiPay(PaymentMethod):
     env = ('KASPI_MERCHANT_ID', 'KASPI_API_KEY', 'KASPI_WEBHOOK_SECRET')
 
     async def start(self, order: Order, s: Settings) -> dict:
-        # KASPI API: создание счёта. Сверьте адрес и поля с документацией Kaspi Pay.
         payload = {
             'merchantId': s.kaspi_merchant_id,
             'orderId': order.id,
@@ -56,14 +45,12 @@ class KaspiPay(PaymentMethod):
 
     @staticmethod
     def check_signature(body: bytes, signature: str, s: Settings) -> bool:
-        # KASPI API: уточните, как Kaspi подписывает уведомления; здесь — HMAC-SHA256 тела запроса секретом из кабинета.
         secret = s.kaspi_webhook_secret.get_secret_value()
         good = hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
         return bool(secret) and hmac.compare_digest(good, signature or '')
 
     @staticmethod
     def parse_webhook(body: bytes) -> tuple[str, str, int | None]:
-        """Возвращает (id заказа, новый статус оплаты paid | failed, сумма из уведомления)."""
         data = json.loads(body or b'{}')
         if not isinstance(data, dict):
             raise ValueError('Уведомление должно быть объектом')

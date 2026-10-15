@@ -1,4 +1,3 @@
-/* Кнопки «В корзину» и «♡» работают на любой странице; счётчики в шапке обновляются сами */
 (() => {
   const ui = App.ui;
   const base = ui.base;
@@ -20,7 +19,7 @@
     });
     ui.$$('[data-cart-count]').forEach((b) => {
       b.classList.remove('bump');
-      void b.offsetWidth; // перезапуск анимации
+      void b.offsetWidth;
       b.classList.add('bump');
     });
     if (button.classList.contains('pc-cart')) {

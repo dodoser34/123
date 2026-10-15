@@ -1,8 +1,7 @@
-/* Шапка сайта: меню, выпадающий каталог, поиск с подсказками, счётчики корзины и избранного */
 (() => {
   const ui = App.ui;
   const base = ui.base;
-  let listenersReady = false; // глобальные обработчики вешаются один раз, даже если шапка перерисовывается
+  let listenersReady = false;
 
   function catalogMenu() {
     return App.db.categories

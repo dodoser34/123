@@ -1,11 +1,15 @@
-/* Как оплатить заказ: блок с реквизитами перевода на Kaspi (после оформления заказа и в личном кабинете).
-   Реквизиты приходят с сервера (backend/.env: KASPI_PHONE, KASPI_RECEIVER, KASPI_PAY_LINK). */
 (() => {
   const ui = App.ui;
 
-  /** HTML блока оплаты для заказа или '' — если платить ничего не нужно. */
   ui.paymentInfo = (order) => {
     const info = order && order.paymentInstructions;
+    if (info && info.type === 'test_payment')
+      return `
+      <div class="pay-info pay-info-test">
+        <div class="pay-info-head"><b>${ui.t('checkout.testPay.title')}</b></div>
+        <p class="muted pay-note">${ui.t('checkout.testPay.note')}</p>
+        <a class="btn btn-primary btn-sm pay-link" href="${ui.base + info.url}">${ui.icon('lock')} ${ui.t('checkout.testPay.go', { sum: ui.price(info.amount) })}</a>
+      </div>`;
     if (!info || info.type !== 'kaspi_transfer') return '';
     const T = ui.t('checkout.kaspi');
     const row = (label, value, copy) =>
@@ -24,7 +28,6 @@
       </div>`;
   };
 
-  // кнопка «скопировать» у номера и комментария
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-copy]');
     if (!b) return;

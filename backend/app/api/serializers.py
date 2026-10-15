@@ -1,4 +1,3 @@
-"""Как записи базы отдаются фронтенду — в тех же полях, что использует сайт (camelCase)."""
 from datetime import datetime
 
 from ..db.models import Order, Product, Review, User
@@ -19,7 +18,6 @@ def user_out(u: User) -> dict:
         'blocked': u.blocked,
         'emailVerified': u.email_verified,
         'hasPassword': bool(u.password_hash),
-        'google': bool(u.google_sub),
     }
 
 

@@ -1,4 +1,3 @@
-/* Окно заказа и экран входа */
 .order-detail dl {
   display: grid;
   grid-template-columns: 140px 1fr;
@@ -20,7 +19,7 @@
   padding: 24px;
   text-align: center;
 }
-/* Отзывы */
+
 .adm-reviews {
   display: grid;
   gap: 14px;

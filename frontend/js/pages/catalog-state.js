@@ -1,14 +1,11 @@
-/* Каталог → состояние: фильтры хранятся в адресе страницы (ссылкой на подборку можно поделиться),
-   отбор и сортировка товаров по этим фильтрам. */
 (() => {
   const { db, ui } = App;
-  const SORTS = ui.t('catalog.sorts'); // названия — texts/…/catalog.js
+  const SORTS = ui.t('catalog.sorts');
   const FLAGS = ui.t('common.flags');
   const VIEW_KEY = App.storage.P + 'view';
   const TEXT_PARAMS = ['cat', 'sub', 'flag', 'q', 'tag'];
-  const LIST_PARAMS = ['brand', 'purpose']; // параметры-списки: brand=A,B
+  const LIST_PARAMS = ['brand', 'purpose'];
 
-  /* ---------- Адрес страницы ⇄ состояние ---------- */
   function read() {
     const p = new URLSearchParams(location.search);
     const state = {
@@ -24,7 +21,6 @@
     return state;
   }
 
-  /** Состояние → строка адреса (только то, что отличается от значений по умолчанию). */
   function toQuery(state) {
     const p = new URLSearchParams();
     TEXT_PARAMS.forEach((k) => state[k] && p.set(k, state[k]));
@@ -37,24 +33,21 @@
     return p.toString() ? '?' + p : '';
   }
 
-  /* Вид списка (крупно / сетка / список) запоминается в браузере, а не в адресе */
   function loadView() {
     try {
       return localStorage.getItem(VIEW_KEY) || 'grid';
     } catch (e) {
-      return 'grid'; // браузер запретил хранилище
+      return 'grid';
     }
   }
   function saveView(view) {
     try {
       localStorage.setItem(VIEW_KEY, view);
     } catch (e) {
-      /* браузер запретил хранилище */
+
     }
   }
 
-  /* ---------- Отбор и сортировка ---------- */
-  /** Товары с учётом категории, флага, поиска и тега — до фильтров цены, бренда и назначения. */
   function baseList(state) {
     let list = db.products.visible();
     if (state.cat) list = list.filter((p) => p.category === state.cat);
@@ -69,7 +62,6 @@
     return list;
   }
 
-  /** Итоговый список: все фильтры + сортировка. Товары не в наличии — в конце. */
   function filtered(state) {
     let list = baseList(state);
     if (state.min != null) list = list.filter((p) => p.price >= state.min);
@@ -89,14 +81,12 @@
     return list.sort((a, b) => (a.stock <= 0) - (b.stock <= 0) || sorters[state.sort](a, b));
   }
 
-  /** Границы ползунка цены, округлённые до сотен. */
   function priceRange(list) {
     const prices = list.map((p) => p.price);
     if (!prices.length) return { min: 0, max: 0 };
     return { min: Math.floor(Math.min(...prices) / 100) * 100, max: Math.ceil(Math.max(...prices) / 100) * 100 };
   }
 
-  /** Заголовок страницы: подкатегория, категория, «Новинки», «Поиск» или просто «Каталог». */
   function title(state) {
     if (state.flag) return FLAGS[state.flag];
     const sub = state.sub && db.categories.sub(state.cat, state.sub);

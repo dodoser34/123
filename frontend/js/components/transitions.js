@@ -1,10 +1,3 @@
-/* Плавные переходы: между страницами, при смене содержимого и при добавлении в корзину.
-   • Между страницами: браузер плавно сменяет одну страницу другой (View Transitions API),
-     шапка остаётся на месте, а фото товара «перелетает» из карточки на страницу товара и обратно.
-     Оформление переходов — в css/components/transitions.css.
-   • ui.transition(update) — плавная смена содержимого без перезагрузки (фильтры, вкладки, разделы админки).
-   • ui.flyToCart(button) — миниатюра товара улетает в значок корзины.
-   Старые браузеры получают простое плавное появление страницы. */
 (() => {
   const ui = App.ui;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -13,11 +6,6 @@
 
   if (!('onpagereveal' in window)) document.documentElement.classList.add('no-vt');
 
-  /**
-   * Плавно применить изменения на странице. update() меняет разметку, браузер анимирует разницу:
-   * карточки «переезжают» на новые места, новые проявляются, лишние растворяются.
-   * type — вид перехода для CSS: 'swap' (по умолчанию), 'section' (смена раздела).
-   */
   ui.transition = (update, type = 'swap') => {
     if (!document.startViewTransition || calm() || document.hidden) {
       update();
@@ -26,18 +14,16 @@
     try {
       return document.startViewTransition({ update, types: [type] });
     } catch (e) {
-      return document.startViewTransition(update); // браузеры без «типов» переходов
+      return document.startViewTransition(update);
     }
   };
 
-  /** Дать карточкам товаров имена, чтобы при сортировке и фильтрах они плавно меняли места. */
   ui.nameCards = (container) => {
     container.querySelectorAll('.product-card[data-id]').forEach((card) => {
       card.style.viewTransitionName = 'card-' + card.dataset.id;
     });
   };
 
-  /** Сдвинуть элемент с проявлением: dir 1 — справа, -1 — слева, 0 — снизу. */
   ui.slideIn = (el, dir = 0, distance = 28) => {
     if (!el || !el.animate || calm()) return;
     el.animate(
@@ -49,7 +35,6 @@
     );
   };
 
-  /** Бегунок под активной вкладкой: плавно переезжает к выбранной. Вызывать после каждой смены вкладки. */
   ui.tabsInk = (tabs) => {
     if (!tabs) return;
     let ink = tabs.querySelector('.tabs-ink');
@@ -70,7 +55,6 @@
     if (first) requestAnimationFrame(() => requestAnimationFrame(() => (ink.style.transition = '')));
   };
 
-  /* ---------- Фото товара «перелетает» между карточкой и страницей товара ---------- */
   const clearPhotoNames = () =>
     document.querySelectorAll('[data-vt-photo]').forEach((el) => {
       el.style.viewTransitionName = '';
@@ -86,7 +70,7 @@
     const link = e.target.closest('.product-card a[href*="product.html"]');
     if (!link || e.defaultPrevented || e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
     clearPhotoNames();
-    // на странице товара у главного фото то же имя — убираем, чтобы имя было одно
+
     document.querySelectorAll('.pp-main img').forEach((img) => {
       img.style.viewTransitionName = 'none';
       img.setAttribute('data-vt-photo', '');
@@ -94,7 +78,6 @@
     namePhoto(link.closest('.product-card').querySelector('.pc-media img'));
   });
 
-  // Возврат со страницы товара: фото улетает обратно в свою карточку, если она видна на экране
   window.addEventListener('pagereveal', (e) => {
     if (!e.viewTransition) return;
     const from = window.navigation && navigation.activation && navigation.activation.from;
@@ -113,7 +96,6 @@
     e.viewTransition.finished.finally(clearPhotoNames);
   });
 
-  /* ---------- Товар улетает в корзину ---------- */
   ui.flyToCart = (button) => {
     if (calm()) return;
     const source = button.closest('.product-card, .pp-top, .sticky-buy, .toast');

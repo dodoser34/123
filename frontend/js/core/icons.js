@@ -1,4 +1,3 @@
-/* Иконки (линейные, в стиле lucide) и логотип-лотос */
 (() => {
   const ui = App.ui;
   const base = ui.base;

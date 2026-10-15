@@ -1,9 +1,6 @@
-/* Страница товара → галерея: миниатюры, главное фото, точки на телефоне, листание свайпом и просмотр на весь экран.
-   Показывает только те фото, которые реально есть на сервере: дополнительные ракурсы можно докладывать в папку позже. */
 (() => {
   const { ui } = App;
 
-  /** Оставить из списка только загружающиеся фото. */
   const loadable = (list) =>
     Promise.all(
       list.map(
@@ -14,12 +11,11 @@
             img.onload = () => resolve(src);
             img.onerror = () => resolve(null);
             img.src = ui.url(src);
-            setTimeout(() => resolve(src), 3000); // медленная сеть — показываем как есть
+            setTimeout(() => resolve(src), 3000);
           })
       )
     ).then((found) => found.filter(Boolean));
 
-  /** Галерея одного товара. images — найденные фото (пустая строка — заглушка), current — номер показанного. */
   function create(p) {
     const g = { images: [''], current: 0 };
 
@@ -52,7 +48,6 @@
         </div>`;
     };
 
-    /** Показать фото номер i; новое выезжает с той стороны, куда листают. */
     g.show = (i) => {
       const count = g.images.length;
       const next = (i + count) % count;

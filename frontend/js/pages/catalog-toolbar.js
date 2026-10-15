@@ -1,11 +1,9 @@
-/* Каталог → панель над товарами: сортировка, фильтр цены с ползунком, переключатель вида (крупно / сетка / список) */
 (() => {
   const { ui } = App;
   const { SORTS } = App.catalogState;
   const T = ui.t('catalog.toolbar');
   const $ = (id) => document.getElementById(id);
 
-  /** range — границы цены в подборке, reset(patch) — применить фильтр. */
   function render(state, range, reset) {
     $('open-filters').innerHTML = `${ui.icon('sliders')} ${T.filters}`;
     $('sort-dd').innerHTML = `

@@ -1,4 +1,3 @@
-/* Всплывающие уведомления в углу экрана */
 (() => {
   const ui = App.ui;
 
@@ -17,7 +16,7 @@
     wrap.appendChild(t);
     setTimeout(() => {
       t.classList.add('is-out');
-      // после исчезновения место плавно схлопывается, остальные уведомления мягко съезжают
+
       setTimeout(() => {
         if (!t.animate) return t.remove();
         t.animate(

@@ -1,4 +1,3 @@
-/* Корзина и оформление заказа */
 .cart-layout {
   display: grid;
   grid-template-columns: 1fr 380px;
@@ -184,7 +183,7 @@
   width: 42px;
   height: 42px;
 }
-/* Корзина: список, недоступные товары, итог */
+
 .cart-list {
   padding: 8px 24px;
 }
@@ -231,7 +230,7 @@
   margin-top: 14px;
   text-align: center;
 }
-/* Оформление заказа: адрес и итог */
+
 .checkout-address {
   margin-top: 18px;
 }
@@ -264,7 +263,7 @@
 .success .muted:not(.lead) {
   margin-bottom: 28px;
 }
-/* Реквизиты перевода на Kaspi (components/payment-info.js) */
+
 .pay-info {
   margin: 20px auto 0;
   max-width: 460px;

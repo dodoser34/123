@@ -1,5 +1,3 @@
-/* Админка → каркас: проверка доступа, боковое меню, роутер (переключение разделов по адресу #products, #orders…).
-   Разделы лежат в отдельных файлах рядом и регистрируют себя в App.admin.views. */
 (() => {
   const A = (App.admin = { views: {}, dirty: false });
 
@@ -10,7 +8,6 @@
     ['orders', 'bag', 'Заказы'],
     ['users', 'users', 'Пользователи'],
     ['reviews', 'star', 'Отзывы'],
-    ['texts', 'edit', 'Тексты сайта'],
     ['photos', 'image', 'Фото «О нас»'],
     ['settings', 'settings', 'Настройки']
   ];
@@ -18,9 +15,8 @@
   document.addEventListener('app:ready', () => {
     const { ui, db } = App;
     const root = document.getElementById('admin-root');
-    const B = (A.base = ui.base); // '../'
+    const B = (A.base = ui.base);
 
-    /* ---------- Доступ ---------- */
     const me = (A.me = db.session.user());
     if (!me || me.role !== 'admin') {
       root.innerHTML = `
@@ -35,7 +31,6 @@
       return;
     }
 
-    /* ---------- Каркас ---------- */
     root.innerHTML = `
       <div class="adm">
         <aside class="adm-side" id="adm-side">
@@ -71,14 +66,13 @@
       backdrop.classList.remove('is-open');
     };
     document.getElementById('adm-logout').onclick = () => {
-      db.session.end(); // core/auth-guard.js отправит на страницу входа
+      db.session.end();
     };
 
-    /** Боковое меню; у «Заказов» и «Отзывов» — счётчики того, что ждёт внимания. */
     function renderNav(active) {
       const counts = {
         orders: db.orders.all().filter((o) => o.status === 'new').length,
-        reviews: db.reviews.all().filter((r) => r.id.startsWith('r-') && !r.reply && r.status !== 'hidden').length // новые отзывы покупателей без ответа
+        reviews: db.reviews.all().filter((r) => r.id.startsWith('r-') && !r.reply && r.status !== 'hidden').length
       };
       document.getElementById('adm-nav').innerHTML = NAV.map(
         ([k, icon, label]) =>
@@ -86,7 +80,6 @@
       ).join('');
     }
 
-    /* ---------- Общие помощники для разделов ---------- */
     A.setTitle = (t) => {
       $title.textContent = t;
       document.title = t + ' — Админ-панель';
@@ -100,7 +93,6 @@
       return x ? x.name : '';
     };
 
-    /* ---------- Роутер ---------- */
     let currentHash = location.hash;
     A.route = function () {
       const [view, id] = (location.hash.slice(1) || 'dashboard').split('/');

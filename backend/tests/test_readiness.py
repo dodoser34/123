@@ -1,4 +1,3 @@
-"""Запуск и readiness: production не сообщает о готовности с нерабочей БД/почтой."""
 import pytest
 
 from app import main
@@ -39,6 +38,8 @@ def production_settings(**changes):
     ({'smtp_user': ''}, 'SMTP_USER'),
     ({'smtp_user': '', 'smtp_password': ''}, 'SMTP_PASSWORD'),
 ])
+
+
 def test_production_rejects_incomplete_smtp_settings(changes, required):
     assert required in ' '.join(production_settings(**changes).problems())
 

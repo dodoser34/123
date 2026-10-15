@@ -1,5 +1,3 @@
-/* Админка → фото товара: загрузка файлов (кнопкой или перетаскиванием), путь к файлу на сайте,
-   порядок фото, главное фото, удаление. Первое фото — главное (его видно в каталоге). */
 (() => {
   const { ui } = App;
   const A = App.admin;
@@ -18,7 +16,6 @@
     <p class="field-hint">Совет: снимите 3 фото — общий вид, текстуру крупным планом и товар в руке или в использовании.</p>
     <div class="img-list" id="img-list"></div>`;
 
-  /** Подключить поведение. images — массив, который меняется на месте; onChange вызывается после каждой правки. */
   A.initImages = (images, onChange) => {
     const list = document.getElementById('img-list');
     const dz = document.getElementById('dz');

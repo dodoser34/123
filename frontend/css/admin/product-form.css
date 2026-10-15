@@ -1,4 +1,3 @@
-/* Форма товара и загрузка фото */
 .pf {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -186,7 +185,7 @@
   font-size: 13px;
   color: var(--text-muted);
 }
-/* Навигация по разделам формы */
+
 .pf-back {
   margin: -8px 0 14px;
 }
@@ -237,7 +236,6 @@
   font-size: 13px;
 }
 
-/* Метки */
 .chips-box {
   display: flex;
   flex-wrap: wrap;
@@ -273,7 +271,6 @@
   font-size: 14px;
 }
 
-/* Списки строк и пары */
 .list-rows {
   display: grid;
   gap: 8px;
@@ -319,7 +316,6 @@
   gap: 6px;
 }
 
-/* Заполненность */
 .progress {
   height: 8px;
   border-radius: 8px;

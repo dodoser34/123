@@ -1,4 +1,3 @@
-/* Избранное: товары, отмеченные сердечком (скрытые админом не показываются) */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
   const root = document.getElementById('fav-root');

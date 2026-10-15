@@ -1,4 +1,3 @@
-"""Общие зависимости маршрутов: база, текущий пользователь, проверка прав."""
 from datetime import datetime, timezone
 
 from fastapi import Depends, Header, HTTPException, status
@@ -11,7 +10,6 @@ from ..db.session import get_db
 
 
 def _bearer(authorization: str | None) -> str | None:
-    # токен — 43 символа; слишком длинные строки не обрабатываем вовсе
     if authorization and authorization.lower().startswith('bearer ') and len(authorization) <= 200:
         return authorization[7:].strip() or None
     return None

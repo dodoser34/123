@@ -1,4 +1,3 @@
-/* Корзина. Товары, которых нет в наличии или которые скрыты, не попадают в итог и заказ. */
 (() => {
   const { KEYS, read, write, emit } = App.storage;
   const db = App.db;
@@ -8,7 +7,6 @@
   db.cart = {
     raw: () => read(KEYS.cart, []),
 
-    /** Позиции корзины: { product, qty, available }. Удалённые товары пропускаются. */
     items() {
       return db.cart
         .raw()
@@ -53,7 +51,6 @@
 
     count: () => db.cart.raw().reduce((s, i) => s + i.qty, 0),
 
-    /** Итоги по доступным позициям. deliveryMethod влияет только на цену курьера. */
     totals(deliveryMethod) {
       const all = db.cart.items();
       const items = all.filter((i) => i.available);

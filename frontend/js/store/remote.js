@@ -1,9 +1,3 @@
-/* Работа с сервером (бэкенд на FastAPI). Включается, если в frontend/env.js указан адрес API.
-   • Читают страницы, как и раньше, из кеша в браузере — его заполняет app.js ответом /api/bootstrap.
-   • Всё, что меняет данные (вход, регистрация, заказы, товары, отзывы, тексты, фото), уходит на сервер,
-     после ответа кеш обновляется и страницы получают событие store:change.
-   • Методы, которые на сервере выполняются не мгновенно, возвращают Promise — страницы вызывают их через await
-     (в локальном режиме await просто получает готовое значение). */
 (() => {
   const API = App.apiUrl;
   App.remote = { enabled: !!API };
@@ -14,7 +8,6 @@
   const ui = App.ui;
   const TOKEN_KEY = 'kbch.v1.token';
 
-  /* ---------- Запросы ---------- */
   const getToken = () => {
     try {
       return localStorage.getItem(TOKEN_KEY) || '';
@@ -61,14 +54,13 @@
     patch: (p, b) => request('PATCH', p, b),
     del: (p, b) => request('DELETE', p, b)
   });
-  /** Выполнить запрос и вернуть {error}, а не исключение — так страницы показывают ошибку под формой. */
+
   const safe = (promise) => promise.catch((e) => ({ error: e.message, status: e.status }));
   const fail = (e) => {
     ui.toast({ title: e.message, icon: 'x' });
     return null;
   };
 
-  /* ---------- Кеш ---------- */
   function applyBoot(data) {
     App.boot = { ok: true, data };
     write(KEYS.products, data.products);
@@ -80,7 +72,7 @@
     if (data.user) write(KEYS.session, { userId: data.user.id });
     else remove(KEYS.session);
   }
-  /** Перечитать всё с сервера (после входа, заказа, смены статусов). */
+
   App.remote.refresh = async () => {
     const voter = read(KEYS.voter, '');
     applyBoot(await api.get('/bootstrap?voter=' + encodeURIComponent(voter)));
@@ -99,13 +91,11 @@
       read(key, []).filter((x) => x.id !== id)
     );
 
-  /** Фото из админки (data:URL) → файл на сервере → адрес файла. */
   async function upload(src, folder) {
     if (!/^data:/.test(src)) return src;
     return (await api.post('/uploads', { data: src, folder })).url;
   }
 
-  /* ---------- Аккаунт ---------- */
   async function afterLogin(res) {
     setToken(res.token);
     write(KEYS.users, [res.user]);
@@ -124,7 +114,7 @@
 
   Object.assign(db.users, {
     MIN_PASSWORD: 8,
-    /** Регистрация: аккаунт создаётся, на почту уходит код → {verify: true, email}. */
+
     register: ({ name, email, password }) =>
       safe(api.post('/auth/register', { name, email, password }).then((r) => ({ verify: true, email: r.email }))),
     verify: (email, code) => safe(api.post('/auth/verify', { email, code }).then(afterLogin)),
@@ -134,19 +124,8 @@
         .post('/auth/login', { email, password })
         .then(afterLogin)
         .catch((e) => (e.code === 'email_not_verified' ? { verify: true, email, error: e.message } : { error: e.message })),
-    requestCode: (email) => safe(api.post('/auth/code/request', { email })),
-    loginWithCode: (email, code) => safe(api.post('/auth/code/verify', { email, code }).then(afterLogin)),
     forgot: (email) => safe(api.post('/auth/password/forgot', { email })),
     resetPassword: (email, code, password) => safe(api.post('/auth/password/reset', { email, code, password }).then(afterLogin)),
-    googleUrl: (next) => {
-      if (!(App.boot && App.boot.data && App.boot.data.config.google)) return '';
-      try {
-        const bytes = crypto.getRandomValues(new Uint8Array(32));
-        const value = btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        sessionStorage.setItem('kbch.oauth.state', JSON.stringify({ value, createdAt: Date.now() }));
-        return `${API}/auth/google/login?next=${encodeURIComponent(next || '')}&login_state=${value}`;
-      } catch (e) { return ''; }
-    },
 
     async update(id, patch) {
       const me = db.session.user();
@@ -173,7 +152,7 @@
         fail(e);
       }
     },
-    /** Удалить свой аккаунт (пароль — для подтверждения). */
+
     deleteAccount: (password) =>
       safe(
         api.del('/auth/me', { password }).then(() => {
@@ -188,7 +167,6 @@
     clearSession();
   };
 
-  /* ---------- Каталог ---------- */
   Object.assign(db.products, {
     async save(product) {
       const current = product.id ? read(KEYS.products, []).find((p) => p.id === product.id) : null;
@@ -227,7 +205,6 @@
     }
   };
 
-  /* ---------- Отзывы ---------- */
   const voterId = () => {
     let id = read(KEYS.voter, null);
     if (!id) write(KEYS.voter, (id = uid('v')));
@@ -266,9 +243,8 @@
       }, fail)
   });
 
-  /* ---------- Заказы и оплата ---------- */
   Object.assign(db.orders, {
-    /** Включённые на сервере способы оплаты: [{code, title, text}]. */
+
     paymentMethods: () => (App.boot && App.boot.data && App.boot.data.payments) || [],
     async create(data) {
       const totals = db.cart.totals(data.delivery);
@@ -289,7 +265,7 @@
     async setStatus(id, status) {
       try {
         replaceIn(KEYS.orders, await api.patch('/admin/orders/' + id, { status }));
-        await App.remote.refresh(); // отмена заказа возвращает товары на склад
+        await App.remote.refresh();
       } catch (e) {
         fail(e);
       }
@@ -300,6 +276,18 @@
         emit('orders', { id });
       } catch (e) {
         fail(e);
+      }
+    },
+
+    async sandboxPay(id, body) {
+      try {
+        const order = await api.post('/payments/sandbox/' + id, body);
+        replaceIn(KEYS.orders, order);
+        emit('orders', { id });
+        return { order };
+      } catch (e) {
+        await App.remote.refresh().catch(() => {});
+        return { error: e.message };
       }
     },
     async remove(id) {
@@ -313,7 +301,6 @@
     }
   });
 
-  /* ---------- Фото и тексты сайта ---------- */
   const savePhotos = (site) => {
     write('site-photos', site.sitePhotos || {});
     emit('media');
@@ -330,17 +317,5 @@
     resetGallery: (i) => api.put('/site/photos', { index: i, url: '' }).then(savePhotos, fail)
   });
 
-  // правки текстов из админки сохраняются на сервере (вместе, через полсекунды после последней правки)
-  const pushTexts = ui.debounce(() => api.put('/site/texts', { edits: ui.textEdits.all() }).catch(fail), 500);
-  ['set', 'reset'].forEach((name) => {
-    const local = ui.textEdits[name];
-    ui.textEdits[name] = (...args) => {
-      const ok = local(...args);
-      pushTexts();
-      return ok;
-    };
-  });
-
-  // Сброс локальных данных недоступен при подключённом сервере.
   db.reset = null;
 })();

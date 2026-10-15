@@ -4,7 +4,6 @@ const vm = require('node:vm');
 
 const JS_DIR = path.join(__dirname, '../../frontend/js');
 
-// Each case gets independent globals, storage and real application modules.
 function browser({ base = '', search = '', products = [] } = {}) {
   const values = new Map();
   const events = [];

@@ -1,11 +1,3 @@
-"""Перевод на Kaspi владельца магазина.
-
-Покупатель видит номер Kaspi, получателя, сумму и комментарий «Заказ №…», заказ получает статус «Ждёт оплаты»,
-администратор после поступления денег отмечает «Оплачен». Настройка — две строки в .env:
-    KASPI_PHONE=+7 700 000 00 00
-    KASPI_RECEIVER=Имя получателя
-(необязательно) KASPI_PAY_LINK — ссылка Kaspi Pay / QR для оплаты в один клик.
-"""
 from ...core.config import Settings
 from ...db.models import Order
 from .base import PaymentMethod

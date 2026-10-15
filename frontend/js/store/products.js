@@ -1,9 +1,7 @@
-/* Товары: чтение, сохранение, удаление, рейтинг, адрес страницы (slug) */
 (() => {
   const { KEYS, read, write, emit, uid, today } = App.storage;
   const db = App.db;
 
-  /** Все поля товара со значениями по умолчанию — так у любого товара полный набор полей. */
   const DEFAULTS = {
     name: '',
     brand: '',
@@ -29,7 +27,7 @@
     warnings: '',
     specs: { volume: '', country: '', shelfLife: '', sku: '' },
     attributes: [],
-    sections: [], // свои разделы: [{ title, text }] — отдельные вкладки на странице товара
+    sections: [],
     seoTitle: '',
     seoDescription: '',
     isHit: false,
@@ -38,7 +36,6 @@
     createdAt: ''
   };
 
-  /** Привести товар к полному формату (в т.ч. товары, сохранённые старыми версиями сайта). */
   function normalize(p) {
     const out = Object.assign({}, DEFAULTS, p);
     out.specs = Object.assign({}, DEFAULTS.specs, p.specs);
@@ -52,15 +49,14 @@
     return out;
   }
 
-  /** Когда применять: ключ в данных → подпись на сайте. */
-  const WHEN = App.ui.t('common.whenToUse'); // названия — texts/…/common.js
+  const WHEN = App.ui.t('common.whenToUse');
 
   db.products = {
     WHEN,
     normalize,
-    /** Все товары, включая скрытые (для админки). */
+
     all: () => read(KEYS.products, []).map(normalize),
-    /** Только опубликованные товары (для витрины). */
+
     visible: () => db.products.all().filter((p) => p.status !== 'hidden'),
     get: (id) => db.products.all().find((p) => p.id === id),
     bySlug: (slug) => db.products.all().find((p) => p.slug === slug),
@@ -91,7 +87,6 @@
       emit('products', { id });
     },
 
-    /** Средняя оценка и число отзывов — считаются только по опубликованным отзывам. */
     rating(p) {
       const list = db.reviews.forProduct(p.id);
       if (!list.length) return { rating: 0, count: 0 };
@@ -99,10 +94,8 @@
       return { rating: Math.round((sum / list.length) * 10) / 10, count: list.length };
     },
 
-    /** Текст, по которому ищется товар: название, бренд, описание, теги, назначение. */
     searchText: (p) => [p.name, p.brand, p.short, ...p.tags, ...p.purpose, ...p.audience].join(' ').toLowerCase(),
 
-    /** Все уже использованные значения поля (теги, «для чего», «кому») — для подсказок в админке. */
     values(field) {
       const set = new Set();
       db.products.all().forEach((p) => (p[field] || []).forEach((v) => set.add(v)));

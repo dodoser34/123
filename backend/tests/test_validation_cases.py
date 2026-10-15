@@ -1,4 +1,3 @@
-"""Границы входных данных: без HTTP, почты и внешних сервисов."""
 import pytest
 from pydantic import ValidationError
 
@@ -14,6 +13,8 @@ from app.schemas.auth import CodeIn, ProfileIn
     ('images', ['a.jpg'] * 21), ('images', ['https://example.com/' + 'a' * 500]),
     ('images', ['javascript:alert(1)']), ('images', ['//evil.example/img.png']),
 ])
+
+
 def test_product_rejects_invalid_field(field, value):
     with pytest.raises(ValidationError):
         ProductIn.model_validate({'name': 'Tea', field: value})

@@ -1,4 +1,3 @@
-/* Админка → редактор категорий */
 (() => {
   const { ui, db } = App;
   const A = App.admin;
@@ -109,7 +108,7 @@
             s.name = s.name.trim();
           });
         });
-        if ((await db.categories.saveAll(cats)) === false) return; // false — сервер отказал
+        if ((await db.categories.saveAll(cats)) === false) return;
         A.dirty = false;
         cats = db.categories.all();
         draw();

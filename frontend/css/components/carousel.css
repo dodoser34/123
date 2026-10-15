@@ -1,4 +1,3 @@
-/* Карусель */
 .carousel {
   position: relative;
 }
@@ -34,7 +33,7 @@
     opacity 0.2s,
     background 0.2s;
 }
-/* Стрелки в заголовке раздела — рядом со ссылкой «Смотреть все» */
+
 .section-head > a {
   margin-left: auto;
 }

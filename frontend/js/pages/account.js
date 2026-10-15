@@ -1,10 +1,8 @@
-/* Личный кабинет: меню, переключение разделов, повтор заказа, сохранение профиля и пароля.
-   Разметка разделов — account-views.js. */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
   const root = document.getElementById('account-root');
 
-  const T = ui.t('account'); // тексты — texts/…/account.js
+  const T = ui.t('account');
   const TABS = {
     orders: ['package', T.nav.orders],
     reviews: ['star', T.nav.reviews],
@@ -35,7 +33,6 @@ document.addEventListener('app:ready', () => {
       </div>`;
   }
 
-  /* ---------- События ---------- */
   const setError = (form, name, msg) => {
     const field = form.elements[name].closest('.field');
     field.classList.toggle('has-error', !!msg);
@@ -45,13 +42,13 @@ document.addEventListener('app:ready', () => {
   root.addEventListener('click', (e) => {
     const t = e.target.closest('[data-tab]');
     if (t) {
-      e.preventDefault(); // плитки статистики — ссылки на разделы
+      e.preventDefault();
       tab = t.dataset.tab;
       history.replaceState(null, '', '#' + tab);
       return ui.transition(render, 'section');
     }
     if (e.target.closest('[data-logout]')) {
-      db.session.end(); // core/auth-guard.js отправит на страницу входа
+      db.session.end();
       return;
     }
     const repeat = e.target.closest('[data-repeat]');
@@ -71,8 +68,10 @@ document.addEventListener('app:ready', () => {
   root.addEventListener('input', (e) => {
     if (e.target.name === 'phone') e.target.value = ui.maskPhone(e.target.value);
   });
+  root.addEventListener('change', (e) => {
+    if (e.target.name === 'phone') e.target.value = ui.fixPhone(e.target.value);
+  });
 
-  /** Пока сервер отвечает, кнопка формы заблокирована. */
   async function busy(f, task) {
     const button = f.querySelector('[type=submit]');
     button.disabled = true;
@@ -89,7 +88,7 @@ document.addEventListener('app:ready', () => {
     const user = db.session.user();
     if (f.id === 'profile-form') {
       const name = f.elements.name.value.trim();
-      const phone = f.elements.phone.value.trim();
+      const phone = (f.elements.phone.value = ui.fixPhone(f.elements.phone.value.trim()));
       setError(f, 'name', name.length < 2 ? T.profile.errorName : '');
       setError(f, 'phone', phone && !ui.isPhoneComplete(phone) ? T.profile.errorPhone : '');
       if (name.length < 2 || (phone && !ui.isPhoneComplete(phone))) return;
@@ -119,7 +118,7 @@ document.addEventListener('app:ready', () => {
       const res = await busy(f, () => db.users.deleteAccount(password));
       if (res.error) return f.elements.password ? setError(f, 'password', res.error) : ui.toast({ title: res.error, icon: 'x' });
       ui.toast({ title: T.delete.done });
-      // сессия завершена — core/auth-guard.js отправит на страницу входа
+
     }
   });
 

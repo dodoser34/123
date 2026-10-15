@@ -1,6 +1,3 @@
-/* Оформление заказа → демо-оплата картой.
-   Это ИМИТАЦИЯ: деньги не списываются, номер карты и CVC никуда не сохраняются —
-   в заказ записываются только последние 4 цифры. Для настоящих платежей нужен платёжный сервис и сервер. */
 (() => {
   const { ui } = App;
   Object.assign(App.texts.checkout.payment, {
@@ -19,11 +16,10 @@
   });
   App.extensions.paymentMethods = { card: App.texts.checkout.payment.card };
   App.texts.checkout.done.paidCard = 'Оплачено картой {brand} •••• {last4} (демо-оплата).';
-  const T = ui.t('checkout.payment'); // тексты — texts/…/checkout.js
+  const T = ui.t('checkout.payment');
 
   const digits = (v) => String(v || '').replace(/\D/g, '');
 
-  /** Проверка номера карты по алгоритму Луна (контрольная сумма, как в настоящих формах оплаты). */
   function luhn(number) {
     let sum = 0;
     let double = false;
@@ -42,7 +38,6 @@
   const brand = (number) =>
     /^4/.test(number) ? 'Visa' : /^(5[1-5]|2[2-7])/.test(number) ? 'Mastercard' : /^220[0-4]/.test(number) ? 'Мир' : '';
 
-  /** Поля карты (показываются, когда выбрана оплата картой). */
   const fields = () => `
     <div class="card-form" id="card-form">
       <p class="demo-note">${ui.icon('info')} ${T.demoNote}</p>
@@ -57,7 +52,6 @@
       </div>
     </div>`;
 
-  /** Форматирование при вводе. Возвращает true, если поле относится к карте. */
   function format(el) {
     if (el.name === 'cardNumber') {
       const d = digits(el.value).slice(0, 19);
@@ -78,7 +72,6 @@
     return false;
   }
 
-  /** Проверка полей карты: { поле: текст ошибки }. */
   function validate(f) {
     const errors = {};
     const number = digits(f.elements.cardNumber.value);
@@ -92,7 +85,6 @@
     return errors;
   }
 
-  /** Имитация ответа банка. Возвращает последние 4 цифры и платёжную систему. */
   function pay(f) {
     const number = digits(f.elements.cardNumber.value);
     return new Promise((resolve) => setTimeout(() => resolve({ last4: number.slice(-4), brand: brand(number) || T.cardDefault }), 1200));

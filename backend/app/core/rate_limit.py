@@ -1,9 +1,3 @@
-"""Ограничение частоты запросов (защита от перебора паролей, спама письмами и DDoS на уровне приложения).
-
-Счётчики «скользящего окна» хранятся в памяти процесса. Основная защита от больших атак — в Nginx
-(deploy/nginx: limit_req, limit_conn); здесь — второй рубеж, который работает и без Nginx (например, на Render).
-При нескольких процессах gunicorn у каждого свои счётчики — для небольшого магазина этого достаточно.
-"""
 import time
 from collections import defaultdict, deque
 
@@ -15,7 +9,6 @@ PERIODS = {'second': 1, 'minute': 60, 'hour': 3600, 'day': 86400}
 
 
 def parse(rule: str) -> tuple[int, int]:
-    """'10/minute' → (10, 60)."""
     count, _, period = rule.partition('/')
     return int(count), PERIODS[period.strip()]
 
@@ -26,7 +19,6 @@ class RateLimiter:
         self.calls = 0
 
     def check(self, key: str, rule: str) -> int | None:
-        """Учесть попытку. Возвращает через сколько секунд можно повторить, если лимит исчерпан."""
         limit, window = parse(rule)
         now = time.monotonic()
         q = self.hits[key]
@@ -36,7 +28,7 @@ class RateLimiter:
             return int(q[0] + window - now) + 1
         q.append(now)
         self.calls += 1
-        if self.calls % 1000 == 0:  # изредка чистим пустые счётчики, чтобы память не росла
+        if self.calls % 1000 == 0:
             for k in [k for k, v in self.hits.items() if not v]:
                 del self.hits[k]
         return None
@@ -49,10 +41,6 @@ limiter = RateLimiter()
 
 
 def client_ip(request: Request) -> str:
-    """IP посетителя. За прокси (TRUST_PROXY=true) — из X-Forwarded-For.
-
-    Берётся адрес, который дописал НАШ прокси (PROXY_HOPS-й с конца), а не первый в списке:
-    первый посетитель может подставить сам и так обходить ограничения."""
     s = get_settings()
     if s.trust_proxy:
         chain = [x.strip() for x in request.headers.get('x-forwarded-for', '').split(',') if x.strip()]
@@ -70,7 +58,6 @@ def enforce(key: str, rule: str) -> None:
 
 
 def limit(rule_name: str, scope: str):
-    """Зависимость FastAPI: лимит на IP для группы маршрутов. Пример: Depends(limit('rate_login', 'login'))."""
 
     def dependency(request: Request) -> None:
         enforce(f'{scope}:{client_ip(request)}', getattr(get_settings(), rule_name))

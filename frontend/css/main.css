@@ -1,6 +1,3 @@
-/* Главный файл стилей магазина: подключает все части по порядку.
-   ?v=21 — версия для сброса кеша браузера; меняйте вместе с VERSION в js/app.js.
-   Порядок важен: база → компоненты → страницы → декор → адаптация (папка responsive/, подключается последней). */
 @import url('base/variables.css?v=21');
 @import url('base/base.css?v=21');
 @import url('base/interaction.css?v=21');
@@ -23,6 +20,7 @@
 @import url('pages/about.css?v=21');
 @import url('pages/delivery.css?v=21');
 @import url('pages/cart-checkout.css?v=21');
+@import url('pages/pay.css?v=21');
 @import url('pages/login.css?v=21');
 @import url('pages/account.css?v=21');
 @import url('pages/not-found.css?v=21');

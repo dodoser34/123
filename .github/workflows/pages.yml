@@ -1,4 +1,3 @@
-# GitHub discovers workflows only here; implementation lives in demo/github-pages/.
 name: GitHub Pages — demo
 
 on:

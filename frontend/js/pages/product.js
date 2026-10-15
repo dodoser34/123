@@ -1,10 +1,7 @@
-/* Страница товара: цена и покупка, вкладки, отзывы, похожие товары.
-   Галерея — product-gallery.js, информационные блоки — product-info.js, отзывы — product-reviews.js,
-   форма отзыва — product-review-form.js, данные для поисковиков — product-seo.js. */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
   const info = App.productInfo;
-  const T = ui.t('product'); // тексты — texts/…/product.js
+  const T = ui.t('product');
   const seo = App.productSeo;
   const root = document.getElementById('product-root');
   const p = db.products.bySlug(ui.qs('slug') || '');
@@ -25,7 +22,7 @@ document.addEventListener('app:ready', () => {
     ['comp', T.tabs.comp],
     ['usage', T.tabs.usage],
     ['specs', T.tabs.specs],
-    // свои разделы товара из админки — отдельные вкладки (x0, x1…)
+
     ...p.sections.map((sec, i) => ['x' + i, ui.esc(sec.title)]),
     ['reviews', T.tabs.reviews]
   ];
@@ -33,7 +30,6 @@ document.addEventListener('app:ready', () => {
 
   seo.meta(p);
 
-  /* ---------- Разметка ---------- */
   function breadcrumbs() {
     const cat = db.categories.get(p.category);
     const sub = db.categories.sub(p.category, p.sub);
@@ -97,7 +93,6 @@ document.addEventListener('app:ready', () => {
       </div>`;
   }
 
-  /** Похожие товары: больше общих «для чего», та же подкатегория, та же категория. */
   function related() {
     const all = db.products.visible().filter((x) => x.id !== p.id && x.stock > 0);
     const shared = (x) =>
@@ -145,7 +140,6 @@ document.addEventListener('app:ready', () => {
     seo.jsonLd(p, r, gallery.images);
   }
 
-  /** Перерисовать только блок отзывов (и счётчики), не трогая галерею и выбранное количество. */
   function rerenderReviews() {
     ui.transition(() => {
       const r = db.products.rating(p);
@@ -158,8 +152,6 @@ document.addEventListener('app:ready', () => {
   }
   const openReviewForm = () => App.productReviewForm.open(p, rerenderReviews);
 
-  /* ---------- События ---------- */
-  /** Переключить вкладку; новая выезжает с той стороны, где стоит её заголовок. */
   function switchTab(name) {
     const order = TABS.map(([k]) => k);
     const was = order.indexOf((document.querySelector('[data-tab].is-active') || {}).dataset?.tab);
@@ -200,7 +192,6 @@ document.addEventListener('app:ready', () => {
     });
   }
 
-  /** Панель «В корзину» внизу экрана — когда основная кнопка покупки ушла вверх. */
   function bindStickyBuy() {
     const sticky = document.getElementById('sticky-buy');
     if (!sticky || !('IntersectionObserver' in window)) return;
@@ -218,7 +209,7 @@ document.addEventListener('app:ready', () => {
 
     const hash = location.hash.slice(1);
     if (TABS.some(([k]) => k === hash)) switchTab(hash);
-    // ссылка «Оценить» из личного кабинета: pages/product.html?slug=…&review=1
+
     if (ui.qs('review') === '1') {
       switchTab('reviews');
       setTimeout(openReviewForm, 300);

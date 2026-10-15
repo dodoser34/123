@@ -1,10 +1,7 @@
-/* ДЕМО: отзывы к демо-товарам. Удаляются вместе с папкой demo.
-   period — сколько пользуется: lt1 (меньше месяца), 1to3 (1–3 месяца), gt3 (больше 3 месяцев).
-   verified — покупка подтверждена заказом; reply — ответ магазина. */
 App.seed = App.seed || {};
 
 App.seed.reviews = [
-  // Anua Heartleaf Toner
+
   {
     id: 'r1',
     productId: 'p1',
@@ -68,7 +65,6 @@ App.seed.reviews = [
     verified: true
   },
 
-  // Beauty of Joseon Dynasty Cream
   {
     id: 'r4',
     productId: 'p2',
@@ -115,7 +111,6 @@ App.seed.reviews = [
     verified: true
   },
 
-  // Round Lab Cleanser
   {
     id: 'r9',
     productId: 'p3',
@@ -147,7 +142,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Torriden Serum
   {
     id: 'r11',
     productId: 'p4',
@@ -198,7 +192,6 @@ App.seed.reviews = [
     }
   },
 
-  // COSRX Snail
   {
     id: 'r14',
     productId: 'p5',
@@ -230,7 +223,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // MEDIPEEL Glutathione
   {
     id: 'r16',
     productId: 'p6',
@@ -262,7 +254,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Mise en Scène
   {
     id: 'r18',
     productId: 'p7',
@@ -294,7 +285,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // rom&nd tint
   {
     id: 'r20',
     productId: 'p8',
@@ -326,7 +316,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // CLIO Cushion
   {
     id: 'r22',
     productId: 'p9',
@@ -358,7 +347,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // ETUDE Mascara
   {
     id: 'r24',
     productId: 'p10',
@@ -390,7 +378,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // ILLIYOON Lotion
   {
     id: 'r26',
     productId: 'p11',
@@ -422,7 +409,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // ILLIYOON Wash
   {
     id: 'r28',
     productId: 'p12',
@@ -454,7 +440,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // HAPPY BATH
   {
     id: 'r30',
     productId: 'p13',
@@ -486,7 +471,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Сбор для иммунитета
   {
     id: 'r5',
     productId: 'h1',
@@ -533,7 +517,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Чабрец
   {
     id: 'r34',
     productId: 'h2',
@@ -565,7 +548,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Ромашка
   {
     id: 'r36',
     productId: 'h3',
@@ -597,7 +579,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Сбор для пищеварения
   {
     id: 'r38',
     productId: 'h4',
@@ -629,7 +610,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Женский сбор
   {
     id: 'r40',
     productId: 'h5',
@@ -661,7 +641,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Успокаивающий сбор
   {
     id: 'r42',
     productId: 'h6',
@@ -693,7 +672,6 @@ App.seed.reviews = [
     verified: false
   },
 
-  // Наборы
   {
     id: 'r44',
     productId: 's1',

@@ -1,8 +1,3 @@
-"""Необязательный импорт примеров только в локальную БД: python demo/seed_backend.py.
-Существующие товары не перезаписываются; production запрещён.
-Фото примеров копируются в папку загрузок сервера (backend/media/products/demo/) и получают адреса /media/… —
-так же, как фото, загруженные из админки, поэтому основной сайт с API показывает их без папки demo.
-"""
 import json
 import re
 import shutil
@@ -23,7 +18,6 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 
 def default_frontend() -> Path:
-    """Папка фронтенда рядом с backend/."""
     return PROJECT_DIR / 'frontend'
 
 
@@ -33,7 +27,6 @@ async def is_empty() -> bool:
 
 
 def read_js_array(path: Path, name: str) -> list:
-    """Достать массив App.seed.<name> = [...] из JS-файла фронтенда (это почти JSON)."""
     text = path.read_text(encoding='utf-8')
     m = re.search(rf'App\.seed\.{name}\s*=\s*(\[.*?\]);\s*$', text, re.S | re.M)
     if not m:
@@ -42,11 +35,10 @@ def read_js_array(path: Path, name: str) -> list:
 
 
 def js_to_json(js: str) -> str:
-    """Перевести литерал JS (объекты, массивы, строки в '…', комментарии) в JSON, не трогая содержимое строк."""
     out, i, n = [], 0, len(js)
     while i < n:
         c = js[i]
-        if c in '\'"`':  # строка: переносим как JSON-строку
+        if c in '\'"`':
             j, buf = i + 1, []
             while js[j] != c:
                 if js[j] == '\\':
@@ -66,8 +58,8 @@ def js_to_json(js: str) -> str:
             out.append(c)
             i += 1
     text = ''.join(out)
-    text = re.sub(r'([{,]\s*)([A-Za-z_$][\w$]*)\s*:', r'\1"\2":', text)  # ключи без кавычек
-    text = re.sub(r',(\s*[}\]])', r'\1', text)  # висячие запятые
+    text = re.sub(r'([{,]\s*)([A-Za-z_$][\w$]*)\s*:', r'\1"\2":', text)
+    text = re.sub(r',(\s*[}\]])', r'\1', text)
     return text
 
 
@@ -75,7 +67,6 @@ DEMO_IMAGES = 'demo/images/products/'
 
 
 def local_images(value):
-    """Заменить пути demo/images/products/… на копии в папке загрузок сервера (во вложенных полях тоже)."""
     from app.core.config import get_settings
 
     if isinstance(value, str) and value.startswith(DEMO_IMAGES):
@@ -98,7 +89,7 @@ def local_images(value):
 async def seed(frontend: Path, demo: bool) -> None:
     from app.core.config import get_settings
     if get_settings().is_production:
-        raise ValueError('Sample importer is for a local development database only')
+        raise ValueError('Импорт примеров разрешён только в локальную базу для разработки')
     async with SessionLocal() as db:
         cats = read_js_array(frontend / 'js/data/categories.js', 'categories')
         added = 0
@@ -142,6 +133,7 @@ async def seed(frontend: Path, demo: bool) -> None:
                 added += 1
             print(f'Отзывы: добавлено {added} из {len(reviews)}')
         await db.commit()
+
 
 if __name__ == "__main__":
     import asyncio

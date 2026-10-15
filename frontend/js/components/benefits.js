@@ -1,8 +1,7 @@
-/* Блок из трёх преимуществ (оригинал, доставка, удобная оплата) */
 (() => {
   const ui = App.ui;
 
-  const ICONS = ['leaf', 'truck', 'card']; // по порядку преимуществ в texts/…/common.js → benefits
+  const ICONS = ['leaf', 'truck', 'card'];
 
   ui.benefits = (compact) => `
     <div class="benefits${compact ? ' is-compact' : ''}">

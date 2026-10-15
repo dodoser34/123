@@ -1,4 +1,3 @@
-/* Картинки с заглушкой (если файла ещё нет), декоративные ветки и «пустые состояния» */
 (() => {
   const ui = App.ui;
   const base = ui.base;
@@ -10,7 +9,6 @@
       ? `<img src="${ui.esc(ui.url(src))}" alt="${ui.esc(alt || '')}"${cls ? ` class="${cls}"` : ''} loading="lazy" decoding="async"${extra ? ' ' + extra : ''}>`
       : ui.placeholder(cls);
 
-  /** Вызывается, если картинка не загрузилась: декор просто убираем, фото заменяем заглушкой с лотосом. */
   ui.imgFail = (el) => {
     if (el.dataset.decor !== undefined) {
       el.remove();
@@ -26,10 +24,6 @@
   ui.decor = (file, cls, style) =>
     `<img class="decor ${cls || ''}" src="${base}assets/images/decor/${file}" alt="" aria-hidden="true" loading="lazy" decoding="async" data-decor${style ? ` style="${style}"` : ''}>`;
 
-  /**
-   * «Пусто»: иллюстрация, заголовок, текст и кнопки.
-   * ui.emptyState({ title, text, actions: '<a class="btn">…</a>', icon: 'bag' })
-   */
   ui.emptyState = ({ title, text, actions = '', icon = '' }) => `
     <div class="empty-state">
       <div class="es-art">

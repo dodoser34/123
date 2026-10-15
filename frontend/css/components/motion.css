@@ -1,9 +1,3 @@
-/* Все анимации сайта в одном месте.
-   • Появление блоков при прокрутке — управляет components/reveal.js (класс .will-reveal).
-   • Эффекты наведения работают только с мышью, чтобы на телефоне карточка не «залипала» после касания.
-   • Если в системе включено «Уменьшить движение», анимации отключаются (см. responsive/reduced-motion.css). */
-
-/* Блок ещё ниже экрана и ждёт плавного появления */
 .will-reveal {
   opacity: 0;
 }
@@ -39,8 +33,7 @@
       transform: translateY(0);
     }
   }
-  /* Первый экран главной: фото мягко «оседает», текст поднимается */
-  /* анимируется весь блок вместе с маской — если анимировать саму картинку, на краю появляется тонкий шов */
+
   .hero-media {
     transform-origin: 100% 50%;
     animation: hero-settle 2.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
@@ -54,7 +47,7 @@
   .anim-up {
     animation: rise 0.8s var(--ease) backwards;
   }
-  /* ступенчатое появление элементов первого экрана */
+
   .anim-delay-1 {
     animation-delay: 0.08s;
   }
@@ -71,7 +64,6 @@
     }
   }
 
-  /* Декоративные ветки слегка покачиваются, пока видны на экране */
   .decor {
     transform-origin: 80% 70%;
     animation: botanical-sway 9s ease-in-out infinite alternate;
@@ -97,7 +89,6 @@
     }
   }
 
-  /* Отклик кнопок */
   .btn,
   .btn-icon,
   .pc-cart-sq {
@@ -133,7 +124,6 @@
     }
   }
 
-  /* Плавное увеличение фото при наведении */
   .mission-img img,
   .gallery-grid img {
     transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
@@ -144,7 +134,6 @@
   }
 }
 
-/* Эффекты наведения — только для мыши */
 @media (hover: hover) and (pointer: fine) {
   .product-card:hover {
     box-shadow: var(--shadow-hover);

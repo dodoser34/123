@@ -1,4 +1,3 @@
-"""Build the removable GitHub Pages demo, with every product photo, into demo/.public."""
 import importlib.util
 import hashlib
 import json
@@ -34,33 +33,31 @@ def public_file(relative: Path) -> bool:
 
 
 def validate_photos(stage: Path) -> int:
-    """Fail the build when even one catalog/order image would be missing from publication."""
     refs = set()
     for name in ('products.js', 'orders.js'):
         data = (stage / 'demo/data' / name).read_text(encoding='utf-8')
         refs.update(re.findall(r"['\"](demo/images/[^'\"]+)['\"]", data))
     if not refs:
-        raise ValueError('Demo catalog has no product photo references')
+        raise ValueError('В демо-каталоге нет ни одного фото товара')
     for ref in sorted(refs):
         target = stage / ref
         if '..' in Path(ref).parts or not target.is_file() or target.stat().st_size == 0:
-            raise ValueError(f'Missing demo product photo: {ref}')
+            raise ValueError(f'Не найдено фото демо-товара: {ref}')
     return len(refs)
 
 
 def validate_output():
     if ROOT.is_symlink() or OUTPUT.is_symlink() or OWNER.is_symlink() or OUTPUT.resolve() != ROOT.resolve() / '.public':
-        raise ValueError('Unsafe demo output path')
+        raise ValueError('Небезопасный путь для сборки демо')
     if OUTPUT.exists():
         if not OUTPUT.is_dir():
-            raise ValueError('Demo output is not a directory')
+            raise ValueError('Место сборки демо — не папка')
         owned = OWNER.is_file() and json.loads(OWNER.read_text(encoding='utf-8')) == IDENTITY
         if any(OUTPUT.iterdir()) and not owned:
-            raise ValueError('Refusing to replace unmanaged demo output')
+            raise ValueError('Папка сборки демо создана не этим скриптом — заменять её не будем')
 
 
 def stamp_assets(stage: Path) -> str:
-    """Version every browser module from actual release contents, preventing stale login/UI code."""
     digest = hashlib.sha256()
     for file in sorted(stage.rglob('*')):
         if file.is_file() and file.suffix in {'.js', '.css', '.html'}:
@@ -79,7 +76,7 @@ def stamp_assets(stage: Path) -> str:
 
 def build() -> dict:
     if FRONTEND.is_symlink() or (FRONTEND / 'index.html').is_symlink() or not (FRONTEND / 'index.html').is_file():
-        raise ValueError('Shared frontend/index.html is required')
+        raise ValueError('Нужен общий файл frontend/index.html')
     config = json.loads((ROOT / 'config.json').read_text(encoding='utf-8'))
     validate_output()
     helper = shared_builder()
@@ -107,15 +104,15 @@ def build() -> dict:
         (stage / '.nojekyll').write_text('', encoding='utf-8')
         for ref in config['extensions']['data'] + config['extensions']['runtime'] + config['extensions']['styles'] + [item for items in config['extensions']['pages'].values() for item in items]:
             if not (stage / ref.lstrip('@')).is_file():
-                raise ValueError(f'Missing demo module: {ref}')
+                raise ValueError(f'Не найден модуль демо: {ref}')
         photos = validate_photos(stage)
         version = stamp_assets(stage)
         size = sum(path.stat().st_size for path in stage.rglob('*') if path.is_file())
         if size >= 1024 ** 3:
-            raise ValueError('Demo exceeds the 1 GiB GitHub Pages site size limit')
+            raise ValueError('Демо больше 1 ГБ — это предел размера сайта на GitHub Pages')
         validate_output()
         if OUTPUT.exists():
-            shutil.rmtree(OUTPUT)  # reserved, resolved and owned directory checked above
+            shutil.rmtree(OUTPUT)
         helper.replace_directory(stage, OUTPUT)
         OWNER.write_text(json.dumps(IDENTITY) + '\n', encoding='utf-8')
     return {'files': count, 'productPhotos': photos, 'bytes': size, 'assetVersion': version}

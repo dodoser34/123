@@ -1,8 +1,7 @@
-/* Главная: первый экран, популярные товары, баннер категорий */
 .hero {
   position: relative;
   margin-top: calc(-1 * var(--header-h));
-  /* первый экран — ровно на высоту окна (шапка лежит поверх фото) */
+
   min-height: max(640px, calc(100vh / var(--zoom)));
   display: flex;
   align-items: center;
@@ -26,11 +25,16 @@
 }
 .hero-background {
   z-index: 0;
+  scale: 1.03;
+  translate: var(--bg-x, 0) var(--bg-y, 0);
+  transition: translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hero-products {
   z-index: 1;
+  translate: var(--pr-x, 0) var(--pr-y, 0);
+  transition: translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* Фото на весь экран; слева растворяется в фоне под текстом, сверху — под шапкой, снизу — короткий мягкий край */
+
 .hero-media {
   --hero-mask: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.25) 22%, #000 52%),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0, #000 140px), linear-gradient(to top, transparent 0, #000 36px);
@@ -56,8 +60,20 @@
 }
 .hero .benefits {
   margin-top: 56px;
-  display: flex;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.hero .benefits.is-compact .benefit {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(243, 239, 230, 0.74);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.hero .benefits.is-compact .benefit b {
+  color: var(--text);
 }
 .section-head {
   display: flex;
@@ -66,14 +82,14 @@
   gap: 24px;
   margin-bottom: 24px;
 }
-/* Баннер «Категории» */
+
 .cats-banner {
   position: relative;
   padding: 56px 0 64px;
   color: #fff;
   overflow: clip;
   background:
-    /* затемнение, чтобы белый текст читался и на светлых участках фото (снег, небо) */
+
     linear-gradient(rgba(16, 26, 19, 0.5), rgba(16, 26, 19, 0.38) 45%, rgba(16, 26, 19, 0.55)),
     url('../../assets/images/pages/home/categories-bg.jpg') center/cover no-repeat,
     radial-gradient(ellipse at 20% 0%, #3e5b47 0%, transparent 60%),

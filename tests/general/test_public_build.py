@@ -1,4 +1,3 @@
-"""Проверки публикации работают только в tmp_path, не трогают настоящую .public."""
 import importlib.util
 import json
 from pathlib import Path
@@ -70,7 +69,7 @@ def test_unmanaged_output_is_never_replaced(build):
     build.OUTPUT.mkdir()
     sentinel = build.OUTPUT / 'manual.html'
     sentinel.write_text('manual', encoding='utf-8')
-    with pytest.raises(ValueError, match='unmanaged'):
+    with pytest.raises(ValueError, match='создана не этим скриптом'):
         build.prepare(None)
     assert sentinel.read_text(encoding='utf-8') == 'manual'
 
@@ -89,3 +88,20 @@ def test_missing_entry_point_fails_without_output(build):
     with pytest.raises(ValueError, match='index.html'):
         build.prepare(None)
     assert not build.OUTPUT.exists()
+
+
+def test_styles_are_bundled_into_one_file_with_correct_paths(build):
+    css = build.PROJECT / 'frontend' / 'css'
+    (css / 'pages').mkdir(parents=True)
+    (css / 'main.css').write_text("@import url('base.css?v=1');\n@import url('pages/home.css?v=1');\n", encoding='utf-8')
+    (css / 'base.css').write_text('body { color: red; }\n', encoding='utf-8')
+    (css / 'pages' / 'home.css').write_text(
+        ".hero { background: url('../../assets/bg.jpg') center; }\n.ic { background: url(\"data:image/svg+xml,%3Csvg%3E\"); }\n",
+        encoding='utf-8',
+    )
+    build.prepare(None)
+    bundled = (build.OUTPUT / 'css' / 'main.css').read_text(encoding='utf-8')
+    assert '@import' not in bundled
+    assert bundled.index('color: red') < bundled.index('.hero')
+    assert "url('../assets/bg.jpg')" in bundled
+    assert 'url("data:image/svg+xml,%3Csvg%3E")' in bundled

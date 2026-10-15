@@ -1,4 +1,3 @@
-/* Начальное локальное хранилище. Каталог заполняется через админку или приходит с API. */
 (() => {
   const { P, KEYS, read, write, clone, emit } = App.storage;
   const db = App.db;

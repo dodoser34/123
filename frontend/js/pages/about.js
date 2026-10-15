@@ -1,8 +1,7 @@
-/* О нас: ценности, счётчики, «Почему нам доверяют», фотогалерея, контакты */
 document.addEventListener('app:ready', () => {
   const { ui, db } = App;
   const C = App.config;
-  const T = ui.t('about'); // тексты — texts/…/about.js
+  const T = ui.t('about');
 
   const VALUE_ICONS = ['leaf', 'droplet', 'hand-heart'];
   document.getElementById('values').innerHTML = T.mission.values
@@ -16,15 +15,12 @@ document.addEventListener('app:ready', () => {
     .map(([icon, text]) => `<div class="trust-card reveal">${ui.icon(icon)}${text}</div>`)
     .join('');
 
-  /* ---------- Фотогалерея «Жизнь магазина» ---------- */
-  // фото gallery-1.jpg, gallery-2.jpg… — по числу подписей в texts/…/about.js
-  // фото, заменённые в админке («Фото «О нас»»), подставляются вместо исходных
   const custom = db.media.gallery();
   const GALLERY = T.gallery.photos.map((alt, i) => [custom[i] || `assets/images/pages/about/gallery-${i + 1}.jpg`, alt]);
   const gallery = document.getElementById('gallery');
   gallery.innerHTML = GALLERY.map(
     ([file, alt], i) =>
-      `<button type="button" data-photo="${i}" aria-label="${ui.t('about.gallery.open', { alt })}">${ui.img(file, alt)}</button>`
+      `<button type="button" data-photo="${i}" aria-label="${ui.t('about.gallery.open', { alt })}">${ui.img(file, alt)}<span class="gallery-cap" aria-hidden="true">${ui.esc(alt)}</span></button>`
   ).join('');
   gallery.addEventListener('click', (e) => {
     const b = e.target.closest('[data-photo]');
@@ -36,7 +32,6 @@ document.addEventListener('app:ready', () => {
       );
   });
 
-  /* ---------- Контакты ---------- */
   const contactsGrid = document.getElementById('contacts-grid');
   contactsGrid.classList.toggle('is-single', !C.address);
   contactsGrid.innerHTML = `
@@ -51,7 +46,6 @@ document.addEventListener('app:ready', () => {
       <p class="muted">${T.contacts.emailText}</p>
       <a href="mailto:${C.email}">${ui.esc(C.email)}</a></div></div>`;
 
-  /* ---------- Счётчики, которые «досчитываются» при появлении на экране ---------- */
   document.getElementById('stats').innerHTML = T.stats.items
     .map((s) => `<div><b data-count="${s.count === 'catalog' ? db.products.visible().length : s.count}">0</b><span>${s.label}</span></div>`)
     .join('');

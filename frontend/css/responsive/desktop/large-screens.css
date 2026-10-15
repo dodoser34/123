@@ -1,7 +1,24 @@
-/* БОЛЬШИЕ ЭКРАНЫ: Full HD, 2K, 4K — интерфейс пропорционально увеличивается (zoom) */
+@media (min-width: 1440px) {
+  :root {
+    --container: 1400px;
+  }
+}
 @media (min-width: 1600px) {
   :root {
-    --container: 1360px;
+    --container: 1520px;
+    --gutter: 48px;
+  }
+
+  .products-grid:not(.is-list):not(.is-large) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .carousel-track {
+    grid-auto-columns: calc((100% - 4 * 20px) / 5);
+  }
+}
+@media (min-width: 2200px) {
+  :root {
+    --container: 1640px;
   }
 }
 @media (min-width: 1800px) {
@@ -29,7 +46,7 @@
     gap: 24px;
   }
 }
-/* 5K (5120 px) и 8K (7680 px) */
+
 @media (min-width: 4800px) {
   :root {
     --zoom: 2.6;

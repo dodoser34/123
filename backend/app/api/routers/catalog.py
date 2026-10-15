@@ -1,4 +1,3 @@
-"""Каталог: категории и товары (смотреть — всем, менять — администратору), загрузка фото."""
 import base64
 import binascii
 import re
@@ -20,7 +19,6 @@ from ..serializers import PRODUCT_COLUMNS, product_out
 router = APIRouter(tags=['Каталог'])
 
 
-# ---------- Категории ----------
 async def categories_list(db: AsyncSession) -> list[dict]:
     rows = (await db.execute(select(Category).order_by(Category.position, Category.name))).scalars().all()
     return [{'id': c.id, 'name': c.name, 'icon': c.icon, 'subs': c.subs or []} for c in rows]
@@ -51,7 +49,6 @@ async def save_categories(data: list[CategoryIn], db: AsyncSession = Depends(get
     return await categories_list(db)
 
 
-# ---------- Товары ----------
 def _slugify(text: str) -> str:
     table = str.maketrans({
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
@@ -127,13 +124,10 @@ async def delete_product(product_id: str, db: AsyncSession = Depends(get_db), _:
     return {'status': 'deleted'}
 
 
-# ---------- Загрузка фото ----------
 TYPES = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp'}
 
 
 def image_type(raw: bytes) -> str | None:
-    """Настоящий тип файла по первым байтам (сигнатуре), а не по тому, что заявил браузер:
-    под видом фото нельзя загрузить HTML, SVG со скриптом или программу."""
     if raw.startswith(bytes.fromhex('ffd8ff')):
         return 'image/jpeg'
     if raw.startswith(bytes.fromhex('89504e470d0a1a0a')):
@@ -166,6 +160,6 @@ async def upload(data: UploadIn, _: User = Depends(admin_user)):
         raise HTTPException(422, 'Файл не похож на фото JPG, PNG или WEBP')
     folder = Path(s.media_dir) / data.folder
     folder.mkdir(parents=True, exist_ok=True)
-    name = f'{secrets.token_hex(8)}.{TYPES[kind]}'  # имя придумывает сервер — путь из запроса не используется
+    name = f'{secrets.token_hex(8)}.{TYPES[kind]}'
     (folder / name).write_bytes(raw)
     return {'url': media_public_url(f'{data.folder}/{name}')}

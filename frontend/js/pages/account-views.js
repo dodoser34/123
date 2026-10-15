@@ -1,15 +1,12 @@
-/* Личный кабинет → разделы: «Мои заказы» (с кнопками «Оценить»), «Мои отзывы», «Профиль», «Пароль».
-   Каждая функция получает пользователя и возвращает HTML раздела. */
 (() => {
   const { ui, db } = App;
-  const T = ui.t('account'); // тексты — texts/…/account.js
+  const T = ui.t('account');
 
   const productLink = (id, extra) => {
     const p = db.products.get(id);
     return p ? ui.productUrl(p) + (extra || '') : '';
   };
 
-  /* ---------- Приветствие и статистика над разделами ---------- */
   const initials = (name) =>
     name
       .trim()
@@ -51,10 +48,8 @@
       </section>`;
   }
 
-  /* ---------- Мои заказы ---------- */
   const STEPS = ['new', 'processing', 'shipped', 'done'].map((k) => [k, T.orders.steps[k]]);
 
-  /** Шкала «Принят → Собираем → В пути → Получен»; у отменённого заказа её нет. */
   function progress(o) {
     const at = STEPS.findIndex(([k]) => k === o.status);
     if (at < 0) return '';

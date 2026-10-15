@@ -1,4 +1,3 @@
-/* Страница товара → отзывы и форма отзыва */
 .reviews-summary {
   display: grid;
   grid-template-columns: 170px minmax(0, 1fr) 220px;
@@ -261,7 +260,7 @@
 .review-reply p {
   font-size: 14px;
 }
-/* Форма отзыва */
+
 .review-form-product {
   margin: -12px 0 14px;
   font-size: 14px;

@@ -1,6 +1,3 @@
-/* Хранилище на localStorage — общая «полка» для всех частей App.db.
-   В локальном режиме пароли, роли и заказы хранятся в браузере пользователя.
-   При подключении бэкенда заменяется реализация файлов store/*.js — страницы менять не нужно. */
 (() => {
   const P = App.storagePrefix || 'kbch.v1.';
   const KEYS = {
@@ -42,7 +39,6 @@
     localStorage.removeItem(P + key);
   }
 
-  /** Сообщить страницам, что данные изменились (событие store:change). */
   function emit(type, detail) {
     document.dispatchEvent(new CustomEvent('store:change', { detail: Object.assign({ type }, detail || {}) }));
   }
@@ -54,7 +50,6 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const today = () => new Date().toISOString().slice(0, 10);
 
-  // Простой синхронный хеш (cyrb53) — для локального режима, не криптостойкий.
   function hash(str, seed = 0) {
     let h1 = 0xdeadbeef ^ seed;
     let h2 = 0x41c6ce57 ^ seed;
@@ -68,7 +63,6 @@
     return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
   }
 
-  /** Хеш пароля привязан к id пользователя, поэтому смена email не ломает вход. */
   const pwHash = (userId, password) => hash(userId + '::' + password, 7);
 
   App.storage = { P, KEYS, read, write, remove, emit, uid, clone, today, hash, pwHash };

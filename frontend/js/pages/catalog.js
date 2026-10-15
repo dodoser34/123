@@ -1,29 +1,23 @@
-/* Каталог: категории, поиск, фильтры (бренд, «для чего», цена, тег), сортировка, страницы.
-   Состояние и отбор товаров — catalog-state.js, боковая панель — catalog-filters.js,
-   панель над товарами — catalog-toolbar.js, крошки, чипы и страницы — catalog-results.js. */
 document.addEventListener('app:ready', () => {
   const { ui } = App;
   const store = App.catalogState;
   const results = App.catalogResults;
-  const PER_PAGE = 9;
+  const PER_PAGE = 12;
   const $ = (id) => document.getElementById(id);
   const state = {};
 
   const readState = () => Object.assign(state, store.read());
 
-  /** Записать фильтры в адрес страницы и перерисовать. animate — плавно (карточки переезжают на новые места). */
   function writeState(push = true, animate = push) {
     history[push ? 'pushState' : 'replaceState'](null, '', location.pathname + store.toQuery(state));
     render(animate);
   }
 
-  /** Изменить фильтры и вернуться на первую страницу. */
   const reset = (patch, push = true) => {
     Object.assign(state, { page: 1, more: 0 }, patch);
     writeState(push);
   };
 
-  /* ---------- Отрисовка ---------- */
   const render = (animate) => (animate ? ui.transition(draw) : draw());
 
   function drawHead() {
@@ -70,7 +64,6 @@ document.addEventListener('app:ready', () => {
     results.pagination(state, pages);
   }
 
-  /* ---------- События ---------- */
   function onChip(key) {
     if (key === 'all') reset({ q: '', tag: '', min: null, max: null, brand: [], purpose: [] });
     else if (key === 'q') reset({ q: '' });
@@ -151,7 +144,6 @@ document.addEventListener('app:ready', () => {
     if ($('aside').classList.contains('is-open')) closeAside();
   });
 
-  // при наборе текста адрес заменяется, а не добавляется в историю на каждую букву
   $('q').addEventListener(
     'input',
     ui.debounce(() => reset({ q: $('q').value.trim() }, false), 300)

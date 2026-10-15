@@ -1,14 +1,12 @@
-/* Пользователи: регистрация, вход, профиль, смена пароля */
 (() => {
   const { KEYS, read, write, emit, uid, hash, pwHash } = App.storage;
   const db = App.db;
 
   const EMAIL_RE = /^\S+@\S+\.\S+$/;
-  /** Email из App.config.adminEmails получают роль администратора. */
+
   const isOwnerEmail = (email) => (App.config.adminEmails || []).some((e) => String(e).trim().toLowerCase() === email);
   const MIN_PASSWORD = 8;
 
-  /** Старые аккаунты хешировали пароль вместе с email — поддерживаем и такой вариант. */
   const checkPassword = (user, password) =>
     user.passwordHash === pwHash(user.id, password) || user.passwordHash === hash(user.email.toLowerCase() + '::' + password, 7);
 
@@ -53,9 +51,9 @@
       const user = db.users.all().find((u) => u.email === email);
       if (!user || !checkPassword(user, password)) return { error: App.ui.t('common.errors.wrongLogin') };
       if (user.blocked) return { error: App.ui.t('common.errors.blocked') };
-      // обновляем старый формат хеша
+
       if (user.passwordHash !== pwHash(user.id, password)) db.users.update(user.id, { passwordHash: pwHash(user.id, password) });
-      // email владельца из настроек — всегда администратор
+
       if (user.role !== 'admin' && isOwnerEmail(email)) db.users.update(user.id, { role: 'admin' });
       db.session.start(user.id);
       return { user: db.users.safe(db.users.get(user.id)) };
@@ -92,7 +90,6 @@
       emit('users');
     },
 
-    /** Удалить свой локальный аккаунт: пароль подтверждает действие. */
     deleteAccount(password) {
       const me = db.session.user();
       const user = me && db.users.get(me.id);
@@ -102,7 +99,7 @@
       db.users.remove(user.id);
       return { ok: true };
     },
-    /** Копия пользователя без хеша пароля — для показа на страницах. */
+
     safe(user) {
       if (!user) return null;
       const copy = Object.assign({}, user);

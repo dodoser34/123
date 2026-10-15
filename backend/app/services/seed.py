@@ -1,4 +1,3 @@
-"""Стартовые категории магазина из frontend/js/data/categories.js. Примерные товары не импортируются."""
 import json
 import re
 from pathlib import Path
@@ -12,7 +11,6 @@ PROJECT_DIR = Path(__file__).resolve().parents[3]
 
 
 def default_frontend() -> Path:
-    """Папка фронтенда рядом с backend/."""
     return PROJECT_DIR / 'frontend'
 
 
@@ -22,7 +20,6 @@ async def is_empty() -> bool:
 
 
 def read_js_array(path: Path, name: str) -> list:
-    """Достать массив App.seed.<name> = [...] из JS-файла фронтенда (это почти JSON)."""
     text = path.read_text(encoding='utf-8')
     m = re.search(rf'App\.seed\.{name}\s*=\s*(\[.*?\]);\s*$', text, re.S | re.M)
     if not m:
@@ -31,11 +28,10 @@ def read_js_array(path: Path, name: str) -> list:
 
 
 def js_to_json(js: str) -> str:
-    """Перевести литерал JS (объекты, массивы, строки в '…', комментарии) в JSON, не трогая содержимое строк."""
     out, i, n = [], 0, len(js)
     while i < n:
         c = js[i]
-        if c in '\'"`':  # строка: переносим как JSON-строку
+        if c in '\'"`':
             j, buf = i + 1, []
             while js[j] != c:
                 if js[j] == '\\':
@@ -55,8 +51,8 @@ def js_to_json(js: str) -> str:
             out.append(c)
             i += 1
     text = ''.join(out)
-    text = re.sub(r'([{,]\s*)([A-Za-z_$][\w$]*)\s*:', r'\1"\2":', text)  # ключи без кавычек
-    text = re.sub(r',(\s*[}\]])', r'\1', text)  # висячие запятые
+    text = re.sub(r'([{,]\s*)([A-Za-z_$][\w$]*)\s*:', r'\1"\2":', text)
+    text = re.sub(r',(\s*[}\]])', r'\1', text)
     return text
 
 

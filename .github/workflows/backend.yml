@@ -1,4 +1,3 @@
-# Тесты бэкенда при каждом изменении папки backend/: на SQLite и на настоящем PostgreSQL (как на сервере).
 name: Тесты бэкенда
 
 on:
@@ -37,7 +36,6 @@ jobs:
           cache-dependency-path: backend/requirements-dev.txt
       - run: pip install -r requirements-dev.txt
 
-      # миграции на PostgreSQL: применяются, совпадают с моделями, откатываются
       - name: Миграции
         if: matrix.database == 'postgres'
         env:
@@ -52,7 +50,6 @@ jobs:
           TEST_DATABASE_URL: ${{ matrix.database == 'postgres' && env.PG_URL || '' }}
         run: python -m pytest -q
 
-      # production не должен запускаться с настройками по умолчанию
       - name: Проверка настроек production
         env:
           ENVIRONMENT: production

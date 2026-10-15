@@ -1,11 +1,7 @@
-/* Карусель: стрелки, прокрутка пальцем и автопрокрутка.
-   Если над каруселью есть заголовок раздела (.section-head), стрелки переносятся в него,
-   чтобы не перекрывать карточки. Автопрокрутка работает всегда и лишь ненадолго
-   уступает, пока человек сам листает карусель. */
 (() => {
   const ui = App.ui;
-  const INTERVAL = 3200; // как часто карусель сдвигается сама, мс
-  const RESUME_AFTER = 5000; // через сколько после ручной прокрутки она продолжит, мс
+  const INTERVAL = 3200;
+  const RESUME_AFTER = 5000;
 
   ui.carousel = (root, options = {}) => {
     const track = options.track || root.querySelector('.carousel-track');
@@ -44,7 +40,7 @@
     next?.addEventListener('click', () => move(step()));
     track.addEventListener('scroll', ui.debounce(update, 60), { passive: true });
     window.addEventListener('resize', update);
-    // картинки и ссылки внутри карусели не перетаскиваются мышью
+
     track.addEventListener('dragstart', (e) => e.preventDefault());
     update();
     if (!options.autoplay) return;

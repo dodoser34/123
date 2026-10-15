@@ -1,5 +1,3 @@
-/* КОРЗИНА (pages/cart.html). Правьте только текст в кавычках.
-   {count} — число, {count|товар|товара|товаров} — слово для числа, {sum} — сумма, {name} — название товара. */
 App.texts.cart = {
   meta: { title: 'Корзина — {shop}' },
 
@@ -27,7 +25,6 @@ App.texts.cart = {
   clearConfirm: 'Удалить все товары из корзины?',
   clearConfirmButton: 'Очистить',
 
-  // Блок «Ваш заказ» справа
   summary: {
     title: 'Ваш заказ',
     items: 'Товары ({count})',

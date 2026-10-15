@@ -1,4 +1,3 @@
-/* ТЕЛЕФОНЫ (до 760 px; внутри — более узкие ступени 600, 560, 480, 400, 360 px) → каталог */
 @media (max-width: 760px) {
   .catalog-head {
     flex-direction: column;
@@ -12,8 +11,7 @@
   }
 }
 @media (max-width: 560px) {
-  /* Панель над товарами: сверху «Категории и фильтры» и переключатель вида,
-     ниже — сортировка и цена ровно пополам */
+
   .toolbar {
     position: relative;
     display: grid;
@@ -25,7 +23,7 @@
   }
   .toolbar .filters-btn {
     grid-column: 1 / -1;
-    margin-right: 102px; /* место под переключатель вида (2 × 42 px + отступы) */
+    margin-right: 102px;
     justify-content: center;
     gap: 10px;
   }
@@ -52,7 +50,7 @@
   }
 }
 @media (max-width: 360px) {
-  /* самые узкие телефоны: кнопки вида чуть меньше, подпись фильтров — в одну строку */
+
   .toolbar .view-switch {
     gap: 6px;
   }

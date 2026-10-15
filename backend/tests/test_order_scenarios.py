@@ -1,4 +1,3 @@
-"""Интеграция API → бизнес-логика → БД; браузер и реальные платежи не нужны."""
 import pytest
 from sqlalchemy import select
 

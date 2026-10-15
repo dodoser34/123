@@ -1,5 +1,3 @@
-/* Мобильное меню (полноэкранное, открывается кнопкой ≡). Пересобирается при каждом открытии,
-   чтобы кнопка «Войти / имя пользователя» всегда была актуальной. */
 (() => {
   const ui = App.ui;
   const base = ui.base;
@@ -65,7 +63,7 @@
     menuEl.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeMenu();
       if (e.key === 'Tab') {
-        // фокус не выходит за пределы меню
+
         const focusable = ui.$$('a, button', menuEl);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];

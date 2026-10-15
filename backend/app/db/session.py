@@ -1,11 +1,3 @@
-"""Подключение к базе данных: PostgreSQL через asyncpg (в тестах — SQLite).
-
-Защита базы на уровне подключения:
-• все запросы строит SQLAlchemy с параметрами — данные никогда не склеиваются с текстом SQL (нет SQL-инъекций);
-• statement_timeout — слишком долгий запрос прерывается и не «вешает» базу;
-• пул соединений ограничен — наплыв запросов не исчерпает подключения к PostgreSQL;
-• DB_SSL=true — шифрованное соединение с облачной базой.
-"""
 import ssl
 from collections.abc import AsyncIterator
 
@@ -16,7 +8,6 @@ from sqlalchemy.orm import DeclarativeBase
 
 from ..core.config import get_settings
 
-# JSON-поля: в PostgreSQL — JSONB, в других базах — обычный JSON
 JSONType = JSON().with_variant(JSONB(), 'postgresql')
 
 
@@ -26,7 +17,6 @@ class Base(DeclarativeBase):
 
 def make_engine():
     s = get_settings()
-    # DATABASE_URL не задан (production без настроек) — подключения не будет, а запуск остановит проверка настроек
     url = s.database_url.get_secret_value() or 'postgresql+asyncpg://not-configured/none'
     if not url.startswith('postgresql'):
         return create_async_engine(url)

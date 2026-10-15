@@ -1,11 +1,3 @@
-"""Защита данных на уровне базы: проверки значений (CHECK) и индексы для частых запросов.
-
-Даже если в коде появится ошибка, база не примет отрицательную цену, неизвестную роль или оценку 7 из 5.
-
-Revision ID: b51c0d2e7f13
-Revises: a8720e66388e
-Create Date: 2026-10-14 19:10:00
-"""
 from typing import Sequence, Union
 
 from alembic import op
@@ -41,6 +33,7 @@ CHECKS = {
     ],
 }
 
+
 INDEXES = [
     ('ix_sessions_expires_at', 'sessions', ['expires_at']),
     ('ix_email_codes_email_purpose', 'email_codes', ['email', 'purpose']),
@@ -50,7 +43,6 @@ INDEXES = [
 
 
 def upgrade() -> None:
-    # batch_alter_table — чтобы миграция работала и на PostgreSQL, и на SQLite (там таблица пересоздаётся)
     for table, checks in CHECKS.items():
         with op.batch_alter_table(table) as batch:
             for name, condition in checks:

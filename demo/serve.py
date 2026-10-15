@@ -1,4 +1,3 @@
-"""Local demo: python demo/serve.py [port]. Generated files remain inside demo/."""
 import importlib.util
 import sys
 from functools import partial
@@ -25,7 +24,7 @@ def main():
         daemon_threads = True
 
     server = Server(('127.0.0.1', port), partial(Handler, directory=str(module.OUTPUT)))
-    print(f'Demo: http://localhost:{port}', flush=True)
+    print(f'Демо: http://localhost:{port}  (остановить — Ctrl+C)', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

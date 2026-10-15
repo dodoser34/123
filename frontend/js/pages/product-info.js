@@ -1,12 +1,9 @@
-/* Страница товара → информационные блоки: «Для чего», теги, вкладки «Описание», «Состав»,
-   «Применение», «Характеристики» и боковая карточка «Кому подходит». */
 (() => {
   const { ui, db } = App;
-  const T = ui.t('product.info'); // тексты — texts/…/product.js
+  const T = ui.t('product.info');
   const list = (items, icon) =>
     items.length ? `<ul class="leaf-list">${items.map((b) => `<li>${ui.icon(icon)}${ui.esc(b)}</li>`).join('')}</ul>` : '';
 
-  /** «Для чего» — чипы-ссылки на каталог с этим назначением; теги — ссылки на каталог с тегом. */
   function chips(p) {
     const purpose = p.purpose.length
       ? `<div class="pp-chips"><span class="pp-chips-label">${ui.icon('target')}${T.purpose}</span>${p.purpose
@@ -19,7 +16,6 @@
     return purpose + tags;
   }
 
-  /** Ключевые компоненты: строки «Название — что делает». */
   function ingredients(p) {
     if (!p.keyIngredients.length) return '';
     return `
@@ -76,7 +72,6 @@
     }
   };
 
-  /** Боковая карточка: «Кому подходит» или предложение консультации. */
   function aside(p) {
     if (p.audience.length) {
       const icons = ['droplet', 'leaf', 'sparkles', 'user'];
@@ -95,7 +90,6 @@
       </aside>`;
   }
 
-  /** Свой раздел товара из админки: пустая строка — новый абзац, строки с «- » — список, перенос строки сохраняется. */
   function custom(section) {
     return section.text
       .split(/\n\s*\n/)

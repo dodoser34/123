@@ -1,5 +1,3 @@
-"""Защитный слой для всех запросов: заголовки безопасности, лимит размера запроса, общий лимит частоты,
-скрытие подробностей ошибок."""
 import logging
 
 from fastapi import FastAPI, HTTPException, Request
@@ -19,13 +17,11 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         s = get_settings()
         path = request.url.path
 
-        # 1. Размер запроса: фото из админки — до MAX_UPLOAD_MB (в base64 на треть больше), остальное — до MAX_BODY_KB
         length = request.headers.get('content-length')
         limit = s.max_upload_mb * 1024 * 1024 * 4 // 3 + 4096 if path.endswith('/uploads') else s.max_body_kb * 1024
         if length and length.isdigit() and int(length) > limit:
             return JSONResponse({'detail': 'Слишком большой запрос'}, status_code=413)
 
-        # 2. Общий лимит запросов к API с одного IP
         if path.startswith('/api/') and path != '/api/health':
             try:
                 enforce(f'global:{client_ip(request)}', s.rate_global)
@@ -35,7 +31,6 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         response = await call_next(request)
 
-        # 3. Заголовки безопасности
         h = response.headers
         h.setdefault('X-Content-Type-Options', 'nosniff')
         h.setdefault('X-Frame-Options', 'DENY')
@@ -46,7 +41,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             h.setdefault('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
         if path.startswith('/api/') and not path.startswith(('/api/docs', '/api/openapi')):
             h.setdefault('Content-Security-Policy', API_CSP)
-            h.setdefault('Cache-Control', 'no-store')  # ответы API (токены, личные данные) не кешируются
+            h.setdefault('Cache-Control', 'no-store')
         return response
 
 
@@ -54,7 +49,6 @@ def install(app: FastAPI) -> None:
     app.add_middleware(SecurityMiddleware)
 
     @app.exception_handler(Exception)
-    async def unexpected(request: Request, exc: Exception):  # noqa: ARG001
-        # подробности — только в лог сервера; посетителю — общий ответ без кода и путей
+    async def unexpected(request: Request, exc: Exception):
         log.exception('Ошибка при обработке %s %s', request.method, request.url.path)
         return JSONResponse({'detail': 'Внутренняя ошибка сервера. Попробуйте позже.'}, status_code=500)

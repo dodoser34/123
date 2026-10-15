@@ -1,4 +1,3 @@
-"""Заказы и оплата. Цены и наличие сервер берёт из базы — подменить сумму из браузера нельзя."""
 import logging
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -9,8 +8,8 @@ from ...core.config import get_settings
 from ...core.rate_limit import limit
 from ...db.models import Order, Product, User
 from ...db.session import get_db
-from ...schemas import OrderIn, OrderPatchIn
-from ...services.payments import METHODS, KaspiPay, enabled_methods, get_method, mark_paid
+from ...schemas import OrderIn, OrderPatchIn, SandboxPayIn
+from ...services.payments import METHODS, KaspiPay, SandboxPayment, enabled_methods, get_method, mark_paid
 from ..deps import admin_user, current_user, first
 from ..serializers import order_out
 
@@ -40,11 +39,10 @@ async def create_order(data: OrderIn, db: AsyncSession = Depends(get_db), user: 
     if data.delivery != 'pickup' and (not data.city or not data.address):
         raise HTTPException(422, 'Укажите город и адрес доставки')
     items, subtotal = [], 0
-    # Единый порядок блокировок исключает взаимную блокировку двух корзин с разным порядком товаров.
     for line in sorted(data.items, key=lambda item: item.id):
         p = await db.get(Product, line.id, with_for_update=True)
         if not p or p.status == 'hidden' or p.stock <= 0:
-            continue  # закончился или скрыт — в заказ не попадает, как и в корзине на сайте
+            continue
         qty = min(line.qty, p.stock)
         p.stock -= qty
         images = (p.data or {}).get('images') or ['']
@@ -71,7 +69,7 @@ async def create_order(data: OrderIn, db: AsyncSession = Depends(get_db), user: 
         total=subtotal + delivery_price,
     )
     db.add(order)
-    await db.flush()  # номер заказа нужен для инструкции по оплате
+    await db.flush()
     instructions = await method.start(order, s)
     await db.commit()
     return order_out(order, instructions)
@@ -94,7 +92,6 @@ async def patch_order(order_id: str, data: OrderPatchIn, db: AsyncSession = Depe
     if not o:
         raise HTTPException(404, 'Заказ не найден')
     if data.status and data.status != o.status:
-        # отмена возвращает товары на склад, возврат из отмены — снова списывает
         sign = 1 if data.status == 'cancelled' else -1 if o.status == 'cancelled' else 0
         quantities = {}
         for item in o.items if sign else []:
@@ -129,10 +126,31 @@ async def delete_order(order_id: str, db: AsyncSession = Depends(get_db), _: Use
     return {'status': 'deleted'}
 
 
+@router.post('/payments/sandbox/{order_id}', summary='Тестовая оплата заказа картой или через Kaspi (деньги не списываются)',
+             dependencies=[Depends(limit('rate_login', 'sandbox-pay'))])
+
+
+async def sandbox_pay(order_id: str, data: SandboxPayIn, db: AsyncSession = Depends(get_db), user: User = Depends(current_user)):
+    o = await first(db, select(Order).where(Order.id == order_id, Order.user_id == user.id))
+    if not o:
+        raise HTTPException(404, 'Заказ не найден')
+    method = METHODS.get(o.payment)
+    if not isinstance(method, SandboxPayment) or o.payment not in get_settings().payment_list:
+        raise HTTPException(400, 'Для этого заказа тестовая оплата недоступна')
+    if o.payment_status in ('paid', 'refunded'):
+        raise HTTPException(409, 'Заказ уже оплачен')
+    if o.status == 'cancelled':
+        raise HTTPException(409, 'Заказ отменён')
+    problem = method.pay(o, data)
+    await db.commit()
+    if problem:
+        raise HTTPException(402, problem)
+    log.info('Заказ №%s оплачен (тестовая оплата: %s)', o.number, o.payment)
+    return order_out(o, _instructions(o))
+
+
 @router.post('/payments/kaspi/webhook', include_in_schema=False, dependencies=[Depends(limit('rate_write', 'webhook'))])
 async def kaspi_webhook(request: Request, x_signature: str = Header(''), db: AsyncSession = Depends(get_db)):
-    """Уведомление Kaspi Pay об оплате. Принимается только с верной подписью; сумма сверяется с заказом;
-    повторное уведомление по уже оплаченному заказу ничего не меняет."""
     s = get_settings()
     if 'kaspi_pay' not in s.payment_list:
         raise HTTPException(404, 'Не найдено')
@@ -148,7 +166,7 @@ async def kaspi_webhook(request: Request, x_signature: str = Header(''), db: Asy
     if not o:
         raise HTTPException(404, 'Заказ не найден')
     if o.payment_status in ('paid', 'refunded'):
-        return {'status': 'ok'}  # повтор уведомления
+        return {'status': 'ok'}
     if status == 'paid':
         if amount is None or amount != o.total:
             log.error('Kaspi webhook: сумма %s не совпадает с заказом №%s (%s)', amount, o.number, o.total)

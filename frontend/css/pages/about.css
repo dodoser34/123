@@ -1,4 +1,3 @@
-/* О нас */
 .about-head .page-head {
   z-index: 1;
 }
@@ -115,19 +114,45 @@
   stroke-width: 1.1;
   margin: 0 auto 14px;
 }
+
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: clamp(150px, 15vw, 230px);
+  grid-template-areas:
+    'a a b c'
+    'a a d c'
+    'e e f f';
+  gap: 12px;
   margin-top: 24px;
+}
+.gallery-grid button:nth-child(1) {
+  grid-area: a;
+}
+.gallery-grid button:nth-child(2) {
+  grid-area: b;
+}
+.gallery-grid button:nth-child(3) {
+  grid-area: c;
+}
+.gallery-grid button:nth-child(4) {
+  grid-area: d;
+}
+.gallery-grid button:nth-child(5) {
+  grid-area: e;
+}
+.gallery-grid button:nth-child(6) {
+  grid-area: f;
 }
 .gallery-grid button {
   position: relative;
-  aspect-ratio: 1/1.1;
-  border-radius: 12px;
+  min-width: 0;
+  border-radius: 16px;
   overflow: hidden;
+  text-align: left;
 }
-.gallery-grid img {
+.gallery-grid img,
+.gallery-grid .img-ph {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -137,11 +162,39 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(31, 58, 45, 0);
-  transition: background 0.3s;
+  background: linear-gradient(to top, rgba(16, 28, 20, 0.62), rgba(16, 28, 20, 0) 55%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
 }
-.gallery-grid button:hover::after {
-  background: rgba(31, 58, 45, 0.18);
+.gallery-cap {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 1;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+}
+.gallery-grid button:hover::after,
+.gallery-grid button:focus-visible::after,
+.gallery-grid button:hover .gallery-cap,
+.gallery-grid button:focus-visible .gallery-cap {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: none) {
+  .gallery-grid button::after,
+  .gallery-cap {
+    opacity: 1;
+    transform: none;
+  }
 }
 .quote-band {
   position: relative;

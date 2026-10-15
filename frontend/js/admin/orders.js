@@ -1,4 +1,3 @@
-/* Админка → заказы и окно заказа */
 (() => {
   const { ui, db } = App;
   const A = App.admin;

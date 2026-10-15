@@ -1,4 +1,3 @@
-/* Модальные окна и окно подтверждения «Вы уверены?» */
 (() => {
   const ui = App.ui;
 
@@ -27,7 +26,7 @@
     });
     return { el: m, close };
   };
-  /** Окно с одним полем: ui.prompt('Новая категория', 'Название') → введённый текст или null. */
+
   ui.prompt = (title, labelText, placeholder = '') =>
     new Promise((resolve) => {
       let done = false;
@@ -35,7 +34,7 @@
         `<h3>${ui.esc(title)}</h3>
         <form class="prompt-form" novalidate>
           <div class="field"><label for="prompt-input">${ui.esc(labelText)}</label><input class="input" id="prompt-input" maxlength="60" placeholder="${ui.esc(placeholder)}" required></div>
-          <div class="modal-actions"><button class="btn btn-secondary btn-sm" type="button" data-no>${ui.t('common.modal.cancel')}</button><button class="btn btn-primary btn-sm" type="submit">OK</button></div>
+          <div class="modal-actions"><button class="btn btn-secondary btn-sm" type="button" data-no>${ui.t('common.modal.cancel')}</button><button class="btn btn-primary btn-sm" type="submit">${ui.t('common.modal.ok')}</button></div>
         </form>`,
         { onClose: () => !done && resolve(null) }
       );
