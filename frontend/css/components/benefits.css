@@ -12,8 +12,8 @@
   border-left: 1px solid var(--border);
 }
 .benefit-ic {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -23,14 +23,16 @@
   background: var(--surface);
 }
 .benefit-ic .icon {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
 }
 .benefit b {
   display: block;
   font-family: var(--font-serif);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 2px;
 }
 .benefit small {
   display: block;
@@ -39,7 +41,7 @@
   line-height: 1.45;
 }
 .benefits-bar {
-  padding: 32px 0;
+  padding: 20px 0;
   border-top: 1px solid var(--border);
 }
 .benefits.is-compact .benefit-ic {

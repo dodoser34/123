@@ -112,8 +112,8 @@
   width: clamp(100px, calc((100% - var(--container)) / 2 + var(--gutter) - 16px), 280px);
   left: -18px;
   right: auto;
-  top: 170px;
-  bottom: auto;
+  top: auto;
+  bottom: 56px;
   opacity: 0.8;
 }
 .mobile-menu .menu-botanical {

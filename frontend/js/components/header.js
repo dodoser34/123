@@ -34,6 +34,7 @@
             <a class="nav-drop-link" href="${ui.page('catalog')}" aria-haspopup="true">${T.catalog} ${ui.icon('chevron-down')}</a>
             <div class="nav-menu">${catalogMenu()}</div>
           </div>
+          <a href="${ui.page('delivery')}"${active(page === 'delivery')}>${T.delivery}</a>
           <a href="${ui.page('about')}"${active(page === 'about')}>${T.about}</a>
         </nav>
         <form class="header-search" role="search" action="${ui.page('catalog')}">

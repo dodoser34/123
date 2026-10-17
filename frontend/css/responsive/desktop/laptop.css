@@ -16,11 +16,20 @@
     gap: 22px;
     margin-left: 8px;
   }
+}
+@media (min-width: 761px) and (max-width: 1024px) {
   .footer-main {
     grid-template-columns: 1fr 1fr 1fr;
   }
   .footer-brand {
     grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .footer-brand p {
+    margin-top: 0;
+    max-width: 360px;
   }
 }
 @media (min-width: 1025px) and (max-width: 1365px) {
@@ -29,10 +38,6 @@
   }
   .header-inner {
     gap: 20px;
-  }
-  .main-nav > a,
-  .nav-drop > button {
-    font-size: 17px;
   }
   .catalog-layout {
     grid-template-columns: 230px 1fr;

@@ -28,6 +28,13 @@
     max-width: 50%;
     padding: calc(var(--header-h) + 16px) 0 20px;
   }
+  .hero::before {
+    display: block;
+  }
+  .hero-eyebrow {
+    margin-bottom: 10px;
+    font-size: 11px;
+  }
   .hero h1 {
     font-size: 34px;
   }

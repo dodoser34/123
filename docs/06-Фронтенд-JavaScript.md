@@ -77,7 +77,7 @@ flowchart TB
 
 | Файлы | Страница |
 |---|---|
-| `home.js` | Главная: карусели, круги категорий, глубина первого экрана |
+| `home.js` | Главная: первый экран, карусели, круги категорий |
 | `catalog.js` + `catalog-state.js`, `catalog-filters.js`, `catalog-toolbar.js`, `catalog-results.js` | Каталог: фильтры хранятся в адресе страницы; боковая панель; сортировка и цена; «Найдено», страницы |
 | `product.js` + `product-gallery.js`, `product-info.js`, `product-reviews.js`, `product-review-form.js`, `product-seo.js` | Товар: галерея, вкладки, отзывы, форма отзыва, данные для поисковиков (schema.org) |
 | `cart.js`, `checkout.js`, `pay.js` | Корзина, оформление заказа, тестовая оплата |

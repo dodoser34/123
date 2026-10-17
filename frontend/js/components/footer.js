@@ -30,7 +30,6 @@
             <h4>${T.buyersTitle}</h4>
             <a href="${ui.page('delivery')}">${T.delivery}</a>
             <a href="${ui.page('delivery')}#faq">${T.faq}</a>
-            <a href="${ui.page('about')}">${T.aboutUs}</a>
             <a href="${ui.page('about')}#contacts">${T.contacts}</a>
             <a href="${ui.page('account')}">${T.account}</a>
           </div>

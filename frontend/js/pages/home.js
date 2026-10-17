@@ -19,29 +19,6 @@ document.addEventListener('app:ready', () => {
       image.addEventListener('error', revealProducts, { once: true });
     });
     revealProducts();
-
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      let scrollY = 0;
-      let mx = 0;
-      let my = 0;
-      let frame = 0;
-      const apply = () => {
-        frame = 0;
-        if (scrollY > innerHeight) return;
-        hero.style.setProperty('--bg-x', `${mx * -6}px`);
-        hero.style.setProperty('--bg-y', `${scrollY * 0.18 + my * -4}px`);
-        hero.style.setProperty('--pr-x', `${mx * 12}px`);
-        hero.style.setProperty('--pr-y', `${scrollY * 0.06 + my * 8}px`);
-      };
-      const queue = () => frame || (frame = requestAnimationFrame(apply));
-      addEventListener('scroll', () => ((scrollY = window.scrollY), queue()), { passive: true });
-      if (matchMedia('(hover: hover) and (pointer: fine)').matches)
-        document.querySelector('.hero').addEventListener('pointermove', (e) => {
-          mx = e.clientX / innerWidth - 0.5;
-          my = e.clientY / innerHeight - 0.5;
-          queue();
-        });
-    }
   }
 
   document.getElementById('hero-benefits').innerHTML = ui.benefits(true);

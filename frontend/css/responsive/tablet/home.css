@@ -21,6 +21,10 @@
   .hero-content {
     padding: calc(var(--header-h) + 32px) 0 24px;
   }
+  .hero::before,
+  .hero::after {
+    display: none;
+  }
   .hero .benefits {
     margin-top: 32px;
   }

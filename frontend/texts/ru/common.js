@@ -4,6 +4,7 @@ App.texts.common = {
   header: {
     menuLabel: 'Основное меню',
     catalog: 'Каталог',
+    delivery: 'Доставка и оплата',
     about: 'О нас',
     searchLabel: 'Поиск товаров',
     searchPlaceholder: 'Поиск товаров…',
@@ -46,7 +47,6 @@ App.texts.common = {
     buyersTitle: 'Покупателям',
     delivery: 'Доставка и оплата',
     faq: 'Вопросы и ответы',
-    aboutUs: 'О нас',
     contacts: 'Контакты',
     account: 'Личный кабинет',
     contactsTitle: 'Контакты',

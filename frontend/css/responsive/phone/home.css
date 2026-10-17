@@ -21,3 +21,14 @@
     width: 100%;
   }
 }
+@media (max-width: 400px) {
+  .hero-eyebrow {
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+  }
+  .hero-eyebrow::before {
+    width: 28px;
+  }
+}

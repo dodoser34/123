@@ -25,14 +25,30 @@
 }
 .hero-background {
   z-index: 0;
-  scale: 1.03;
-  translate: var(--bg-x, 0) var(--bg-y, 0);
-  transition: translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: saturate(0.92);
 }
 .hero-products {
   z-index: 1;
-  translate: var(--pr-x, 0) var(--pr-y, 0);
-  transition: translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 24px 30px rgba(31, 42, 30, 0.18));
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 55% 70% at 18% 55%, rgba(243, 239, 230, 0.9), rgba(243, 239, 230, 0) 70%);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg), rgba(243, 239, 230, 0));
 }
 
 .hero-media {
@@ -49,8 +65,33 @@
   max-width: 560px;
   padding: calc(var(--header-h) + 48px) 0 56px;
 }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 44px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left;
+}
 .hero h1 {
-  font-size: clamp(42px, 5.6vw, 72px);
+  font-size: clamp(42px, 5.6vw, 76px);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+}
+.hero h1 i {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--primary);
 }
 .hero .lead {
   margin: 22px 0 34px;
@@ -66,11 +107,16 @@
 }
 
 .hero .benefits.is-compact .benefit {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(243, 239, 230, 0.74);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(250, 248, 243, 0.62);
+  box-shadow: 0 8px 24px rgba(40, 45, 30, 0.06);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+}
+.hero .benefits.is-compact .benefit-ic {
+  color: var(--gold);
 }
 .hero .benefits.is-compact .benefit b {
   color: var(--text);
